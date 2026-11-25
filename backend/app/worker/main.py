@@ -7,6 +7,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from app.config import get_settings
+from app.database import SessionLocal
+from app.services.daily_email_job import run_daily_lesson_emails
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,8 +17,11 @@ logging.basicConfig(
 logger = logging.getLogger("daily_lessons.worker")
 
 
-def daily_lesson_email_placeholder() -> None:
-    logger.info("Daily lesson email job triggered (implementation scheduled in later phase).")
+def scheduled_daily_email_job() -> None:
+    logger.info("Running scheduled daily lesson email job...")
+    with SessionLocal() as db:
+        summary = run_daily_lesson_emails(db)
+    logger.info("Daily lesson email job completed: %s", summary)
 
 
 def main() -> None:
@@ -25,7 +30,7 @@ def main() -> None:
     scheduler = BlockingScheduler(timezone=tz)
 
     scheduler.add_job(
-        daily_lesson_email_placeholder,
+        scheduled_daily_email_job,
         trigger=CronTrigger(
             hour=settings.daily_email_hour,
             minute=settings.daily_email_minute,
