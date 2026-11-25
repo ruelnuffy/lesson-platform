@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.api.auth import login_rate_limiter
+from app.api.quizzes import quiz_rate_limiter
 from app.config import get_settings
 from app.database import get_db
 from app.main import app
@@ -60,6 +61,7 @@ def db_session() -> Generator[Session, None, None]:
 @pytest.fixture(scope="function")
 def client(db_session: Session) -> Generator[TestClient, None, None]:
     login_rate_limiter.reset()
+    quiz_rate_limiter.reset()
 
     def _override_get_db() -> Generator[Session, None, None]:
         yield db_session
@@ -69,3 +71,4 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
         yield test_client
     app.dependency_overrides.clear()
     login_rate_limiter.reset()
+    quiz_rate_limiter.reset()
