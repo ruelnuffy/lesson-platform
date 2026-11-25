@@ -1,14 +1,18 @@
-const API_BASE_URL =
+export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 export class ApiError extends Error {
   status: number;
   detail: unknown;
+  reason?: string;
 
   constructor(status: number, message: string, detail?: unknown) {
     super(message);
     this.status = status;
     this.detail = detail;
+    if (detail && typeof detail === "object" && "reason" in detail) {
+      this.reason = String((detail as { reason?: string }).reason);
+    }
   }
 }
 
@@ -37,7 +41,7 @@ export async function apiFetch<T>(
         message = data.detail.message;
       }
     } catch {
-      // ignore non-JSON error body
+      // ignore non-JSON body
     }
     throw new ApiError(response.status, message, detail);
   }
@@ -47,4 +51,134 @@ export async function apiFetch<T>(
   }
 
   return response.json() as Promise<T>;
+}
+
+export function formatNaira(priceKobo: number): string {
+  const naira = priceKobo / 100;
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 0,
+  }).format(naira);
+}
+
+// Shared API Types
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: "user" | "admin";
+  created_at: string;
+}
+
+export interface CoursePublic {
+  id: number;
+  title: string;
+  description: string;
+  price_kobo: number;
+  is_active: boolean;
+  total_lessons: number;
+}
+
+export interface QuizScoreSummary {
+  quiz_id: number;
+  pass_mark_percent: number;
+  attempts_count: number;
+  best_score_percent: number | null;
+  latest_score_percent: number | null;
+  passed: boolean;
+}
+
+export interface LessonSummary {
+  id: number;
+  course_id: number;
+  day_number: number;
+  title: string;
+  release_date: string;
+  has_quiz: boolean;
+  quiz_summary: QuizScoreSummary | null;
+}
+
+export interface LessonDetail extends LessonSummary {
+  content_markdown: string;
+  video_url: string | null;
+}
+
+export interface TodayDashboard {
+  today: string;
+  lesson: LessonDetail | null;
+  past_lessons: LessonSummary[];
+  total_lessons: number;
+  unlocked_count: number;
+  completed_quizzes_count: number;
+  streak: number;
+  next_release_date: string | null;
+}
+
+export interface QuizQuestionPublic {
+  id: number;
+  text: string;
+  options: string[];
+  order: number;
+}
+
+export interface QuizPublic {
+  id: number;
+  lesson_id: number;
+  lesson_title: string;
+  day_number: number;
+  pass_mark_percent: number;
+  questions: QuizQuestionPublic[];
+  attempts_count: number;
+  best_score_percent: number | null;
+  latest_score_percent: number | null;
+  passed: boolean;
+}
+
+export interface QuestionResult {
+  question_id: number;
+  selected_index: number | null;
+  is_correct: boolean;
+  explanation: string;
+}
+
+export interface QuizSubmitResult {
+  attempt_id: number;
+  quiz_id: number;
+  score_percent: number;
+  passed: boolean;
+  pass_mark_percent: number;
+  correct_count: number;
+  total_questions: number;
+  best_score_percent: number;
+  latest_score_percent: number;
+  attempts_count: number;
+  results: QuestionResult[];
+}
+
+export interface UserScores {
+  average_best_score: number | null;
+  total_attempts: number;
+  quizzes_passed: number;
+  by_lesson: Array<{
+    lesson_id: number;
+    lesson_title: string;
+    day_number: number;
+    quiz_id: number;
+    pass_mark_percent: number;
+    attempts_count: number;
+    best_score_percent: number | null;
+    latest_score_percent: number | null;
+    passed: boolean;
+  }>;
+  attempts: Array<{
+    attempt_id: number;
+    quiz_id: number;
+    lesson_id: number;
+    lesson_title: string;
+    day_number: number;
+    score_percent: number;
+    passed: boolean;
+    created_at: string;
+  }>;
 }
