@@ -1,0 +1,210 @@
+from datetime import date
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import inspect
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from app.api.auth import login_rate_limiter
+from app.config import get_settings
+from app.models import (
+    Course,
+    EmailLog,
+    EmailStatus,
+    Enrollment,
+    EnrollmentStatus,
+    Lesson,
+    Question,
+    Quiz,
+    QuizAttempt,
+    User,
+    UserRole,
+)
+from app.security.password import hash_password
+
+
+def test_health_endpoint(client: TestClient) -> None:
+    res = client.get("/health")
+    assert res.status_code == 200
+    assert res.json()["status"] == "ok"
+
+
+def test_register_sets_httponly_cookie_and_returns_user(client: TestClient) -> None:
+    res = client.post(
+        "/api/auth/register",
+        json={
+            "name": "Ada Lovelace",
+            "email": "Ada@Example.com",
+            "password": "supersecretpassword",
+        },
+    )
+    assert res.status_code == 201
+    data = res.json()
+    assert data["name"] == "Ada Lovelace"
+    assert data["email"] == "ada@example.com"
+    assert data["role"] == "user"
+    assert "password" not in data
+    assert "password_hash" not in data
+
+    settings = get_settings()
+    set_cookie = res.headers.get("set-cookie", "")
+    assert f"{settings.auth_cookie_name}=" in set_cookie
+    assert "HttpOnly" in set_cookie
+
+    me_res = client.get("/api/auth/me")
+    assert me_res.status_code == 200
+    assert me_res.json()["email"] == "ada@example.com"
+
+
+def test_register_duplicate_email_rejected(client: TestClient) -> None:
+    payload = {
+        "name": "User One",
+        "email": "dup@example.com",
+        "password": "password123",
+    }
+    assert client.post("/api/auth/register", json=payload).status_code == 201
+    res = client.post("/api/auth/register", json=payload)
+    assert res.status_code == 409
+
+
+def test_login_logout_and_me_flow(client: TestClient, db_session: Session) -> None:
+    user = User(
+        name="Chidi",
+        email="chidi@example.com",
+        password_hash=hash_password("correct-horse-battery"),
+        role=UserRole.user,
+    )
+    db_session.add(user)
+    db_session.commit()
+
+    # Unauthenticated /me fails
+    assert client.get("/api/auth/me").status_code == 401
+
+    # Wrong password fails
+    bad = client.post(
+        "/api/auth/login",
+        json={"email": "chidi@example.com", "password": "wrongpassword"},
+    )
+    assert bad.status_code == 401
+
+    # Valid login succeeds
+    ok = client.post(
+        "/api/auth/login",
+        json={"email": "CHIDI@example.com", "password": "correct-horse-battery"},
+    )
+    assert ok.status_code == 200
+    assert ok.json()["email"] == "chidi@example.com"
+
+    # /me succeeds with cookie
+    me = client.get("/api/auth/me")
+    assert me.status_code == 200
+    assert me.json()["id"] == user.id
+
+    # Logout clears cookie
+    out = client.post("/api/auth/logout")
+    assert out.status_code == 200
+    assert client.get("/api/auth/me").status_code == 401
+
+
+def test_login_rate_limiting(client: TestClient) -> None:
+    max_attempts = login_rate_limiter.max_requests
+    for _ in range(max_attempts):
+        res = client.post(
+            "/api/auth/login",
+            json={"email": "nobody@example.com", "password": "wrong"},
+        )
+        assert res.status_code == 401
+
+    blocked = client.post(
+        "/api/auth/login",
+        json={"email": "nobody@example.com", "password": "wrong"},
+    )
+    assert blocked.status_code == 429
+
+
+def test_all_tables_and_constraints_exist(db_session: Session) -> None:
+    inspector = inspect(db_session.get_bind())
+    tables = set(inspector.get_table_names())
+    expected = {
+        "users",
+        "courses",
+        "lessons",
+        "enrollments",
+        "quizzes",
+        "questions",
+        "quiz_attempts",
+        "email_log",
+    }
+    assert expected.issubset(tables)
+
+    user = User(
+        name="Student",
+        email="student@example.com",
+        password_hash=hash_password("password123"),
+        role=UserRole.user,
+    )
+    course = Course(
+        title="Python Foundations",
+        description="7-day daily course",
+        price_kobo=1500000,
+        is_active=True,
+    )
+    db_session.add_all([user, course])
+    db_session.flush()
+
+    lesson = Lesson(
+        course_id=course.id,
+        day_number=1,
+        title="Day 1",
+        content_markdown="# Hello",
+        release_date=date(2026, 11, 25),
+    )
+    enrollment = Enrollment(
+        user_id=user.id,
+        course_id=course.id,
+        status=EnrollmentStatus.paid,
+        paystack_reference="ref_test_001",
+    )
+    db_session.add_all([lesson, enrollment])
+    db_session.flush()
+
+    quiz = Quiz(lesson_id=lesson.id, pass_mark_percent=70)
+    db_session.add(quiz)
+    db_session.flush()
+
+    question = Question(
+        quiz_id=quiz.id,
+        text="2 + 2 = ?",
+        options=["3", "4", "5"],
+        correct_index=1,
+        explanation="2 + 2 equals 4.",
+        order=1,
+    )
+    attempt = QuizAttempt(
+        user_id=user.id,
+        quiz_id=quiz.id,
+        score_percent=100.0,
+        answers={"1": 1},
+        passed=True,
+    )
+    log1 = EmailLog(
+        user_id=user.id,
+        lesson_id=lesson.id,
+        type="daily_lesson",
+        status=EmailStatus.sent,
+    )
+    db_session.add_all([question, attempt, log1])
+    db_session.flush()
+
+    # Verify unique(user_id, lesson_id, type) on email_log
+    log_dup = EmailLog(
+        user_id=user.id,
+        lesson_id=lesson.id,
+        type="daily_lesson",
+        status=EmailStatus.sent,
+    )
+    db_session.add(log_dup)
+    with pytest.raises(IntegrityError):
+        db_session.flush()
+    db_session.rollback()
