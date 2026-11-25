@@ -1,5 +1,19 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Award,
+  BarChart3,
+  BookOpen,
+  ClipboardList,
+  CreditCard,
+  Download,
+  Mail,
+  Search,
+  Send,
+  ShieldCheck,
+  Users,
+  X,
+} from "lucide-react";
 import { API_BASE_URL, apiFetch, formatNaira } from "../../lib/api";
 import { AdminCoursesTab } from "./AdminCoursesTab";
 import { AdminQuizzesTab } from "./AdminQuizzesTab";
@@ -67,6 +81,21 @@ interface AdminScores {
   }>;
 }
 
+const statusPill = (status: string) => {
+  switch (status) {
+    case "paid":
+    case "sent":
+      return "bg-emerald-50 text-emerald-700 border-emerald-200/80";
+    case "pending":
+      return "bg-amber-50 text-amber-700 border-amber-200/80";
+    case "failed":
+    case "expired":
+      return "bg-rose-50 text-rose-700 border-rose-200/80";
+    default:
+      return "bg-zinc-100 text-zinc-700 border-zinc-200";
+  }
+};
+
 export function AdminDashboardPage() {
   const [tab, setTab] = useState<Tab>("overview");
   const [userSearch, setUserSearch] = useState("");
@@ -97,7 +126,13 @@ export function AdminDashboardPage() {
   });
 
   const selectedUserScores = useQuery<
-    Array<{ attempt_id: number; day_number: number; lesson_title: string; score_percent: number; passed: boolean }>
+    Array<{
+      attempt_id: number;
+      day_number: number;
+      lesson_title: string;
+      score_percent: number;
+      passed: boolean;
+    }>
   >({
     queryKey: ["admin", "user-scores", selectedUserId],
     queryFn: () => apiFetch(`/api/admin/users/${selectedUserId}/scores`),
@@ -147,7 +182,7 @@ export function AdminDashboardPage() {
         body: JSON.stringify({ target_date: resendDate }),
       }),
     onSuccess: (res) => {
-      setResendResult(`Sent: ${res.sent}, Skipped: ${res.skipped}, Failed: ${res.failed}`);
+      setResendResult(`Sent: ${res.sent} · Skipped: ${res.skipped} · Failed: ${res.failed}`);
       qc.invalidateQueries({ queryKey: ["admin", "emails"] });
     },
   });
@@ -158,311 +193,425 @@ export function AdminDashboardPage() {
     enabled: tab === "scores",
   });
 
-  const tabs: Array<{ id: Tab; label: string }> = [
-    { id: "overview", label: "Overview" },
-    { id: "users", label: "Users" },
-    { id: "courses", label: "Courses & Lessons" },
-    { id: "quizzes", label: "Quizzes" },
-    { id: "payments", label: "Payments" },
-    { id: "emails", label: "Emails" },
-    { id: "scores", label: "Scores" },
+  const tabs: Array<{ id: Tab; label: string; icon: ReactNode }> = [
+    { id: "overview", label: "Overview", icon: <BarChart3 className="w-4 h-4" /> },
+    { id: "users", label: "Users", icon: <Users className="w-4 h-4" /> },
+    { id: "courses", label: "Courses & Lessons", icon: <BookOpen className="w-4 h-4" /> },
+    { id: "quizzes", label: "Quizzes", icon: <ClipboardList className="w-4 h-4" /> },
+    { id: "payments", label: "Payments", icon: <CreditCard className="w-4 h-4" /> },
+    { id: "emails", label: "Emails", icon: <Mail className="w-4 h-4" /> },
+    { id: "scores", label: "Scores", icon: <Award className="w-4 h-4" /> },
   ];
 
   const defaultCourseId = courses.data?.[0]?.id;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
-        <div className="flex flex-wrap gap-2">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium ${
-                tab === t.id
-                  ? "bg-indigo-600 text-white"
-                  : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <div className="grid lg:grid-cols-12 gap-8 items-start">
+        {/* Sidebar */}
+        <aside className="lg:col-span-3 lg:sticky lg:top-24">
+          <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-3">
+            <div className="px-3 py-2.5 mb-1 flex items-center gap-2 border-b border-zinc-100">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-zinc-900">Admin Console</p>
+                <p className="text-[11px] text-zinc-500">Operations &amp; Content</p>
+              </div>
+            </div>
 
-      {tab === "overview" && overview.data && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <StatCard label="Total Users" value={String(overview.data.total_users)} />
-          <StatCard label="Paid Users" value={String(overview.data.paid_users)} />
-          <StatCard label="Revenue" value={formatNaira(overview.data.revenue_kobo)} />
-          <StatCard label="Emails Sent Today" value={String(overview.data.lessons_sent_today)} />
-          <StatCard
-            label="Avg Quiz Score"
-            value={
-              overview.data.average_quiz_score !== null
-                ? `${overview.data.average_quiz_score}%`
-                : "—"
-            }
-          />
-        </div>
-      )}
+            <nav className="flex lg:flex-col gap-1 overflow-x-auto pb-1 lg:pb-0">
+              {tabs.map((t) => {
+                const active = tab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setTab(t.id)}
+                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${
+                      active
+                        ? "bg-zinc-900 text-white shadow-sm"
+                        : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                    }`}
+                  >
+                    {t.icon}
+                    {t.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </aside>
 
-      {tab === "users" && (
-        <div className="space-y-4">
-          <input
-            placeholder="Search users by name or email..."
-            value={userSearch}
-            onChange={(e) => setUserSearch(e.target.value)}
-            className="w-full sm:w-80 rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white"
-          />
-          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3">User</th>
-                  <th className="px-4 py-3">Role</th>
-                  <th className="px-4 py-3">Access</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {(users.data || []).map((u) => (
-                  <tr key={u.id}>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900">{u.name}</div>
-                      <div className="text-xs text-slate-500">{u.email}</div>
-                    </td>
-                    <td className="px-4 py-3 uppercase text-xs font-semibold">{u.role}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                          u.is_paid
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {u.is_paid ? "Paid" : "Unpaid"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right space-x-2">
-                      {!u.is_paid && defaultCourseId && (
-                        <button
-                          onClick={() =>
-                            grantMutation.mutate({ userId: u.id, courseId: defaultCourseId })
-                          }
-                          className="text-xs font-semibold text-emerald-700 hover:underline"
-                        >
-                          Grant Access
-                        </button>
-                      )}
-                      {u.is_paid && (
-                        <button
-                          onClick={() => revokeMutation.mutate(u.id)}
-                          className="text-xs font-semibold text-rose-600 hover:underline"
-                        >
-                          Revoke
-                        </button>
-                      )}
-                      <button
-                        onClick={() => setSelectedUserId(u.id)}
-                        className="text-xs font-semibold text-indigo-600 hover:underline"
-                      >
-                        View Scores
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* Main Content */}
+        <section className="lg:col-span-9 min-w-0 space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-extrabold text-zinc-900 tracking-tight capitalize">
+              {tabs.find((t) => t.id === tab)?.label}
+            </h1>
           </div>
 
-          {selectedUserId && (
-            <div className="bg-white border border-slate-200 rounded-xl p-5">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="font-bold text-slate-900">User #{selectedUserId} Quiz Scores</h3>
-                <button
-                  onClick={() => setSelectedUserId(null)}
-                  className="text-xs text-slate-500 hover:underline"
-                >
-                  Close
-                </button>
+          {tab === "overview" && overview.data && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <StatCard
+                label="Total Users"
+                value={String(overview.data.total_users)}
+                accent="text-zinc-900"
+              />
+              <StatCard
+                label="Paid Users"
+                value={String(overview.data.paid_users)}
+                accent="text-emerald-600"
+              />
+              <StatCard
+                label="Total Revenue"
+                value={formatNaira(overview.data.revenue_kobo)}
+                accent="text-indigo-600"
+              />
+              <StatCard
+                label="Emails Sent Today"
+                value={String(overview.data.lessons_sent_today)}
+                accent="text-zinc-900"
+              />
+              <StatCard
+                label="Average Quiz Score"
+                value={
+                  overview.data.average_quiz_score !== null
+                    ? `${overview.data.average_quiz_score}%`
+                    : "—"
+                }
+                accent="text-amber-600"
+              />
+            </div>
+          )}
+
+          {tab === "users" && (
+            <div className="space-y-4">
+              <div className="relative max-w-sm">
+                <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  placeholder="Search users by name or email..."
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  className="w-full rounded-xl border border-zinc-300 pl-10 pr-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
+                />
               </div>
-              {selectedUserScores.data?.length ? (
-                <ul className="space-y-1 text-sm">
-                  {selectedUserScores.data.map((s) => (
-                    <li key={s.attempt_id}>
-                      Day {s.day_number} ({s.lesson_title}): <strong>{s.score_percent}%</strong>{" "}
-                      ({s.passed ? "Passed" : "Failed"})
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-slate-500">No quiz attempts for this user.</p>
+
+              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
+                    <tr>
+                      <th className="px-5 py-3.5">User</th>
+                      <th className="px-5 py-3.5">Role</th>
+                      <th className="px-5 py-3.5">Status</th>
+                      <th className="px-5 py-3.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100">
+                    {(users.data || []).map((u) => (
+                      <tr key={u.id} className="hover:bg-zinc-50/70">
+                        <td className="px-5 py-3.5">
+                          <div className="font-semibold text-zinc-900">{u.name}</div>
+                          <div className="text-xs text-zinc-500">{u.email}</div>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="text-[11px] font-bold uppercase px-2 py-0.5 rounded bg-zinc-100 text-zinc-700">
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                              u.is_paid
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
+                                : "bg-zinc-100 text-zinc-600 border-zinc-200"
+                            }`}
+                          >
+                            {u.is_paid ? "Paid" : "Unpaid"}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 text-right space-x-3 whitespace-nowrap">
+                          {!u.is_paid && defaultCourseId && (
+                            <button
+                              onClick={() =>
+                                grantMutation.mutate({ userId: u.id, courseId: defaultCourseId })
+                              }
+                              className="text-xs font-semibold text-emerald-700 hover:underline"
+                            >
+                              Grant Access
+                            </button>
+                          )}
+                          {u.is_paid && (
+                            <button
+                              onClick={() => revokeMutation.mutate(u.id)}
+                              className="text-xs font-semibold text-rose-600 hover:underline"
+                            >
+                              Revoke
+                            </button>
+                          )}
+                          <button
+                            onClick={() => setSelectedUserId(u.id)}
+                            className="text-xs font-semibold text-indigo-600 hover:underline"
+                          >
+                            Scores
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {selectedUserId && (
+                <div className="bg-white border border-indigo-200 rounded-2xl p-5 shadow-soft">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-bold text-zinc-900">
+                      User #{selectedUserId} Quiz Scores
+                    </h3>
+                    <button
+                      onClick={() => setSelectedUserId(null)}
+                      className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {selectedUserScores.data?.length ? (
+                    <ul className="space-y-2 text-sm">
+                      {selectedUserScores.data.map((s) => (
+                        <li
+                          key={s.attempt_id}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50"
+                        >
+                          <span>
+                            Day {s.day_number}: <strong>{s.lesson_title}</strong>
+                          </span>
+                          <span
+                            className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                              s.passed
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-rose-50 text-rose-700"
+                            }`}
+                          >
+                            {s.score_percent}% ({s.passed ? "Passed" : "Failed"})
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-zinc-500">No quiz attempts for this user.</p>
+                  )}
+                </div>
               )}
             </div>
           )}
-        </div>
-      )}
 
-      {tab === "courses" && <AdminCoursesTab />}
-      {tab === "quizzes" && <AdminQuizzesTab />}
+          {tab === "courses" && <AdminCoursesTab />}
+          {tab === "quizzes" && <AdminQuizzesTab />}
 
-      {tab === "payments" && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-600">
-              <tr>
-                <th className="px-4 py-3">User</th>
-                <th className="px-4 py-3">Course</th>
-                <th className="px-4 py-3">Amount</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Reference</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {(payments.data || []).map((p) => (
-                <tr key={p.id}>
-                  <td className="px-4 py-3">
-                    <div className="font-medium">{p.user_name}</div>
-                    <div className="text-xs text-slate-500">{p.user_email}</div>
-                  </td>
-                  <td className="px-4 py-3">{p.course_title}</td>
-                  <td className="px-4 py-3 font-medium">{formatNaira(p.amount_kobo)}</td>
-                  <td className="px-4 py-3 uppercase text-xs font-semibold">{p.status}</td>
-                  <td className="px-4 py-3 font-mono text-xs">{p.paystack_reference || "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {tab === "emails" && (
-        <div className="space-y-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-wrap items-center gap-3">
-            <input
-              type="date"
-              value={resendDate}
-              onChange={(e) => setResendDate(e.target.value)}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
-            />
-            <button
-              onClick={() => resendMutation.mutate()}
-              disabled={resendMutation.isPending}
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
-            >
-              {resendMutation.isPending ? "Sending..." : "Send / Resend Day's Emails"}
-            </button>
-            {resendResult && <span className="text-sm text-slate-600">{resendResult}</span>}
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3">Recipient</th>
-                  <th className="px-4 py-3">Lesson</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Error</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {(emails.data || []).map((e) => (
-                  <tr key={e.id}>
-                    <td className="px-4 py-3">{e.user_email}</td>
-                    <td className="px-4 py-3">
-                      Day {e.day_number}: {e.lesson_title}
-                    </td>
-                    <td className="px-4 py-3 uppercase text-xs font-semibold">{e.status}</td>
-                    <td className="px-4 py-3 text-xs text-rose-600">{e.error || "—"}</td>
+          {tab === "payments" && (
+            <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
+                  <tr>
+                    <th className="px-5 py-3.5">User</th>
+                    <th className="px-5 py-3.5">Course</th>
+                    <th className="px-5 py-3.5">Amount</th>
+                    <th className="px-5 py-3.5">Status</th>
+                    <th className="px-5 py-3.5">Reference</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {tab === "scores" && scores.data && (
-        <div className="space-y-6">
-          <div className="flex justify-end">
-            <a
-              href={`${API_BASE_URL}/api/admin/scores/export.csv`}
-              className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
-            >
-              Export CSV
-            </a>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
-            <div className="px-4 py-3 border-b border-slate-200 font-bold text-slate-900">
-              Per-Lesson Summary
+                </thead>
+                <tbody className="divide-y divide-zinc-100">
+                  {(payments.data || []).map((p) => (
+                    <tr key={p.id} className="hover:bg-zinc-50/70">
+                      <td className="px-5 py-3.5">
+                        <div className="font-semibold text-zinc-900">{p.user_name}</div>
+                        <div className="text-xs text-zinc-500">{p.user_email}</div>
+                      </td>
+                      <td className="px-5 py-3.5 text-zinc-700">{p.course_title}</td>
+                      <td className="px-5 py-3.5 font-bold text-zinc-900">
+                        {formatNaira(p.amount_kobo)}
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase border ${statusPill(
+                            p.status
+                          )}`}
+                        >
+                          {p.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 font-mono text-xs text-zinc-600">
+                        {p.paystack_reference || "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3">Lesson</th>
-                  <th className="px-4 py-3">Attempts</th>
-                  <th className="px-4 py-3">Avg Score</th>
-                  <th className="px-4 py-3">Pass Rate</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {scores.data.by_lesson.map((row) => (
-                  <tr key={row.lesson_id}>
-                    <td className="px-4 py-3 font-medium">
-                      Day {row.day_number}: {row.lesson_title}
-                    </td>
-                    <td className="px-4 py-3">{row.attempts_count}</td>
-                    <td className="px-4 py-3">{row.average_score}%</td>
-                    <td className="px-4 py-3">{row.pass_rate}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          )}
 
-          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto">
-            <div className="px-4 py-3 border-b border-slate-200 font-bold text-slate-900">
-              All Attempts
+          {tab === "emails" && (
+            <div className="space-y-4">
+              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-4 flex flex-wrap items-center gap-3">
+                <input
+                  type="date"
+                  value={resendDate}
+                  onChange={(e) => setResendDate(e.target.value)}
+                  className="rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
+                />
+                <button
+                  onClick={() => resendMutation.mutate()}
+                  disabled={resendMutation.isPending}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                >
+                  <Send className="w-4 h-4" />
+                  {resendMutation.isPending ? "Sending..." : "Send / Resend Day's Emails"}
+                </button>
+                {resendResult && (
+                  <span className="text-xs font-semibold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg">
+                    {resendResult}
+                  </span>
+                )}
+              </div>
+
+              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
+                    <tr>
+                      <th className="px-5 py-3.5">Recipient</th>
+                      <th className="px-5 py-3.5">Lesson</th>
+                      <th className="px-5 py-3.5">Status</th>
+                      <th className="px-5 py-3.5">Error</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100">
+                    {(emails.data || []).map((e) => (
+                      <tr key={e.id} className="hover:bg-zinc-50/70">
+                        <td className="px-5 py-3.5 font-medium text-zinc-900">{e.user_email}</td>
+                        <td className="px-5 py-3.5 text-zinc-700">
+                          Day {e.day_number}: {e.lesson_title}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase border ${statusPill(
+                              e.status
+                            )}`}
+                          >
+                            {e.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 text-xs text-rose-600">{e.error || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3">User</th>
-                  <th className="px-4 py-3">Lesson</th>
-                  <th className="px-4 py-3">Score</th>
-                  <th className="px-4 py-3">Passed</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {scores.data.attempts.map((a) => (
-                  <tr key={a.attempt_id}>
-                    <td className="px-4 py-3">
-                      {a.user_name} <span className="text-xs text-slate-500">({a.user_email})</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      Day {a.day_number}: {a.lesson_title}
-                    </td>
-                    <td className="px-4 py-3 font-semibold">{a.score_percent}%</td>
-                    <td className="px-4 py-3">{a.passed ? "Yes" : "No"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+          )}
+
+          {tab === "scores" && scores.data && (
+            <div className="space-y-6">
+              <div className="flex justify-end">
+                <a
+                  href={`${API_BASE_URL}/api/admin/scores/export.csv`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors shadow-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Export CSV
+                </a>
+              </div>
+
+              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+                <div className="px-5 py-3.5 border-b border-zinc-100 font-bold text-zinc-900">
+                  Per-Lesson Summary
+                </div>
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
+                    <tr>
+                      <th className="px-5 py-3.5">Lesson</th>
+                      <th className="px-5 py-3.5">Attempts</th>
+                      <th className="px-5 py-3.5">Avg Score</th>
+                      <th className="px-5 py-3.5">Pass Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100">
+                    {scores.data.by_lesson.map((row) => (
+                      <tr key={row.lesson_id} className="hover:bg-zinc-50/70">
+                        <td className="px-5 py-3.5 font-semibold text-zinc-900">
+                          Day {row.day_number}: {row.lesson_title}
+                        </td>
+                        <td className="px-5 py-3.5">{row.attempts_count}</td>
+                        <td className="px-5 py-3.5 font-bold">{row.average_score}%</td>
+                        <td className="px-5 py-3.5 text-emerald-700 font-semibold">
+                          {row.pass_rate}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+                <div className="px-5 py-3.5 border-b border-zinc-100 font-bold text-zinc-900">
+                  All Attempts
+                </div>
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
+                    <tr>
+                      <th className="px-5 py-3.5">User</th>
+                      <th className="px-5 py-3.5">Lesson</th>
+                      <th className="px-5 py-3.5">Score</th>
+                      <th className="px-5 py-3.5">Passed</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100">
+                    {scores.data.attempts.map((a) => (
+                      <tr key={a.attempt_id} className="hover:bg-zinc-50/70">
+                        <td className="px-5 py-3.5">
+                          <span className="font-semibold text-zinc-900">{a.user_name}</span>{" "}
+                          <span className="text-xs text-zinc-500">({a.user_email})</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          Day {a.day_number}: {a.lesson_title}
+                        </td>
+                        <td className="px-5 py-3.5 font-bold">{a.score_percent}%</td>
+                        <td className="px-5 py-3.5">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                              a.passed
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-rose-50 text-rose-700"
+                            }`}
+                          >
+                            {a.passed ? "Yes" : "No"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent: string;
+}) {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5">
-      <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
+    <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft">
+      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">{label}</p>
+      <p className={`mt-2 text-3xl font-extrabold tracking-tight ${accent}`}>{value}</p>
     </div>
   );
 }

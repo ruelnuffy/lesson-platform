@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  RotateCcw,
+  Trophy,
+  XCircle,
+} from "lucide-react";
 import { PaywallCard } from "../components/PaywallCard";
 import {
   ApiError,
@@ -38,7 +47,7 @@ export function QuizPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-12 text-slate-500">Loading quiz...</div>
+      <div className="max-w-2xl mx-auto px-4 py-12 text-zinc-500">Loading quiz...</div>
     );
   }
 
@@ -63,76 +72,108 @@ export function QuizPage() {
   if (result) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
-        <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm">
-          <span
-            className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase ${
+        <div className="bg-white border border-zinc-200/90 rounded-3xl p-8 sm:p-10 text-center shadow-elevated">
+          <div
+            className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${
               result.passed
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-amber-50 text-amber-700"
+                ? "bg-emerald-50 text-emerald-600"
+                : "bg-amber-50 text-amber-600"
             }`}
           >
-            {result.passed ? "Passed!" : "Keep Practicing"}
-          </span>
-          <h1 className="mt-3 text-4xl font-extrabold text-slate-900">
+            <Trophy className="w-8 h-8" />
+          </div>
+
+          <div className="mt-4">
+            <span
+              className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                result.passed
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-amber-50 text-amber-700"
+              }`}
+            >
+              {result.passed ? "Quiz Passed" : "Keep Practicing"}
+            </span>
+          </div>
+
+          <h1 className="mt-3 text-5xl font-extrabold text-zinc-900 tracking-tight">
             {result.score_percent}%
           </h1>
-          <p className="mt-1 text-slate-600 text-sm">
+          <p className="mt-2 text-zinc-600 text-sm">
             {result.correct_count} of {result.total_questions} correct · Pass mark{" "}
             {result.pass_mark_percent}%
           </p>
-          <p className="mt-2 text-xs text-slate-500">
-            Best score: <strong>{result.best_score_percent}%</strong> · Latest:{" "}
-            <strong>{result.latest_score_percent}%</strong> · Attempts: {result.attempts_count}
-          </p>
 
-          <div className="mt-6 flex items-center justify-center gap-3">
+          <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-3 px-4 py-2 rounded-xl bg-zinc-50 border border-zinc-200/80 text-xs text-zinc-600">
+            <span>
+              Best: <strong className="text-zinc-900">{result.best_score_percent}%</strong>
+            </span>
+            <span className="text-zinc-300">•</span>
+            <span>
+              Latest: <strong className="text-zinc-900">{result.latest_score_percent}%</strong>
+            </span>
+            <span className="text-zinc-300">•</span>
+            <span>
+              Attempts: <strong className="text-zinc-900">{result.attempts_count}</strong>
+            </span>
+          </div>
+
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={resetForRetake}
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
             >
+              <RotateCcw className="w-4 h-4" />
               Retake Quiz
             </button>
             <Link
               to="/dashboard"
-              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50"
+              className="px-5 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-sm font-semibold hover:bg-zinc-50 transition-colors"
             >
-              Dashboard
+              Back to Dashboard
             </Link>
           </div>
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">Explanations</h2>
+          <h2 className="text-lg font-extrabold text-zinc-900 tracking-tight">
+            Detailed Explanations
+          </h2>
           {quiz.questions.map((q, idx) => {
             const r = result.results.find((item) => item.question_id === q.id);
             return (
               <div
                 key={q.id}
-                className={`bg-white border rounded-xl p-5 ${
-                  r?.is_correct ? "border-emerald-200" : "border-rose-200"
+                className={`bg-white border rounded-2xl p-5 shadow-soft ${
+                  r?.is_correct ? "border-emerald-200/90" : "border-rose-200/90"
                 }`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="font-semibold text-slate-900">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-bold text-zinc-900 text-sm sm:text-base">
                     {idx + 1}. {q.text}
                   </p>
                   <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded ${
+                    className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${
                       r?.is_correct
                         ? "bg-emerald-50 text-emerald-700"
                         : "bg-rose-50 text-rose-700"
                     }`}
                   >
+                    {r?.is_correct ? (
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    ) : (
+                      <XCircle className="w-3.5 h-3.5" />
+                    )}
                     {r?.is_correct ? "Correct" : "Incorrect"}
                   </span>
                 </div>
                 {r?.selected_index !== null && r?.selected_index !== undefined && (
-                  <p className="mt-2 text-sm text-slate-600">
-                    Your answer: <strong>{q.options[r.selected_index]}</strong>
+                  <p className="mt-2.5 text-sm text-zinc-600">
+                    Your answer:{" "}
+                    <strong className="text-zinc-900">{q.options[r.selected_index]}</strong>
                   </p>
                 )}
                 {r?.explanation && (
-                  <p className="mt-2 text-sm text-slate-700 bg-slate-50 p-3 rounded-lg">
+                  <p className="mt-3 text-sm text-zinc-700 bg-zinc-50 border border-zinc-100 p-3.5 rounded-xl leading-relaxed">
                     {r.explanation}
                   </p>
                 )}
@@ -151,29 +192,50 @@ export function QuizPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <Link to={`/lessons/${quiz.lesson_id}`} className="text-sm text-indigo-600 hover:underline">
-        ← Back to Day {quiz.day_number}: {quiz.lesson_title}
+      <Link
+        to={`/lessons/${quiz.lesson_id}`}
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-indigo-600 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Day {quiz.day_number}: {quiz.lesson_title}
       </Link>
 
-      <div className="mt-4 bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
-        <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+      <div className="mt-4 bg-white border border-zinc-200/90 rounded-3xl shadow-elevated p-6 sm:p-9">
+        <div className="flex items-center justify-between text-xs font-semibold text-zinc-500">
           <span>
             Question {currentIndex + 1} of {total}
           </span>
-          <span>Pass mark: {quiz.pass_mark_percent}%</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-700">
+            Pass mark: {quiz.pass_mark_percent}%
+          </span>
         </div>
 
-        <div className="mt-2 w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-indigo-600 transition-all"
-            style={{ width: `${((currentIndex + 1) / total) * 100}%` }}
-          />
+        {/* Step progress bar */}
+        <div className="mt-3 flex gap-1.5">
+          {quiz.questions.map((q, idx) => {
+            const answered = answers[String(q.id)] !== undefined;
+            const isCurrent = idx === currentIndex;
+            return (
+              <div
+                key={q.id}
+                className={`h-2 flex-1 rounded-full transition-all ${
+                  isCurrent
+                    ? "bg-indigo-600"
+                    : answered
+                    ? "bg-emerald-500"
+                    : "bg-zinc-200"
+                }`}
+              />
+            );
+          })}
         </div>
 
         {question && (
-          <div className="mt-6">
-            <h1 className="text-xl font-bold text-slate-900">{question.text}</h1>
-            <div className="mt-5 space-y-3">
+          <div className="mt-7">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-zinc-900 tracking-tight leading-snug">
+              {question.text}
+            </h1>
+            <div className="mt-6 space-y-3">
               {question.options.map((option, idx) => {
                 const isSelected = selected === idx;
                 return (
@@ -183,16 +245,25 @@ export function QuizPage() {
                     onClick={() =>
                       setAnswers((prev) => ({ ...prev, [String(question.id)]: idx }))
                     }
-                    className={`w-full text-left p-4 rounded-xl border text-sm font-medium transition ${
+                    className={`w-full text-left p-4 rounded-2xl border-2 text-sm font-medium transition-all flex items-center gap-3.5 ${
                       isSelected
-                        ? "border-indigo-600 bg-indigo-50 text-indigo-900"
-                        : "border-slate-200 hover:border-slate-300 text-slate-700"
+                        ? "border-indigo-600 bg-indigo-50/70 text-indigo-950 shadow-sm"
+                        : "border-zinc-200/90 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-700"
                     }`}
                   >
-                    <span className="inline-block w-6 font-bold text-slate-400">
-                      {String.fromCharCode(65 + idx)}.
+                    <span
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
+                        isSelected
+                          ? "bg-indigo-600 text-white"
+                          : "bg-zinc-100 text-zinc-500"
+                      }`}
+                    >
+                      {String.fromCharCode(65 + idx)}
                     </span>
-                    {option}
+                    <span className="flex-1">{option}</span>
+                    {isSelected && (
+                      <CheckCircle2 className="w-5 h-5 text-indigo-600 shrink-0" />
+                    )}
                   </button>
                 );
               })}
@@ -201,18 +272,20 @@ export function QuizPage() {
         )}
 
         {submitMutation.error && (
-          <div className="mt-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm">
-            {submitMutation.error.message}
+          <div className="mt-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            <span>{submitMutation.error.message}</span>
           </div>
         )}
 
-        <div className="mt-8 flex items-center justify-between">
+        <div className="mt-8 pt-6 border-t border-zinc-100 flex items-center justify-between">
           <button
             type="button"
             disabled={currentIndex === 0}
             onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-sm font-semibold hover:bg-zinc-50 disabled:opacity-40 transition-colors"
           >
+            <ArrowLeft className="w-4 h-4" />
             Previous
           </button>
 
@@ -221,18 +294,20 @@ export function QuizPage() {
               type="button"
               disabled={selected === undefined}
               onClick={() => setCurrentIndex((i) => Math.min(total - 1, i + 1))}
-              className="px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 disabled:opacity-40 transition-colors"
             >
               Next
+              <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
             <button
               type="button"
               disabled={!allAnswered || submitMutation.isPending}
               onClick={() => submitMutation.mutate(answers)}
-              className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-40"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-40 shadow-sm transition-colors"
             >
               {submitMutation.isPending ? "Grading..." : "Submit Quiz"}
+              <CheckCircle2 className="w-4 h-4" />
             </button>
           )}
         </div>

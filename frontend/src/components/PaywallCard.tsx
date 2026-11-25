@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { ArrowRight, CheckCircle2, Lock, ShieldCheck } from "lucide-react";
 import { apiFetch, formatNaira, type CoursePublic } from "../lib/api";
 
 export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string }) {
@@ -11,37 +12,80 @@ export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string
   const primary = courses[0];
 
   return (
-    <div className="max-w-xl mx-auto my-12 bg-white border border-slate-200 rounded-2xl shadow-sm p-8 text-center">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 text-xl font-bold">
-        🔒
-      </div>
-      <h1 className="mt-4 text-2xl font-bold text-slate-900">{title}</h1>
-      <p className="mt-2 text-slate-600">
-        An active paid enrollment is required to view lesson content and take daily quizzes.
-      </p>
-
-      {primary && (
-        <div className="mt-6 p-5 bg-slate-50 rounded-xl border border-slate-200 text-left">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="font-semibold text-slate-900">{primary.title}</h2>
-              <p className="text-sm text-slate-600 mt-1">{primary.description}</p>
-              <p className="text-xs text-slate-500 mt-2">
-                {primary.total_lessons} scheduled daily lessons + quizzes
-              </p>
+    <div className="max-w-xl mx-auto my-12 px-4">
+      <div className="bg-white border border-zinc-200/90 rounded-3xl shadow-elevated overflow-hidden">
+        <div className="bg-zinc-900 px-8 py-8 text-center text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-transparent to-amber-500/20 pointer-events-none" />
+          <div className="relative">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-sm">
+              <Lock className="w-6 h-6 text-indigo-300" />
             </div>
-            <span className="text-lg font-bold text-indigo-700 whitespace-nowrap">
-              {formatNaira(primary.price_kobo)}
-            </span>
+            <h1 className="mt-4 text-2xl font-extrabold tracking-tight">{title}</h1>
+            <p className="mt-2 text-sm text-zinc-300 max-w-md mx-auto">
+              An active paid enrollment is required to read lesson content, watch embedded
+              videos, and take daily mastery quizzes.
+            </p>
           </div>
-          <Link
-            to={`/checkout?courseId=${primary.id}`}
-            className="mt-5 block w-full text-center px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
-          >
-            Enroll &amp; Pay with Paystack
-          </Link>
         </div>
-      )}
+
+        <div className="p-8">
+          {primary ? (
+            <>
+              <div className="p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600">
+                      Full Cohort Access
+                    </span>
+                    <h2 className="mt-1 font-bold text-zinc-900 text-lg">{primary.title}</h2>
+                    <p className="text-sm text-zinc-600 mt-1.5 leading-relaxed">
+                      {primary.description}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="text-2xl font-extrabold text-zinc-900">
+                      {formatNaira(primary.price_kobo)}
+                    </span>
+                    <span className="block text-[11px] text-zinc-500">One-time payment</span>
+                  </div>
+                </div>
+
+                <ul className="mt-5 pt-4 border-t border-zinc-200/80 space-y-2 text-sm text-zinc-700">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    {primary.total_lessons} structured daily lessons unlocked on schedule
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    Server-graded quizzes with instant explanations &amp; unlimited retakes
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    Daily 06:30 WAT morning email reminders
+                  </li>
+                </ul>
+              </div>
+
+              <Link
+                to={`/checkout?courseId=${primary.id}`}
+                className="mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-sm transition-all"
+              >
+                Enroll &amp; Pay with Paystack
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-zinc-500">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                Verified server-side via Paystack · Instant unlock
+              </p>
+            </>
+          ) : (
+            <p className="text-center text-sm text-zinc-500">
+              No active courses are available for enrollment yet.
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

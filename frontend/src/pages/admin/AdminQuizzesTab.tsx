@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { apiFetch } from "../../lib/api";
 
 interface AdminLesson {
@@ -103,13 +104,15 @@ export function AdminQuizzesTab() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-wrap items-end gap-4">
+      <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 flex flex-wrap items-end gap-4">
         <div className="flex-1 min-w-[240px]">
-          <label className="block text-xs font-semibold text-slate-500">Select Lesson</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            Select Lesson
+          </label>
           <select
             value={activeLessonId ?? ""}
             onChange={(e) => setSelectedLessonId(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1.5 w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm bg-white"
           >
             {lessons.map((l) => (
               <option key={l.id} value={l.id}>
@@ -119,20 +122,22 @@ export function AdminQuizzesTab() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-500">Pass Mark (%)</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            Pass Mark (%)
+          </label>
           <input
             type="number"
             min="0"
             max="100"
             value={passMark}
             onChange={(e) => setPassMark(e.target.value)}
-            className="mt-1 w-24 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1.5 w-24 rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
           />
         </div>
         <button
           type="button"
           onClick={() => updatePassMark.mutate()}
-          className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold"
+          className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors"
         >
           Save Pass Mark
         </button>
@@ -140,45 +145,50 @@ export function AdminQuizzesTab() {
 
       {quiz && (
         <>
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
-            <h2 className="font-bold text-slate-900">
+          <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 space-y-3">
+            <h2 className="font-bold text-zinc-900">
               Questions ({quiz.questions.length})
             </h2>
             {quiz.questions.length === 0 ? (
-              <p className="text-sm text-slate-500">No questions yet.</p>
+              <p className="text-sm text-zinc-500">No questions yet.</p>
             ) : (
               quiz.questions.map((q, idx) => (
-                <div key={q.id} className="p-4 rounded-lg border border-slate-200">
+                <div key={q.id} className="p-4 rounded-xl border border-zinc-200/80 bg-zinc-50/50">
                   <div className="flex justify-between gap-4">
-                    <p className="font-semibold text-slate-900 text-sm">
+                    <p className="font-bold text-zinc-900 text-sm">
                       {idx + 1}. {q.text}
                     </p>
                     <button
                       type="button"
                       onClick={() => deleteQuestion.mutate(q.id)}
-                      className="text-xs text-rose-600 hover:underline"
+                      className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 shrink-0"
                     >
-                      Delete
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                  <ul className="mt-2 space-y-1 text-sm">
+                  <ul className="mt-2.5 space-y-1 text-sm">
                     {q.options.map((opt, optIdx) => (
                       <li
                         key={optIdx}
-                        className={
+                        className={`flex items-center gap-1.5 ${
                           optIdx === q.correct_index
                             ? "font-semibold text-emerald-700"
-                            : "text-slate-600"
-                        }
+                            : "text-zinc-600"
+                        }`}
                       >
-                        {String.fromCharCode(65 + optIdx)}. {opt}{" "}
-                        {optIdx === q.correct_index && "✓ (Correct)"}
+                        <span className="font-mono text-xs">
+                          {String.fromCharCode(65 + optIdx)}.
+                        </span>
+                        <span>{opt}</span>
+                        {optIdx === q.correct_index && (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        )}
                       </li>
                     ))}
                   </ul>
                   {q.explanation && (
-                    <p className="mt-2 text-xs text-slate-500">
-                      Explanation: {q.explanation}
+                    <p className="mt-2.5 text-xs text-zinc-500 bg-white border border-zinc-200/60 p-2.5 rounded-lg">
+                      <strong>Explanation:</strong> {q.explanation}
                     </p>
                   )}
                 </div>
@@ -188,35 +198,35 @@ export function AdminQuizzesTab() {
 
           <form
             onSubmit={handleAddQuestion}
-            className="bg-white border border-slate-200 rounded-xl p-5 space-y-4"
+            className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 space-y-4"
           >
-            <h2 className="font-bold text-slate-900">Add Question</h2>
+            <h2 className="font-bold text-zinc-900">Add Question</h2>
             <input
               required
               placeholder="Question text"
               value={qText}
               onChange={(e) => setQText(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
             />
             <div>
-              <label className="block text-xs font-semibold text-slate-500">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
                 Options (one per line)
               </label>
               <textarea
                 rows={4}
                 value={optionsText}
                 onChange={(e) => setOptionsText(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1.5 w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-500">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
                 Correct Answer
               </label>
               <select
                 value={correctIndex}
                 onChange={(e) => setCorrectIndex(Number(e.target.value))}
-                className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1.5 rounded-xl border border-zinc-300 px-3.5 py-2 text-sm bg-white"
               >
                 {parsedOptions.map((opt, idx) => (
                   <option key={idx} value={idx}>
@@ -229,12 +239,13 @@ export function AdminQuizzesTab() {
               placeholder="Explanation shown after grading"
               value={explanation}
               onChange={(e) => setExplanation(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
             />
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
             >
+              <Plus className="w-4 h-4" />
               Add Question
             </button>
           </form>

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CalendarPlus, Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
 import { MarkdownView } from "../../components/MarkdownView";
 import { apiFetch, formatNaira } from "../../lib/api";
 
@@ -26,21 +27,18 @@ export function AdminCoursesTab() {
   const qc = useQueryClient();
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
   const [editingLesson, setEditingLesson] = useState<AdminLesson | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
-  // Course form
   const [courseTitle, setCourseTitle] = useState("");
   const [courseDesc, setCourseDesc] = useState("");
   const [coursePriceNaira, setCoursePriceNaira] = useState("15000");
 
-  // Bulk lessons form
   const [bulkStartDate, setBulkStartDate] = useState(
     new Date().toISOString().slice(0, 10)
   );
   const [bulkDays, setBulkDays] = useState("7");
   const [bulkStartDay, setBulkStartDay] = useState("1");
 
-  // Single lesson form
   const [lessonDay, setLessonDay] = useState("1");
   const [lessonTitle, setLessonTitle] = useState("");
   const [lessonReleaseDate, setLessonReleaseDate] = useState(
@@ -172,25 +170,24 @@ export function AdminCoursesTab() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Courses List + Create */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <h2 className="font-bold text-slate-900 mb-3">Courses</h2>
+    <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-5">
+        <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5">
+          <h2 className="font-bold text-zinc-900 mb-3">Courses</h2>
           <div className="space-y-2">
             {courses.map((c) => (
               <div
                 key={c.id}
                 onClick={() => setSelectedCourseId(c.id)}
-                className={`p-3 rounded-lg border cursor-pointer flex items-center justify-between ${
+                className={`p-3.5 rounded-xl border cursor-pointer flex items-center justify-between transition-colors ${
                   activeCourseId === c.id
-                    ? "border-indigo-600 bg-indigo-50"
-                    : "border-slate-200 hover:bg-slate-50"
+                    ? "border-indigo-600 bg-indigo-50/70"
+                    : "border-zinc-200 hover:bg-zinc-50"
                 }`}
               >
                 <div>
-                  <p className="font-semibold text-slate-900 text-sm">{c.title}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="font-bold text-zinc-900 text-sm">{c.title}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">
                     {formatNaira(c.price_kobo)} · {c.lesson_count} lessons
                   </p>
                 </div>
@@ -200,9 +197,10 @@ export function AdminCoursesTab() {
                     e.stopPropagation();
                     deleteCourse.mutate(c.id);
                   }}
-                  className="text-xs text-rose-600 hover:underline"
+                  className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50"
+                  title="Delete course"
                 >
-                  Delete
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -211,22 +209,22 @@ export function AdminCoursesTab() {
 
         <form
           onSubmit={handleCreateCourse}
-          className="bg-white border border-slate-200 rounded-xl p-5 space-y-3"
+          className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 space-y-3"
         >
-          <h2 className="font-bold text-slate-900">Create New Course</h2>
+          <h2 className="font-bold text-zinc-900">Create New Course</h2>
           <input
             required
             placeholder="Course title"
             value={courseTitle}
             onChange={(e) => setCourseTitle(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
           />
           <textarea
             rows={2}
             placeholder="Course description"
             value={courseDesc}
             onChange={(e) => setCourseDesc(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
           />
           <div className="flex items-center gap-3">
             <input
@@ -235,12 +233,13 @@ export function AdminCoursesTab() {
               placeholder="Price (NGN)"
               value={coursePriceNaira}
               onChange={(e) => setCoursePriceNaira(e.target.value)}
-              className="w-40 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-36 rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
             />
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
             >
+              <Plus className="w-4 h-4" />
               Add Course
             </button>
           </div>
@@ -249,81 +248,86 @@ export function AdminCoursesTab() {
 
       {activeCourseId && (
         <>
-          {/* Bulk Create Days */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <h2 className="font-bold text-slate-900 mb-3">Bulk Create Lesson Days</h2>
+          <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5">
+            <h2 className="font-bold text-zinc-900 mb-3 flex items-center gap-2">
+              <CalendarPlus className="w-4 h-4 text-indigo-600" />
+              Bulk Create Lesson Days
+            </h2>
             <div className="flex flex-wrap items-end gap-3">
               <div>
-                <label className="block text-xs text-slate-500">Start Date</label>
+                <label className="block text-xs font-semibold text-zinc-500">Start Date</label>
                 <input
                   type="date"
                   value={bulkStartDate}
                   onChange={(e) => setBulkStartDate(e.target.value)}
-                  className="mt-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+                  className="mt-1 rounded-xl border border-zinc-300 px-3 py-2 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-500">Number of Days</label>
+                <label className="block text-xs font-semibold text-zinc-500">Days</label>
                 <input
                   type="number"
                   min="1"
                   max="90"
                   value={bulkDays}
                   onChange={(e) => setBulkDays(e.target.value)}
-                  className="mt-1 w-24 rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+                  className="mt-1 w-24 rounded-xl border border-zinc-300 px-3 py-2 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-500">Start Day #</label>
+                <label className="block text-xs font-semibold text-zinc-500">Start Day #</label>
                 <input
                   type="number"
                   min="1"
                   value={bulkStartDay}
                   onChange={(e) => setBulkStartDay(e.target.value)}
-                  className="mt-1 w-24 rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+                  className="mt-1 w-24 rounded-xl border border-zinc-300 px-3 py-2 text-sm"
                 />
               </div>
               <button
                 type="button"
                 onClick={() => bulkCreate.mutate()}
-                className="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800"
+                className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors"
               >
                 Bulk Create Days
               </button>
             </div>
           </div>
 
-          {/* Lessons Table */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            <div className="px-5 py-3 border-b border-slate-200 font-bold text-slate-900">
-              Lessons ({lessons.length})
+          <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-zinc-100 font-bold text-zinc-900">
+              Scheduled Lessons ({lessons.length})
             </div>
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-zinc-100">
               {lessons.map((l) => (
                 <div
                   key={l.id}
-                  className="px-5 py-3 flex items-center justify-between gap-4 text-sm"
+                  className="px-5 py-3.5 flex items-center justify-between gap-4 text-sm hover:bg-zinc-50/70"
                 >
                   <div>
-                    <span className="font-semibold text-indigo-700 mr-2">
+                    <span className="inline-block px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold text-xs mr-2">
                       Day {l.day_number}
                     </span>
-                    <span className="font-medium text-slate-900">{l.title}</span>
-                    <span className="ml-2 text-xs text-slate-500">({l.release_date})</span>
+                    <span className="font-semibold text-zinc-900">{l.title}</span>
+                    <span className="ml-2 text-xs text-zinc-500 font-mono">
+                      {l.release_date}
+                    </span>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => startEditLesson(l)}
-                      className="text-indigo-600 font-medium hover:underline"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-indigo-700 hover:bg-indigo-50"
                     >
+                      <Pencil className="w-3.5 h-3.5" />
                       Edit
                     </button>
                     <button
                       type="button"
                       onClick={() => deleteLesson.mutate(l.id)}
-                      className="text-rose-600 font-medium hover:underline"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50"
                     >
+                      <Trash2 className="w-3.5 h-3.5" />
                       Delete
                     </button>
                   </div>
@@ -332,30 +336,30 @@ export function AdminCoursesTab() {
             </div>
           </div>
 
-          {/* Lesson Markdown Editor with Preview */}
           <form
             onSubmit={handleSaveLesson}
-            className="bg-white border border-slate-200 rounded-xl p-5 space-y-4"
+            className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-slate-900">
-                {editingLesson ? `Edit Day ${editingLesson.day_number}` : "Create Lesson"}
+              <h2 className="font-bold text-zinc-900">
+                {editingLesson ? `Editing Day ${editingLesson.day_number}` : "Create Lesson"}
               </h2>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setShowPreview((p) => !p)}
-                  className="px-3 py-1 rounded border border-slate-300 text-xs font-medium"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
                 >
+                  {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   {showPreview ? "Hide Preview" : "Show Preview"}
                 </button>
                 {editingLesson && (
                   <button
                     type="button"
                     onClick={() => setEditingLesson(null)}
-                    className="px-3 py-1 rounded border border-slate-300 text-xs"
+                    className="px-3 py-1.5 rounded-lg border border-zinc-200 text-xs font-semibold text-zinc-600"
                   >
-                    Cancel Edit
+                    Cancel
                   </button>
                 )}
               </div>
@@ -369,21 +373,21 @@ export function AdminCoursesTab() {
                 placeholder="Day #"
                 value={lessonDay}
                 onChange={(e) => setLessonDay(e.target.value)}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
               />
               <input
                 required
                 placeholder="Lesson Title"
                 value={lessonTitle}
                 onChange={(e) => setLessonTitle(e.target.value)}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
               />
               <input
                 type="date"
                 required
                 value={lessonReleaseDate}
                 onChange={(e) => setLessonReleaseDate(e.target.value)}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
               />
             </div>
 
@@ -391,7 +395,7 @@ export function AdminCoursesTab() {
               placeholder="Optional Video Embed URL (e.g. https://www.youtube.com/embed/...)"
               value={lessonVideoUrl}
               onChange={(e) => setLessonVideoUrl(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
             />
 
             <div className={showPreview ? "grid md:grid-cols-2 gap-4" : ""}>
@@ -399,10 +403,10 @@ export function AdminCoursesTab() {
                 rows={10}
                 value={lessonMarkdown}
                 onChange={(e) => setLessonMarkdown(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono"
+                className="w-full rounded-xl border border-zinc-300 px-3.5 py-2.5 text-sm font-mono"
               />
               {showPreview && (
-                <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 overflow-y-auto max-h-72">
+                <div className="border border-zinc-200 rounded-xl p-4 bg-zinc-50 overflow-y-auto max-h-72">
                   <MarkdownView content={lessonMarkdown} />
                 </div>
               )}
@@ -410,7 +414,7 @@ export function AdminCoursesTab() {
 
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
             >
               {editingLesson ? "Update Lesson" : "Create Lesson"}
             </button>
