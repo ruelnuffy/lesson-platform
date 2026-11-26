@@ -3,13 +3,16 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Award,
+  BarChart3,
   BookOpen,
+  ClipboardList,
   CreditCard,
   Home,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
-  ShieldCheck,
+  Users,
   User as UserIcon,
   X,
 } from "lucide-react";
@@ -128,20 +131,92 @@ export function AppShell({ children }: { children: ReactNode }) {
         {user?.role === "admin" && (
           <>
             <p className="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
-              Administration
+              Admin · Analytics
             </p>
-            <Link
-              to="/admin"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                location.pathname.startsWith("/admin")
-                  ? "bg-amber-400 text-zinc-900 shadow-soft"
-                  : "bg-amber-300/20 text-amber-100 hover:bg-amber-300/30"
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Admin Console</span>
-            </Link>
+            {[
+              { tab: "overview", label: "Overview", icon: BarChart3 },
+              { tab: "users", label: "Users", icon: Users },
+              { tab: "scores", label: "All Scores", icon: Award },
+            ].map((item) => {
+              const Icon = item.icon;
+              const currentTab =
+                new URLSearchParams(location.search).get("tab") || "overview";
+              const active =
+                location.pathname.startsWith("/admin") && currentTab === item.tab;
+              return (
+                <Link
+                  key={item.tab}
+                  to={`/admin?tab=${item.tab}`}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    active
+                      ? "bg-white text-blue-600 shadow-soft"
+                      : "text-blue-100 hover:text-white hover:bg-blue-500/60"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+
+            <p className="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
+              Admin · Content
+            </p>
+            {[
+              { tab: "courses", label: "Courses & Lessons", icon: BookOpen },
+              { tab: "quizzes", label: "Quizzes", icon: ClipboardList },
+            ].map((item) => {
+              const Icon = item.icon;
+              const currentTab =
+                new URLSearchParams(location.search).get("tab") || "overview";
+              const active =
+                location.pathname.startsWith("/admin") && currentTab === item.tab;
+              return (
+                <Link
+                  key={item.tab}
+                  to={`/admin?tab=${item.tab}`}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    active
+                      ? "bg-white text-blue-600 shadow-soft"
+                      : "text-blue-100 hover:text-white hover:bg-blue-500/60"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+
+            <p className="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
+              Admin · Operations
+            </p>
+            {[
+              { tab: "payments", label: "Payments", icon: CreditCard },
+              { tab: "emails", label: "Emails", icon: Mail },
+            ].map((item) => {
+              const Icon = item.icon;
+              const currentTab =
+                new URLSearchParams(location.search).get("tab") || "overview";
+              const active =
+                location.pathname.startsWith("/admin") && currentTab === item.tab;
+              return (
+                <Link
+                  key={item.tab}
+                  to={`/admin?tab=${item.tab}`}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    active
+                      ? "bg-white text-blue-600 shadow-soft"
+                      : "text-blue-100 hover:text-white hover:bg-blue-500/60"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </>
         )}
       </div>

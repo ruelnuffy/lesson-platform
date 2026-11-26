@@ -1,17 +1,10 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import {
-  Award,
-  BarChart3,
-  BookOpen,
-  ClipboardList,
-  CreditCard,
   Download,
-  Mail,
   Search,
   Send,
-  ShieldCheck,
-  Users,
   X,
 } from "lucide-react";
 import { API_BASE_URL, apiFetch, formatNaira } from "../../lib/api";
@@ -96,8 +89,20 @@ const statusPill = (status: string) => {
   }
 };
 
+const TAB_TITLES: Record<Tab, string> = {
+  overview: "Admin Overview",
+  users: "Users & Access",
+  courses: "Courses & Lessons",
+  quizzes: "Quizzes",
+  payments: "Payments",
+  emails: "Email Logs & Resend",
+  scores: "Quiz Scores & CSV",
+};
+
 export function AdminDashboardPage() {
-  const [tab, setTab] = useState<Tab>("overview");
+  const [searchParams] = useSearchParams();
+  const rawTab = searchParams.get("tab") as Tab | null;
+  const tab: Tab = rawTab && rawTab in TAB_TITLES ? rawTab : "overview";
   const [userSearch, setUserSearch] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [resendDate, setResendDate] = useState(new Date().toISOString().slice(0, 10));
@@ -193,63 +198,20 @@ export function AdminDashboardPage() {
     enabled: tab === "scores",
   });
 
-  const tabs: Array<{ id: Tab; label: string; icon: ReactNode }> = [
-    { id: "overview", label: "Overview", icon: <BarChart3 className="w-4 h-4" /> },
-    { id: "users", label: "Users", icon: <Users className="w-4 h-4" /> },
-    { id: "courses", label: "Courses & Lessons", icon: <BookOpen className="w-4 h-4" /> },
-    { id: "quizzes", label: "Quizzes", icon: <ClipboardList className="w-4 h-4" /> },
-    { id: "payments", label: "Payments", icon: <CreditCard className="w-4 h-4" /> },
-    { id: "emails", label: "Emails", icon: <Mail className="w-4 h-4" /> },
-    { id: "scores", label: "Scores", icon: <Award className="w-4 h-4" /> },
-  ];
-
   const defaultCourseId = courses.data?.[0]?.id;
 
   return (
-    <div className="w-full px-4 sm:px-8 py-8">
-      <div className="grid lg:grid-cols-12 gap-8 items-start">
-        {/* Sidebar */}
-        <aside className="lg:col-span-3 lg:sticky lg:top-24">
-          <div className="bg-white rounded-2xl shadow-soft p-3">
-            <div className="px-3 py-2.5 mb-2 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-zinc-900">Admin Console</p>
-                <p className="text-[11px] text-zinc-500">Operations &amp; Content</p>
-              </div>
-            </div>
+    <div className="w-full px-4 sm:px-8 py-8 space-y-6">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+          Admin Console
+        </p>
+        <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+          {TAB_TITLES[tab]}
+        </h1>
+      </div>
 
-            <nav className="flex lg:flex-col gap-1 overflow-x-auto pb-1 lg:pb-0">
-              {tabs.map((t) => {
-                const active = tab === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => setTab(t.id)}
-                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${
-                      active
-                        ? "bg-zinc-900 text-white shadow-sm"
-                        : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-                    }`}
-                  >
-                    {t.icon}
-                    {t.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <section className="lg:col-span-9 min-w-0 space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-extrabold text-zinc-900 tracking-tight capitalize">
-              {tabs.find((t) => t.id === tab)?.label}
-            </h1>
-          </div>
+      <section className="min-w-0 space-y-6">
 
           {tab === "overview" && overview.data && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -594,7 +556,6 @@ export function AdminDashboardPage() {
             </div>
           )}
         </section>
-      </div>
     </div>
   );
 }
