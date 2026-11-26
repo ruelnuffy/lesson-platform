@@ -28,6 +28,8 @@ class ResetPasswordRequest(BaseModel):
 
 class ProfileUpdateRequest(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
+    email: EmailStr | None = None
+    current_password: str | None = Field(default=None, max_length=128)
     avatar_url: str | None = Field(default=None, max_length=500_000)
 
 

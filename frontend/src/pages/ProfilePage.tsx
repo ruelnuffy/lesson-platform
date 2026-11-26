@@ -5,6 +5,9 @@ import {
   Calendar,
   Camera,
   CheckCircle2,
+  Eye,
+  EyeOff,
+  Lock,
   Mail,
   ShieldCheck,
   Trash2,
@@ -45,16 +48,32 @@ export function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>(user?.avatar_url || "");
   const [savedBanner, setSavedBanner] = useState(false);
 
-  const updateProfile = useMutation<User, ApiError, { name: string; avatar_url: string | null }>({
+  const emailChanged =
+    Boolean(user) && email.trim().toLowerCase() !== user!.email.toLowerCase();
+
+  const updateProfile = useMutation<
+    User,
+    ApiError,
+    {
+      name: string;
+      email: string;
+      current_password?: string;
+      avatar_url: string | null;
+    }
+  >({
     mutationFn: (payload) =>
       apiFetch<User>("/api/auth/profile", {
         method: "PATCH",
         body: JSON.stringify(payload),
       }),
     onSuccess: async () => {
+      setCurrentPassword("");
       await refetchUser();
       setSavedBanner(true);
       setTimeout(() => setSavedBanner(false), 3000);
@@ -77,6 +96,8 @@ export function ProfilePage() {
     setSavedBanner(false);
     updateProfile.mutate({
       name: name.trim(),
+      email: email.trim(),
+      ...(emailChanged ? { current_password: currentPassword } : {}),
       avatar_url: avatarUrl.trim() || null,
     });
   };
@@ -91,7 +112,7 @@ export function ProfilePage() {
           Your Profile
         </h1>
         <p className="mt-1 text-sm text-zinc-600">
-          Update your display name and profile picture shown across your dashboard.
+          Update your display name, email address, and profile picture.
         </p>
       </div>
 
@@ -121,7 +142,7 @@ export function ProfilePage() {
           <h2 className="mt-4 text-xl font-extrabold text-zinc-900">
             {name || user.name}
           </h2>
-          <p className="text-sm text-zinc-500 mt-0.5">{user.email}</p>
+          <p className="text-sm text-zinc-500 mt-0.5">{email || user.email}</p>
 
           <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold capitalize">
             <ShieldCheck className="w-3.5 h-3.5" />
@@ -134,7 +155,7 @@ export function ProfilePage() {
                 <Mail className="w-3.5 h-3.5 text-blue-600" />
                 Email
               </span>
-              <span className="font-semibold text-zinc-900 truncate max-w-[160px]">
+              <span className="font-semibold text-zinc-900 truncate max-w-[180px]">
                 {user.email}
               </span>
             </div>
@@ -186,6 +207,49 @@ export function ProfilePage() {
               />
             </div>
           </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Email Address
+            </label>
+            <div className="mt-1.5 relative">
+              <Mail className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl bg-[#F7F7F5] pl-10 pr-4 py-3 text-sm text-zinc-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
+              />
+            </div>
+          </div>
+
+          {emailChanged && (
+            <div className="p-4 rounded-2xl bg-sky-50/80 space-y-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-blue-700">
+                Confirm Current Password to Change Email
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="Enter your current password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full rounded-xl bg-white pl-10 pr-11 py-2.5 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-700"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">

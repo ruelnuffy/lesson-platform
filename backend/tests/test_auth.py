@@ -323,3 +323,34 @@ def test_update_profile_name_and_avatar(
     data = res.json()
     assert data["name"] == "New Name"
     assert data["avatar_url"] == "https://example.com/avatar.png"
+
+    # Changing email without current_password fails
+    no_pwd = client.patch(
+        "/api/auth/profile",
+        json={"email": "newemail@example.com"},
+    )
+    assert no_pwd.status_code == 400
+
+    # Changing email to an existing user's email returns 409
+    other = User(
+        name="Other",
+        email="taken@example.com",
+        password_hash=hash_password("password123"),
+        role=UserRole.user,
+    )
+    db_session.add(other)
+    db_session.commit()
+
+    dup = client.patch(
+        "/api/auth/profile",
+        json={"email": "taken@example.com", "current_password": "password123"},
+    )
+    assert dup.status_code == 409
+
+    # Valid email change succeeds and allows login with new email
+    changed = client.patch(
+        "/api/auth/profile",
+        json={"email": "Updated@Example.com", "current_password": "password123"},
+    )
+    assert changed.status_code == 200
+    assert changed.json()["email"] == "updated@example.com"

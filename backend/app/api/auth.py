@@ -156,6 +156,27 @@ def update_profile(
 ) -> User:
     if body.name is not None:
         current_user.name = body.name.strip()
+
+    if body.email is not None:
+        new_email = body.email.strip().lower()
+        if new_email != current_user.email:
+            if not body.current_password or not verify_password(
+                body.current_password, current_user.password_hash
+            ):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Current password is required to change your email",
+                )
+            existing = db.scalar(
+                select(User).where(User.email == new_email, User.id != current_user.id)
+            )
+            if existing:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="An account with this email already exists",
+                )
+            current_user.email = new_email
+
     if "avatar_url" in body.model_fields_set:
         if body.avatar_url is not None and body.avatar_url.strip():
             val = body.avatar_url.strip()
