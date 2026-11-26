@@ -635,6 +635,11 @@ export function LandingPage() {
                   Dashboard
                 </Link>
               </li>
+              <li>
+                <Link to="/admin/login" className="hover:text-blue-600">
+                  Admin Login
+                </Link>
+              </li>
             </ul>
           </div>
 

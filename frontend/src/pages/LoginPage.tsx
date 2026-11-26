@@ -4,7 +4,7 @@ import { AlertCircle, ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { ApiError, apiFetch } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
-export function LoginPage() {
+export function LoginPage({ isAdmin = false }: { isAdmin?: boolean }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +15,9 @@ export function LoginPage() {
   const { refetchUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: string } | null)?.from || "/dashboard";
+  const from =
+    (location.state as { from?: string } | null)?.from ||
+    (isAdmin ? "/admin" : "/dashboard");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -50,13 +52,15 @@ export function LoginPage() {
         {/* Right Form */}
         <div className="md:col-span-7 p-8 sm:p-12 flex flex-col justify-center">
           <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
-            Daily Lessons
+            {isAdmin ? "Admin Console" : "Daily Lessons"}
           </p>
           <h1 className="mt-2 text-3xl font-extrabold text-zinc-900 tracking-tight">
-            Welcome back
+            {isAdmin ? "Admin Sign In" : "Welcome back"}
           </h1>
           <p className="mt-2 text-sm text-zinc-600">
-            Sign in to continue your morning lessons and keep your streak going.
+            {isAdmin
+              ? "Sign in with your administrator credentials to manage courses, users, and scores."
+              : "Sign in to continue your morning lessons and keep your streak going."}
           </p>
 
           {error && (

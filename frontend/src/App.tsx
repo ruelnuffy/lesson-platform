@@ -19,6 +19,7 @@ import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 const PUBLIC_PATHS = new Set([
   "/",
   "/login",
+  "/admin/login",
   "/register",
   "/forgot-password",
   "/reset-password",
@@ -33,6 +34,7 @@ function AppRoutes() {
       {/* Public */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/admin/login" element={<LoginPage isAdmin />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
