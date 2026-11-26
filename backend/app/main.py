@@ -1,5 +1,10 @@
 import os
 from pathlib import Path
+import sys
+
+_BACKEND_ROOT = str(Path(__file__).resolve().parent.parent)
+if _BACKEND_ROOT not in sys.path:
+    sys.path.insert(0, _BACKEND_ROOT)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,10 +25,14 @@ from app.seed import seed_database
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    startup_error: str | None = None
     if settings.database_url.startswith("sqlite"):
-        Base.metadata.create_all(bind=engine)
-        with SessionLocal() as db:
-            seed_database(db)
+        try:
+            Base.metadata.create_all(bind=engine)
+            with SessionLocal() as db:
+                seed_database(db)
+        except Exception as exc:  # pragma: no cover - defensive for serverless cold start
+            startup_error = f"{type(exc).__name__}: {exc}"
 
     app = FastAPI(title=settings.app_name)
 
@@ -60,7 +69,10 @@ def create_app() -> FastAPI:
 
     @app.get("/health", tags=["health"])
     def health() -> dict[str, str]:
-        return {"status": "ok", "app": settings.app_name}
+        payload = {"status": "ok", "app": settings.app_name}
+        if startup_error:
+            payload["startup_error"] = startup_error
+        return payload
 
     return app
 
