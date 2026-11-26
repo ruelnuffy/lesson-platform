@@ -88,13 +88,22 @@ def test_login_logout_and_me_flow(client: TestClient, db_session: Session) -> No
     )
     assert bad.status_code == 401
 
-    # Valid login succeeds
+    # Valid login without remember_me sets a session cookie (no Max-Age)
     ok = client.post(
         "/api/auth/login",
-        json={"email": "CHIDI@example.com", "password": "correct-horse-battery"},
+        json={"email": "CHIDI@example.com", "password": "correct-horse-battery", "remember_me": False},
     )
     assert ok.status_code == 200
     assert ok.json()["email"] == "chidi@example.com"
+    assert "Max-Age=" not in ok.headers.get("set-cookie", "")
+
+    # Login with remember_me=True sets a 30-day persistent cookie
+    remembered = client.post(
+        "/api/auth/login",
+        json={"email": "chidi@example.com", "password": "correct-horse-battery", "remember_me": True},
+    )
+    assert remembered.status_code == 200
+    assert "Max-Age=2592000" in remembered.headers.get("set-cookie", "")
 
     # /me succeeds with cookie
     me = client.get("/api/auth/me")

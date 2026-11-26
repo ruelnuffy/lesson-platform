@@ -15,15 +15,20 @@ def password_hash_fingerprint(password_hash: str) -> str:
     return hashlib.sha256(password_hash.encode("utf-8")).hexdigest()[:16]
 
 
-def create_access_token(user_id: int, role: str) -> str:
+def create_access_token(
+    user_id: int,
+    role: str,
+    expire_minutes: int | None = None,
+) -> str:
     settings = get_settings()
     now = datetime.now(UTC)
+    ttl_minutes = expire_minutes if expire_minutes is not None else settings.jwt_expire_minutes
     payload: dict[str, Any] = {
         "sub": str(user_id),
         "role": role,
         "purpose": "access",
         "iat": int(now.timestamp()),
-        "exp": int((now + timedelta(minutes=settings.jwt_expire_minutes)).timestamp()),
+        "exp": int((now + timedelta(minutes=ttl_minutes)).timestamp()),
     }
     return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 

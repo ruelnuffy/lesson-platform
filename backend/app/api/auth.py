@@ -38,15 +38,32 @@ login_rate_limiter = SlidingWindowRateLimiter(
 rate_limit_login = make_rate_limit_dependency(login_rate_limiter, "login")
 
 
-def _set_auth_cookie(response: Response, token: str) -> None:
+REMEMBER_ME_MINUTES = 60 * 24 * 30  # 30 days
+SESSION_ONLY_MINUTES = 60 * 24      # 24 hours
+
+
+def _set_auth_cookie(
+    response: Response,
+    token: str,
+    *,
+    persistent: bool = True,
+    max_age_seconds: int | None = None,
+) -> None:
     settings = get_settings()
+    cookie_max_age: int | None = None
+    if persistent:
+        cookie_max_age = (
+            max_age_seconds
+            if max_age_seconds is not None
+            else settings.jwt_expire_minutes * 60
+        )
     response.set_cookie(
         key=settings.auth_cookie_name,
         value=token,
         httponly=True,
         secure=settings.auth_cookie_secure,
         samesite=settings.auth_cookie_samesite,
-        max_age=settings.jwt_expire_minutes * 60,
+        max_age=cookie_max_age,
         path="/",
     )
 
@@ -76,7 +93,7 @@ def register(
     db.refresh(user)
 
     token = create_access_token(user.id, user.role.value)
-    _set_auth_cookie(response, token)
+    _set_auth_cookie(response, token, persistent=True)
     return user
 
 
@@ -98,8 +115,17 @@ def login(
             detail="Invalid email or password",
         )
 
-    token = create_access_token(user.id, user.role.value)
-    _set_auth_cookie(response, token)
+    if body.remember_me:
+        token = create_access_token(user.id, user.role.value, expire_minutes=REMEMBER_ME_MINUTES)
+        _set_auth_cookie(
+            response,
+            token,
+            persistent=True,
+            max_age_seconds=REMEMBER_ME_MINUTES * 60,
+        )
+    else:
+        token = create_access_token(user.id, user.role.value, expire_minutes=SESSION_ONLY_MINUTES)
+        _set_auth_cookie(response, token, persistent=False)
     return user
 
 

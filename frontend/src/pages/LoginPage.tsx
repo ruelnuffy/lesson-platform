@@ -7,6 +7,7 @@ import { useAuth } from "../lib/auth";
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -22,7 +23,7 @@ export function LoginPage() {
     try {
       await apiFetch("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember_me: rememberMe }),
       });
       await refetchUser();
       navigate(from, { replace: true });
@@ -106,6 +107,18 @@ export function LoginPage() {
                 />
               </div>
             </div>
+
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded accent-blue-600 cursor-pointer"
+              />
+              <span className="text-sm text-zinc-600">
+                Keep me signed in for 30 days
+              </span>
+            </label>
 
             <button
               type="submit"
