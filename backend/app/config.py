@@ -1,6 +1,7 @@
 from functools import lru_cache
 import os
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,6 +9,14 @@ def _default_database_url() -> str:
     if os.getenv("VERCEL"):
         return "sqlite:////tmp/dailylessons.db"
     return "postgresql+psycopg://dailylessons:dailylessons_dev_password@postgres:5432/dailylessons"
+
+
+def _default_frontend_origin() -> str:
+    if frontend_url := os.getenv("FRONTEND_URL"):
+        return frontend_url.rstrip("/")
+    if vercel_url := os.getenv("VERCEL_URL"):
+        return f"https://{vercel_url}".rstrip("/")
+    return "http://localhost:5173"
 
 
 class Settings(BaseSettings):
@@ -21,7 +30,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     timezone: str = "Africa/Lagos"
 
-    database_url: str = _default_database_url()
+    database_url: str = Field(default_factory=_default_database_url)
 
     jwt_secret_key: str = "change-me-to-a-long-random-secret-at-least-32-chars"
     jwt_algorithm: str = "HS256"
@@ -30,7 +39,7 @@ class Settings(BaseSettings):
     auth_cookie_secure: bool = False
     auth_cookie_samesite: str = "lax"
 
-    frontend_origin: str = "http://localhost:5173"
+    frontend_origin: str = Field(default_factory=_default_frontend_origin)
 
     paystack_secret_key: str = ""
     paystack_public_key: str = ""

@@ -27,9 +27,15 @@ def create_app() -> FastAPI:
 
     app = FastAPI(title=settings.app_name)
 
+    cors_origins = [settings.frontend_origin]
+    if env_frontend := os.getenv("FRONTEND_URL"):
+        normalized = env_frontend.rstrip("/")
+        if normalized not in cors_origins:
+            cors_origins.append(normalized)
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[settings.frontend_origin],
+        allow_origins=cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
