@@ -35,7 +35,7 @@ export function RegisterPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 bg-dot-grid">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-elevated p-8">
-        <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-indigo-600 text-white mb-4 shadow-sm">
+        <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-blue-600 text-white mb-4 shadow-sm">
           <Sparkles className="w-5 h-5" />
         </div>
         <h1 className="text-2xl font-extrabold text-zinc-900 tracking-tight">
@@ -65,7 +65,7 @@ export function RegisterPage() {
                 placeholder="Ada Lovelace"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>
@@ -82,7 +82,7 @@ export function RegisterPage() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ export function RegisterPage() {
                 placeholder="At least 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>
@@ -108,7 +108,7 @@ export function RegisterPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 shadow-sm transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-50 shadow-sm transition-colors"
           >
             {submitting ? "Creating account..." : "Create Account"}
             {!submitting && <ArrowRight className="w-4 h-4" />}
@@ -117,7 +117,7 @@ export function RegisterPage() {
 
         <p className="mt-6 text-center text-sm text-zinc-600">
           Already have an account?{" "}
-          <Link to="/login" className="text-indigo-600 font-semibold hover:underline">
+          <Link to="/login" className="text-blue-600 font-semibold hover:underline">
             Sign in
           </Link>
         </p>

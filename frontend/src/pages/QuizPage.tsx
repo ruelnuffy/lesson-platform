@@ -120,7 +120,7 @@ export function QuizPage() {
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={resetForRetake}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               Retake Quiz
@@ -192,7 +192,7 @@ export function QuizPage() {
     <div className="max-w-2xl mx-auto px-4 py-10">
       <Link
         to={`/lessons/${quiz.lesson_id}`}
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-indigo-600 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-blue-600 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Day {quiz.day_number}: {quiz.lesson_title}
@@ -218,7 +218,7 @@ export function QuizPage() {
                 key={q.id}
                 className={`h-2 flex-1 rounded-full transition-all ${
                   isCurrent
-                    ? "bg-indigo-600"
+                    ? "bg-blue-600"
                     : answered
                     ? "bg-emerald-500"
                     : "bg-zinc-200"
@@ -245,14 +245,14 @@ export function QuizPage() {
                     }
                     className={`w-full text-left p-4 rounded-2xl text-sm font-medium transition-all flex items-center gap-3.5 ${
                       isSelected
-                        ? "bg-indigo-50 text-indigo-950 ring-2 ring-indigo-600 shadow-soft"
+                        ? "bg-blue-50 text-blue-950 ring-2 ring-blue-600 shadow-soft"
                         : "bg-zinc-50/90 hover:bg-white hover:shadow-soft text-zinc-700"
                     }`}
                   >
                     <span
                       className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
                         isSelected
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-blue-600 text-white"
                           : "bg-zinc-100 text-zinc-500"
                       }`}
                     >
@@ -260,7 +260,7 @@ export function QuizPage() {
                     </span>
                     <span className="flex-1">{option}</span>
                     {isSelected && (
-                      <CheckCircle2 className="w-5 h-5 text-indigo-600 shrink-0" />
+                      <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0" />
                     )}
                   </button>
                 );
@@ -292,7 +292,7 @@ export function QuizPage() {
               type="button"
               disabled={selected === undefined}
               onClick={() => setCurrentIndex((i) => Math.min(total - 1, i + 1))}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 disabled:opacity-40 transition-colors"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 disabled:opacity-40 transition-colors"
             >
               Next
               <ArrowRight className="w-4 h-4" />

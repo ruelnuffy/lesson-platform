@@ -44,7 +44,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
           <div className="mt-6 flex justify-center gap-3">
             <Link
               to="/checkout"
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
             >
               Try Again
             </Link>
@@ -64,7 +64,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
     return (
       <div className="max-w-lg mx-auto my-14 px-4">
         <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
-          <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mx-auto" />
+          <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto" />
           <h1 className="mt-4 text-xl font-extrabold text-zinc-900">
             Verifying your payment...
           </h1>
@@ -115,7 +115,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
         </p>
         <Link
           to="/lessons/today"
-          className="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+          className="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
         >
           Start Today&apos;s Lesson
           <ArrowRight className="w-4 h-4" />

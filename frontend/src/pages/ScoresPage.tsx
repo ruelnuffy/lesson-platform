@@ -18,7 +18,7 @@ export function ScoresPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+        <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">
           Performance
         </p>
         <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
@@ -35,13 +35,13 @@ export function ScoresPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Average Best Score
             </p>
-            <p className="mt-1.5 text-3xl font-extrabold text-indigo-600">
+            <p className="mt-1.5 text-3xl font-extrabold text-blue-600">
               {data?.average_best_score !== null && data?.average_best_score !== undefined
                 ? `${data.average_best_score}%`
                 : "—"}
             </p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <Target className="w-5 h-5" />
           </div>
         </div>
@@ -122,7 +122,7 @@ export function ScoresPage() {
                     <td className="px-6 py-4 text-right">
                       <Link
                         to={`/lessons/${row.lesson_id}/quiz`}
-                        className="inline-flex items-center gap-1 text-indigo-600 font-semibold hover:text-indigo-800"
+                        className="inline-flex items-center gap-1 text-blue-600 font-semibold hover:text-blue-800"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                         Retake

@@ -266,7 +266,7 @@ export function AdminDashboardPage() {
               <StatCard
                 label="Total Revenue"
                 value={formatNaira(overview.data.revenue_kobo)}
-                accent="text-indigo-600"
+                accent="text-blue-600"
               />
               <StatCard
                 label="Emails Sent Today"
@@ -293,7 +293,7 @@ export function AdminDashboardPage() {
                   placeholder="Search users by name or email..."
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
-                  className="w-full rounded-xl pl-10 pr-3.5 py-2.5 text-sm bg-white shadow-soft focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  className="w-full rounded-xl pl-10 pr-3.5 py-2.5 text-sm bg-white shadow-soft focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
 
@@ -351,7 +351,7 @@ export function AdminDashboardPage() {
                           )}
                           <button
                             onClick={() => setSelectedUserId(u.id)}
-                            className="text-xs font-semibold text-indigo-600 hover:underline"
+                            className="text-xs font-semibold text-blue-600 hover:underline"
                           >
                             Scores
                           </button>
@@ -457,12 +457,12 @@ export function AdminDashboardPage() {
                   type="date"
                   value={resendDate}
                   onChange={(e) => setResendDate(e.target.value)}
-                  className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
                 <button
                   onClick={() => resendMutation.mutate()}
                   disabled={resendMutation.isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                   <Send className="w-4 h-4" />
                   {resendMutation.isPending ? "Sending..." : "Send / Resend Day's Emails"}
@@ -514,7 +514,7 @@ export function AdminDashboardPage() {
               <div className="flex justify-end">
                 <a
                   href={`${API_BASE_URL}/api/admin/scores/export.csv`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors shadow-sm"
                 >
                   <Download className="w-4 h-4" />
                   Export CSV

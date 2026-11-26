@@ -112,7 +112,7 @@ export function AdminQuizzesTab() {
           <select
             value={activeLessonId ?? ""}
             onChange={(e) => setSelectedLessonId(Number(e.target.value))}
-            className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+            className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           >
             {lessons.map((l) => (
               <option key={l.id} value={l.id}>
@@ -131,13 +131,13 @@ export function AdminQuizzesTab() {
             max="100"
             value={passMark}
             onChange={(e) => setPassMark(e.target.value)}
-            className="mt-1.5 w-24 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+            className="mt-1.5 w-24 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
           />
         </div>
         <button
           type="button"
           onClick={() => updatePassMark.mutate()}
-          className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors"
+          className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
         >
           Save Pass Mark
         </button>
@@ -206,7 +206,7 @@ export function AdminQuizzesTab() {
               placeholder="Question text"
               value={qText}
               onChange={(e) => setQText(e.target.value)}
-              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
@@ -216,7 +216,7 @@ export function AdminQuizzesTab() {
                 rows={4}
                 value={optionsText}
                 onChange={(e) => setOptionsText(e.target.value)}
-                className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
             <div>
@@ -226,7 +226,7 @@ export function AdminQuizzesTab() {
               <select
                 value={correctIndex}
                 onChange={(e) => setCorrectIndex(Number(e.target.value))}
-                className="mt-1.5 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="mt-1.5 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               >
                 {parsedOptions.map((opt, idx) => (
                   <option key={idx} value={idx}>
@@ -239,11 +239,11 @@ export function AdminQuizzesTab() {
               placeholder="Explanation shown after grading"
               value={explanation}
               onChange={(e) => setExplanation(e.target.value)}
-              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
             <button
               type="submit"
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
             >
               <Plus className="w-4 h-4" />
               Add Question

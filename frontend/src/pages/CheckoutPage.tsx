@@ -46,7 +46,7 @@ export function CheckoutPage() {
   return (
     <div className="max-w-xl mx-auto px-4 py-12">
       <div className="bg-white rounded-3xl shadow-elevated p-8">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-50 text-blue-600">
           <CreditCard className="w-6 h-6" />
         </div>
         <h1 className="mt-4 text-2xl font-extrabold text-zinc-900 tracking-tight">
@@ -64,7 +64,7 @@ export function CheckoutPage() {
             <select
               value={activeCourse?.id ?? ""}
               onChange={(e) => setSelectedCourseId(Number(e.target.value))}
-              className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft"
+              className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
             >
               {courses.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -112,7 +112,7 @@ export function CheckoutPage() {
           type="button"
           disabled={!activeCourse || initMutation.isPending}
           onClick={() => activeCourse && initMutation.mutate(activeCourse.id)}
-          className="mt-6 w-full py-3.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 shadow-sm transition-colors"
+          className="mt-6 w-full py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-50 shadow-sm transition-colors"
         >
           {initMutation.isPending ? "Redirecting to Paystack..." : "Pay with Paystack"}
         </button>

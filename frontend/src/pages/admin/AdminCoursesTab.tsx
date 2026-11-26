@@ -181,7 +181,7 @@ export function AdminCoursesTab() {
                 onClick={() => setSelectedCourseId(c.id)}
                 className={`p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all ${
                   activeCourseId === c.id
-                    ? "bg-indigo-50 ring-2 ring-indigo-600 shadow-sm"
+                    ? "bg-blue-50 ring-2 ring-blue-600 shadow-sm"
                     : "bg-zinc-50/80 hover:bg-zinc-100/80"
                 }`}
               >
@@ -217,14 +217,14 @@ export function AdminCoursesTab() {
             placeholder="Course title"
             value={courseTitle}
             onChange={(e) => setCourseTitle(e.target.value)}
-            className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft"
+            className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
           />
           <textarea
             rows={2}
             placeholder="Course description"
             value={courseDesc}
             onChange={(e) => setCourseDesc(e.target.value)}
-            className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft"
+            className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
           />
           <div className="flex items-center gap-3">
             <input
@@ -233,11 +233,11 @@ export function AdminCoursesTab() {
               placeholder="Price (NGN)"
               value={coursePriceNaira}
               onChange={(e) => setCoursePriceNaira(e.target.value)}
-              className="w-36 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft"
+              className="w-36 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
             />
             <button
               type="submit"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
             >
               <Plus className="w-4 h-4" />
               Add Course
@@ -250,7 +250,7 @@ export function AdminCoursesTab() {
         <>
           <div className="bg-white rounded-2xl shadow-soft p-5">
             <h2 className="font-bold text-zinc-900 mb-3 flex items-center gap-2">
-              <CalendarPlus className="w-4 h-4 text-indigo-600" />
+              <CalendarPlus className="w-4 h-4 text-blue-600" />
               Bulk Create Lesson Days
             </h2>
             <div className="flex flex-wrap items-end gap-3">
@@ -260,7 +260,7 @@ export function AdminCoursesTab() {
                   type="date"
                   value={bulkStartDate}
                   onChange={(e) => setBulkStartDate(e.target.value)}
-                  className="mt-1 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  className="mt-1 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
               <div>
@@ -271,7 +271,7 @@ export function AdminCoursesTab() {
                   max="90"
                   value={bulkDays}
                   onChange={(e) => setBulkDays(e.target.value)}
-                  className="mt-1 w-24 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  className="mt-1 w-24 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
               <div>
@@ -281,13 +281,13 @@ export function AdminCoursesTab() {
                   min="1"
                   value={bulkStartDay}
                   onChange={(e) => setBulkStartDay(e.target.value)}
-                  className="mt-1 w-24 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  className="mt-1 w-24 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
               <button
                 type="button"
                 onClick={() => bulkCreate.mutate()}
-                className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors"
+                className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
               >
                 Bulk Create Days
               </button>
@@ -305,7 +305,7 @@ export function AdminCoursesTab() {
                   className="px-5 py-3.5 flex items-center justify-between gap-4 text-sm hover:bg-zinc-50/70"
                 >
                   <div>
-                    <span className="inline-block px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold text-xs mr-2">
+                    <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-xs mr-2">
                       Day {l.day_number}
                     </span>
                     <span className="font-semibold text-zinc-900">{l.title}</span>
@@ -317,7 +317,7 @@ export function AdminCoursesTab() {
                     <button
                       type="button"
                       onClick={() => startEditLesson(l)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-indigo-700 hover:bg-indigo-50"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-700 hover:bg-blue-50"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                       Edit
@@ -373,21 +373,21 @@ export function AdminCoursesTab() {
                 placeholder="Day #"
                 value={lessonDay}
                 onChange={(e) => setLessonDay(e.target.value)}
-                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
               <input
                 required
                 placeholder="Lesson Title"
                 value={lessonTitle}
                 onChange={(e) => setLessonTitle(e.target.value)}
-                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
               <input
                 type="date"
                 required
                 value={lessonReleaseDate}
                 onChange={(e) => setLessonReleaseDate(e.target.value)}
-                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
 
@@ -395,7 +395,7 @@ export function AdminCoursesTab() {
               placeholder="Optional Video Embed URL (e.g. https://www.youtube.com/embed/...)"
               value={lessonVideoUrl}
               onChange={(e) => setLessonVideoUrl(e.target.value)}
-              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
 
             <div className={showPreview ? "grid md:grid-cols-2 gap-4" : ""}>
@@ -403,7 +403,7 @@ export function AdminCoursesTab() {
                 rows={10}
                 value={lessonMarkdown}
                 onChange={(e) => setLessonMarkdown(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm font-mono focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm font-mono focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
               {showPreview && (
                 <div className="rounded-xl p-4 bg-zinc-50 shadow-inner overflow-y-auto max-h-72">
@@ -414,7 +414,7 @@ export function AdminCoursesTab() {
 
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
             >
               {editingLesson ? "Update Lesson" : "Create Lesson"}
             </button>

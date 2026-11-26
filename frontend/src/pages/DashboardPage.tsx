@@ -58,7 +58,7 @@ export function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">
             Learning Dashboard
           </p>
           <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
@@ -66,7 +66,7 @@ export function DashboardPage() {
           </h1>
         </div>
         <span className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-white text-xs font-medium text-zinc-600 shadow-soft">
-          <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+          <Calendar className="w-3.5 h-3.5 text-blue-600" />
           {data.today} (WAT)
         </span>
       </div>
@@ -103,7 +103,7 @@ export function DashboardPage() {
               </span>
             </p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <BookOpen className="w-5 h-5" />
           </div>
         </div>
@@ -120,7 +120,7 @@ export function DashboardPage() {
           </div>
           <div className="mt-3.5 w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-indigo-600 to-emerald-500 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-blue-600 to-emerald-500 rounded-full transition-all duration-500"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -132,11 +132,11 @@ export function DashboardPage() {
 
       {/* Today's Lesson Hero */}
       <section className="relative overflow-hidden bg-zinc-900 rounded-3xl p-7 sm:p-9 text-white shadow-elevated">
-        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-indigo-600/30 blur-3xl pointer-events-none" />
+        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-blue-600/30 blur-3xl pointer-events-none" />
         <div className="absolute -left-16 -bottom-24 w-72 h-72 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
 
         <div className="relative">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-indigo-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-blue-200">
             Today&apos;s Drop · {data.today}
           </span>
 
@@ -153,7 +153,7 @@ export function DashboardPage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to={`/lessons/${data.lesson.id}`}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:bg-indigo-50 text-sm shadow-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:bg-blue-50 text-sm shadow-sm transition-colors"
                 >
                   Open Today&apos;s Lesson
                   <ArrowRight className="w-4 h-4" />
@@ -192,7 +192,7 @@ export function DashboardPage() {
           </h2>
           <Link
             to="/scores"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-800"
           >
             View all scores
             <ArrowRight className="w-3.5 h-3.5" />
@@ -218,7 +218,7 @@ export function DashboardPage() {
                         lesson.quiz_summary?.passed
                           ? "bg-emerald-50 text-emerald-700"
                           : isToday
-                          ? "bg-indigo-600 text-white shadow-sm"
+                          ? "bg-blue-600 text-white shadow-sm"
                           : "bg-zinc-100 text-zinc-700"
                       }`}
                     >
@@ -235,7 +235,7 @@ export function DashboardPage() {
                           Day {lesson.day_number} · {lesson.release_date}
                         </span>
                         {isToday && (
-                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
+                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
                             Today
                           </span>
                         )}
@@ -245,7 +245,7 @@ export function DashboardPage() {
                           </span>
                         )}
                       </div>
-                      <h3 className="mt-1 font-bold text-zinc-900 group-hover:text-indigo-700 transition-colors">
+                      <h3 className="mt-1 font-bold text-zinc-900 group-hover:text-blue-700 transition-colors">
                         {lesson.title}
                       </h3>
                     </div>
@@ -261,7 +261,7 @@ export function DashboardPage() {
                     {lesson.has_quiz && (
                       <Link
                         to={`/lessons/${lesson.id}/quiz`}
-                        className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors"
+                        className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
                       >
                         Quiz
                       </Link>

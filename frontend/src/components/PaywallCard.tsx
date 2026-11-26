@@ -15,10 +15,10 @@ export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string
     <div className="max-w-xl mx-auto my-12 px-4">
       <div className="bg-white rounded-3xl shadow-elevated overflow-hidden">
         <div className="bg-zinc-900 px-8 py-8 text-center text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-transparent to-amber-500/20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 via-transparent to-amber-500/20 pointer-events-none" />
           <div className="relative">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm shadow-sm">
-              <Lock className="w-6 h-6 text-indigo-300" />
+              <Lock className="w-6 h-6 text-blue-300" />
             </div>
             <h1 className="mt-4 text-2xl font-extrabold tracking-tight">{title}</h1>
             <p className="mt-2 text-sm text-zinc-300 max-w-md mx-auto">
@@ -34,7 +34,7 @@ export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string
               <div className="p-5 rounded-2xl bg-zinc-50/90 shadow-soft">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
                       Full Cohort Access
                     </span>
                     <h2 className="mt-1 font-bold text-zinc-900 text-lg">{primary.title}</h2>
@@ -68,7 +68,7 @@ export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string
 
               <Link
                 to={`/checkout?courseId=${primary.id}`}
-                className="mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-sm transition-all"
+                className="mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-sm transition-all"
               >
                 Enroll &amp; Pay with Paystack
                 <ArrowRight className="w-4 h-4" />

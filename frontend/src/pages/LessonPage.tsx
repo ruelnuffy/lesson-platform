@@ -68,7 +68,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
             </p>
             <Link
               to="/dashboard"
-              className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
@@ -91,7 +91,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
     return (
       <div className="max-w-lg mx-auto my-14 px-4">
         <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 text-blue-600">
             <CalendarClock className="w-7 h-7" />
           </div>
           <h1 className="mt-4 text-xl font-extrabold text-zinc-900">
@@ -102,7 +102,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
           </p>
           <Link
             to="/dashboard"
-            className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-indigo-600"
+            className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600"
           >
             Go to Dashboard
           </Link>
@@ -115,7 +115,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
     <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       <Link
         to="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-indigo-600 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-blue-600 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Dashboard
@@ -123,7 +123,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
 
       <div className="mt-4 bg-white rounded-3xl shadow-elevated p-6 sm:p-10">
         <div className="flex flex-wrap items-center gap-2.5 text-xs">
-          <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold">
+          <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-bold">
             Day {lesson.day_number}
           </span>
           <span className="text-zinc-500 font-medium">Released {lesson.release_date}</span>
@@ -142,7 +142,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
         {lesson.video_url && (
           <div className="mt-7">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 mb-2">
-              <PlayCircle className="w-4 h-4 text-indigo-600" />
+              <PlayCircle className="w-4 h-4 text-blue-600" />
               Lesson Video
             </div>
             <div className="aspect-video w-full rounded-2xl overflow-hidden bg-zinc-900 shadow-elevated">
@@ -164,7 +164,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
         {lesson.has_quiz && (
           <div className="mt-10 p-6 rounded-2xl bg-zinc-50 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
                 <ClipboardCheck className="w-5 h-5" />
               </div>
               <div>
@@ -178,7 +178,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
             </div>
             <Link
               to={`/lessons/${lesson.id}/quiz`}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 text-sm transition-colors shrink-0"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 text-sm transition-colors shrink-0"
             >
               {lesson.quiz_summary?.attempts_count ? "Retake Quiz" : "Take Quiz"}
               <ArrowRight className="w-4 h-4" />

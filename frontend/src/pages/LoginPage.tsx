@@ -64,7 +64,7 @@ export function LoginPage() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>
@@ -81,7 +81,7 @@ export function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>
@@ -89,7 +89,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-zinc-900 text-white font-semibold hover:bg-indigo-600 disabled:opacity-50 shadow-sm transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-zinc-900 text-white font-semibold hover:bg-blue-600 disabled:opacity-50 shadow-sm transition-colors"
           >
             {submitting ? "Signing in..." : "Sign in"}
             {!submitting && <ArrowRight className="w-4 h-4" />}
@@ -98,7 +98,7 @@ export function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-zinc-600">
           New here?{" "}
-          <Link to="/register" className="text-indigo-600 font-semibold hover:underline">
+          <Link to="/register" className="text-blue-600 font-semibold hover:underline">
             Create an account
           </Link>
         </p>

@@ -7,7 +7,6 @@ import {
   LogOut,
   Menu,
   ShieldCheck,
-  Sparkles,
   X,
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
@@ -30,7 +29,7 @@ export function Navbar() {
       (path !== "/" && location.pathname.startsWith(path));
     return `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
       active
-        ? "bg-indigo-50 text-indigo-700"
+        ? "bg-blue-50 text-blue-700"
         : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/80"
     }`;
   };
@@ -50,13 +49,10 @@ export function Navbar() {
         <Link
           to="/"
           onClick={() => setMobileOpen(false)}
-          className="flex items-center gap-2.5 group"
+          className="flex items-center group"
         >
-          <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-zinc-900 text-white shadow-sm group-hover:bg-indigo-600 transition-colors">
-            <Sparkles className="w-4 h-4" />
-          </span>
           <div className="leading-tight">
-            <span className="font-extrabold tracking-tight text-zinc-900 text-base block">
+            <span className="font-extrabold tracking-tight text-blue-600 group-hover:text-blue-700 transition-colors text-lg block">
               Daily Lessons
             </span>
             <span className="text-[11px] font-medium text-zinc-500 hidden sm:block">
@@ -98,7 +94,7 @@ export function Navbar() {
               <div className="w-2" />
 
               <div className="flex items-center gap-2.5 pl-1">
-                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-sm">
                   {initials}
                 </div>
                 <span className="text-sm font-medium text-zinc-700 max-w-[120px] truncate">
@@ -124,7 +120,7 @@ export function Navbar() {
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-2 rounded-xl text-sm font-semibold bg-zinc-900 text-white hover:bg-indigo-600 shadow-sm transition-colors"
+                className="px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-sky-500 to-blue-600 text-white hover:from-sky-600 hover:to-blue-700 shadow-sm transition-all"
               >
                 Get Started
               </Link>
@@ -149,7 +145,7 @@ export function Navbar() {
           {user ? (
             <>
               <div className="flex items-center gap-3 pb-3 mb-2">
-                <div className="w-9 h-9 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">
                   {initials}
                 </div>
                 <div>
