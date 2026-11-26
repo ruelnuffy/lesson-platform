@@ -113,15 +113,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
 
   return (
     <article className="w-full px-4 sm:px-8 py-8">
-      <Link
-        to="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-blue-600 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Dashboard
-      </Link>
-
-      <div className="mt-4 bg-white rounded-3xl shadow-elevated p-6 sm:p-10">
+      <div className="bg-white rounded-3xl shadow-elevated p-6 sm:p-10">
         <div className="flex flex-wrap items-center gap-2.5 text-xs">
           <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-bold">
             Day {lesson.day_number}

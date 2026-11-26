@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
+  ArrowLeft,
   Award,
   BookOpen,
   CreditCard,
@@ -200,6 +201,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <Menu className="w-5 h-5" />
             </button>
+            {location.pathname !== "/dashboard" && (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F7F5] text-xs font-semibold text-zinc-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Back to Dashboard</span>
+              </Link>
+            )}
             <h2 className="text-base sm:text-lg font-extrabold text-zinc-900 tracking-tight">
               {getPageTitle(location.pathname)}
             </h2>
