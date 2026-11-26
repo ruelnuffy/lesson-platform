@@ -112,6 +112,24 @@ export function Navbar() {
             </>
           ) : (
             <div className="flex items-center gap-2">
+              <a
+                href="/#courses"
+                className="px-3 py-2 rounded-xl text-sm font-medium text-zinc-600 hover:text-blue-600 transition-colors"
+              >
+                Courses
+              </a>
+              <a
+                href="/#about"
+                className="px-3 py-2 rounded-xl text-sm font-medium text-zinc-600 hover:text-blue-600 transition-colors"
+              >
+                About
+              </a>
+              <a
+                href="/#faq"
+                className="px-3 py-2 rounded-xl text-sm font-medium text-zinc-600 hover:text-blue-600 transition-colors"
+              >
+                FAQ
+              </a>
               <Link
                 to="/login"
                 className="px-4 py-2 rounded-xl text-sm font-semibold text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"

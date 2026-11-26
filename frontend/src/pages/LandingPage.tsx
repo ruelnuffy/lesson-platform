@@ -1,17 +1,62 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BookOpen,
+  CheckCircle2,
+  ChevronDown,
   Clock,
   Mail,
   ShieldCheck,
+  Star,
 } from "lucide-react";
 import { apiFetch, formatNaira, type CoursePublic } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
+const FAQS = [
+  {
+    q: "What time do new lessons unlock each day?",
+    a: "Every scheduled lesson unlocks at midnight in Africa/Lagos (WAT), and we send a friendly morning reminder email at 06:30 WAT with a direct link to today's lesson.",
+  },
+  {
+    q: "What happens if I miss a day?",
+    a: "No stress—once a lesson's release date passes, it stays unlocked in your dashboard forever so you can catch up whenever it fits your schedule.",
+  },
+  {
+    q: "Can I retake quizzes to improve my score?",
+    a: "Yes! Quizzes are graded securely on our server and you can retake them as many times as you like. We save every attempt and display both your best and latest scores.",
+  },
+  {
+    q: "How does payment work?",
+    a: "Checkout is powered by Paystack. Once your payment is verified server-side, your enrollment activates immediately with zero manual waiting.",
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    quote:
+      "Ten minutes with my morning coffee completely beat trying to binge a 30-hour video course on weekends. The quizzes actually made the concepts stick.",
+    name: "Tunde A.",
+    role: "Backend Engineer, Lagos",
+  },
+  {
+    quote:
+      "The 06:30 morning email is the nudge I needed. I finished all 7 days without missing a single quiz and finally feel confident with webhooks and auth.",
+    name: "Zainab M.",
+    role: "Product Developer, Abuja",
+  },
+  {
+    quote:
+      "Super clean, zero clutter. I love that every explanation breaks down why an answer is right instead of just flashing a score.",
+    name: "Chinedu O.",
+    role: "Full-Stack Student, Port Harcourt",
+  },
+];
+
 export function LandingPage() {
   const { user } = useAuth();
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ["courses"],
     queryFn: () => apiFetch<CoursePublic[]>("/api/courses"),
@@ -22,15 +67,12 @@ export function LandingPage() {
       {/* Hero */}
       <section className="relative bg-white shadow-soft">
         <div className="absolute inset-0 bg-dot-grid opacity-50 pointer-events-none" />
-        <div className="absolute -top-24 right-0 w-96 h-96 bg-sky-200/40 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 lg:py-24 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6">
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-extrabold text-zinc-900 tracking-tight leading-[1.08]">
               Build real engineering mastery,{" "}
-              <span className="text-blue-600">
-                one morning at a time.
-              </span>
+              <span className="text-blue-600">one morning at a time.</span>
             </h1>
 
             <p className="mt-5 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-xl">
@@ -97,7 +139,16 @@ export function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div className="max-w-xl mb-8">
+          <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+            How It Works
+          </p>
+          <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+            A simple daily rhythm that actually sticks
+          </h2>
+        </div>
+
         <div className="grid sm:grid-cols-3 gap-5">
           {[
             {
@@ -131,7 +182,7 @@ export function LandingPage() {
       </section>
 
       {/* Available Courses */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+      <section id="courses" className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
         <div className="flex items-end justify-between mb-6">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -204,10 +255,223 @@ export function LandingPage() {
         )}
       </section>
 
-      <footer className="bg-white shadow-nav py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p className="font-bold text-blue-600">Daily Lessons</p>
-          <p>Scheduled in Africa/Lagos · Powered by FastAPI, React &amp; Paystack</p>
+      {/* About Us */}
+      <section id="about" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
+        <div className="bg-white rounded-3xl shadow-soft p-8 sm:p-12 grid lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7">
+            <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              About Us
+            </p>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+              Built for people who want real progress, not endless playlists
+            </h2>
+            <p className="mt-4 text-zinc-600 leading-relaxed">
+              Most online courses sit unfinished because they dump dozens of hours on you all at
+              once. We created <strong>Daily Lessons</strong> around a simpler idea: one clear,
+              practical lesson every morning followed by a short quiz that verifies what you
+              actually retained.
+            </p>
+            <ul className="mt-6 space-y-3 text-sm text-zinc-700">
+              {[
+                "Written by practicing engineers focused on real-world production skills",
+                "Paced intentionally in Africa/Lagos time so you build a steady morning routine",
+                "Active recall built in—every lesson ends with instant explanations",
+              ].map((point) => (
+                <li key={point} className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+            <div className="bg-[#F7F7F5] rounded-2xl p-6 shadow-soft">
+              <p className="text-3xl font-extrabold text-blue-600">10 min</p>
+              <p className="mt-1 text-xs font-semibold text-zinc-600">
+                Average daily reading time
+              </p>
+            </div>
+            <div className="bg-[#F7F7F5] rounded-2xl p-6 shadow-soft">
+              <p className="text-3xl font-extrabold text-blue-600">06:30</p>
+              <p className="mt-1 text-xs font-semibold text-zinc-600">
+                WAT morning email drop
+              </p>
+            </div>
+            <div className="bg-[#F7F7F5] rounded-2xl p-6 shadow-soft">
+              <p className="text-3xl font-extrabold text-blue-600">100%</p>
+              <p className="mt-1 text-xs font-semibold text-zinc-600">
+                Server-graded quizzes
+              </p>
+            </div>
+            <div className="bg-[#F7F7F5] rounded-2xl p-6 shadow-soft">
+              <p className="text-3xl font-extrabold text-blue-600">∞</p>
+              <p className="mt-1 text-xs font-semibold text-zinc-600">
+                Unlimited quiz retakes
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+        <div className="max-w-xl mb-8">
+          <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+            Learner Stories
+          </p>
+          <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+            Trusted by consistent learners
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {TESTIMONIALS.map((t) => (
+            <div
+              key={t.name}
+              className="bg-white rounded-2xl p-6 shadow-soft flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex gap-1 text-amber-400">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <Star key={n} className="w-4 h-4 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="mt-4 text-sm text-zinc-700 leading-relaxed">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+              </div>
+              <div className="mt-6">
+                <p className="text-sm font-bold text-zinc-900">{t.name}</p>
+                <p className="text-xs text-zinc-500">{t.role}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="max-w-3xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
+        <div className="text-center mb-8">
+          <p className="text-xs font-bold uppercase tracking-wider text-blue-600">FAQ</p>
+          <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+            Frequently Asked Questions
+          </h2>
+        </div>
+
+        <div className="space-y-3">
+          {FAQS.map((item, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div key={item.q} className="bg-white rounded-2xl shadow-soft overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-zinc-900 text-sm sm:text-base"
+                >
+                  <span>{item.q}</span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform ${
+                      isOpen ? "rotate-180 text-blue-600" : ""
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-6 pb-5 text-sm text-zinc-600 leading-relaxed">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+        <div className="bg-blue-600 rounded-3xl p-8 sm:p-12 text-center text-white shadow-elevated">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            Ready to start your morning learning habit?
+          </h2>
+          <p className="mt-3 text-blue-100 max-w-xl mx-auto text-sm sm:text-base">
+            Create your account in seconds, enroll via Paystack, and unlock your first lesson
+            today.
+          </p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              to={user ? "/dashboard" : "/register"}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white text-blue-600 font-bold hover:bg-blue-50 shadow-soft transition-colors"
+            >
+              {user ? "Open Dashboard" : "Create Free Account"}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-white shadow-nav py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+          <div>
+            <p className="font-extrabold text-blue-600 text-lg">Daily Lessons</p>
+            <p className="mt-2 text-xs text-zinc-500 leading-relaxed">
+              Focused daily engineering lessons delivered every morning at 06:30 Africa/Lagos.
+            </p>
+          </div>
+
+          <div>
+            <p className="font-bold text-zinc-900 mb-3">Explore</p>
+            <ul className="space-y-2 text-xs text-zinc-600">
+              <li>
+                <a href="#courses" className="hover:text-blue-600">
+                  Courses
+                </a>
+              </li>
+              <li>
+                <a href="#about" className="hover:text-blue-600">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="#faq" className="hover:text-blue-600">
+                  FAQ
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-bold text-zinc-900 mb-3">Account</p>
+            <ul className="space-y-2 text-xs text-zinc-600">
+              <li>
+                <Link to="/login" className="hover:text-blue-600">
+                  Sign in
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className="hover:text-blue-600">
+                  Create Account
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard" className="hover:text-blue-600">
+                  Dashboard
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-bold text-zinc-900 mb-3">Schedule &amp; Support</p>
+            <p className="text-xs text-zinc-500 leading-relaxed">
+              Daily unlocks in Africa/Lagos (WAT). Secure payments processed via Paystack.
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-400">
+          <p>© {new Date().getFullYear()} Daily Lessons. All rights reserved.</p>
+          <p>Built with FastAPI, React &amp; Paystack</p>
         </div>
       </footer>
     </div>
