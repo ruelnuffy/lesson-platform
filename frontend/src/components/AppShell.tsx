@@ -54,18 +54,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white shadow-soft">
       {/* Brand */}
-      <div className="h-16 px-6 flex items-center justify-between">
+      <div className="h-16 px-6 flex items-center justify-between bg-blue-600 text-white">
         <Link
           to="/"
           onClick={() => setSidebarOpen(false)}
-          className="font-extrabold tracking-tight text-blue-600 text-lg"
+          className="font-extrabold tracking-tight text-white text-lg"
         >
           Daily Lessons
         </Link>
         <button
           type="button"
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+          className="lg:hidden p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-blue-500/60"
           aria-label="Close sidebar"
         >
           <X className="w-5 h-5" />
@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Prominent User Profile Card */}
       {user && (
-        <div className="px-4 pb-3">
+        <div className="px-4 pt-4 pb-3">
           <Link
             to="/profile"
             onClick={() => setSidebarOpen(false)}
@@ -192,17 +192,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Main Content Column */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top Utility Bar */}
-        <header className="sticky top-0 z-20 h-16 bg-white/90 backdrop-blur-md shadow-nav px-4 sm:px-8 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-20 h-16 bg-blue-600 text-white shadow-nav px-4 sm:px-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl text-zinc-600 hover:bg-[#F7F7F5]"
+              className="lg:hidden p-2 rounded-xl text-white hover:bg-blue-500/60"
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h2 className="text-base sm:text-lg font-extrabold text-zinc-900 tracking-tight">
+            <h2 className="text-base sm:text-lg font-extrabold text-white tracking-tight">
               {getPageTitle(location.pathname)}
             </h2>
           </div>
@@ -210,7 +210,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             <Link
               to="/lessons/today"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-blue-600 text-xs font-semibold hover:bg-blue-50 shadow-sm transition-colors"
             >
               <BookOpen className="w-3.5 h-3.5" />
               Today&apos;s Lesson
@@ -218,10 +218,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             {user && (
               <Link
                 to="/profile"
-                className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-[#F7F7F5] hover:bg-zinc-200/70 transition-colors"
+                className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-blue-500/70 hover:bg-blue-500 transition-colors"
               >
                 <Avatar name={user.name} avatarUrl={user.avatar_url} size="sm" />
-                <span className="hidden md:inline text-xs font-semibold text-zinc-800 max-w-[110px] truncate">
+                <span className="hidden md:inline text-xs font-semibold text-white max-w-[110px] truncate">
                   {user.name}
                 </span>
               </Link>
