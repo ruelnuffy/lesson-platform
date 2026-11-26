@@ -93,7 +93,7 @@ export function LandingPage() {
       <section className="relative bg-white shadow-soft">
         <div className="absolute inset-0 bg-dot-grid bg-[length:24px_24px] opacity-50 pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-32 grid lg:grid-cols-12 gap-14 lg:gap-16 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-20 lg:pt-40 lg:pb-32 grid lg:grid-cols-12 gap-14 lg:gap-16 items-center">
           <div className="lg:col-span-6">
             <h1 className="text-5xl sm:text-6xl lg:text-[64px] font-extrabold text-zinc-900 tracking-tight leading-[1.04]">
               Build real engineering mastery,{" "}

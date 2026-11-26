@@ -36,7 +36,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-3 z-40 px-4 sm:px-6">
+    <header className="fixed top-4 inset-x-0 z-40 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto bg-white/95 backdrop-blur-md rounded-full shadow-elevated px-5 sm:px-7 h-16 flex items-center justify-between gap-4">
         {/* Left: Brand */}
         <Link
