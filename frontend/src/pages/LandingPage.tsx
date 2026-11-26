@@ -4,7 +4,6 @@ import {
   ArrowRight,
   BookOpen,
   Clock,
-  Flame,
   Mail,
   ShieldCheck,
 } from "lucide-react";
@@ -86,30 +85,12 @@ export function LandingPage() {
 
           {/* Right Hero Image */}
           <div className="lg:col-span-6">
-            <div className="relative rounded-3xl overflow-hidden shadow-elevated bg-white">
+            <div className="rounded-3xl overflow-hidden shadow-elevated bg-white">
               <img
                 src="/images/hero-learning.jpg"
                 alt="Learner enjoying a bright morning lesson at a sunlit desk"
                 className="w-full h-[320px] sm:h-[380px] object-cover"
               />
-              <div className="absolute inset-x-4 bottom-4 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-elevated flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-sky-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <BookOpen className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                      Today&apos;s Lesson Ready
-                    </p>
-                    <p className="text-sm font-bold text-zinc-900">
-                      Day 4: Access Gating &amp; Timezones
-                    </p>
-                  </div>
-                </div>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 text-xs font-bold shrink-0">
-                  <Flame className="w-3.5 h-3.5" />4 day streak
-                </span>
-              </div>
             </div>
           </div>
         </div>
