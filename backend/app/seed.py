@@ -1,8 +1,8 @@
 """Idempotent seed script for Daily Lessons.
 
 Creates:
-- Admin user: admin@dailylessons.local / AdminPass123!
-- Sample paid student: student@dailylessons.local / StudentPass123!
+- Admin user: admin@dailylessons.com / AdminPass123!
+- Sample paid student: student@dailylessons.com / StudentPass123!
 - 1 active course with 7 daily lessons (Days 1-3 past, Day 4 today, Days 5-7 upcoming)
 - 7 quizzes (3 questions each)
 """
@@ -373,11 +373,11 @@ def seed_database(db: Session) -> dict[str, int]:
     today = today_in_app_tz()
 
     # 1. Admin user
-    admin = db.scalar(select(User).where(User.email == "admin@dailylessons.local"))
+    admin = db.scalar(select(User).where(User.email == "admin@dailylessons.com"))
     if not admin:
         admin = User(
             name="Admin Instructor",
-            email="admin@dailylessons.local",
+            email="admin@dailylessons.com",
             password_hash=hash_password("AdminPass123!"),
             role=UserRole.admin,
         )
@@ -385,11 +385,11 @@ def seed_database(db: Session) -> dict[str, int]:
         db.flush()
 
     # 2. Sample student user
-    student = db.scalar(select(User).where(User.email == "student@dailylessons.local"))
+    student = db.scalar(select(User).where(User.email == "student@dailylessons.com"))
     if not student:
         student = User(
             name="Demo Learner",
-            email="student@dailylessons.local",
+            email="student@dailylessons.com",
             password_hash=hash_password("StudentPass123!"),
             role=UserRole.user,
         )

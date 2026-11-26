@@ -37,6 +37,8 @@ export async function apiFetch<T>(
       detail = data.detail ?? data;
       if (typeof data.detail === "string") {
         message = data.detail;
+      } else if (Array.isArray(data.detail) && data.detail[0]?.msg) {
+        message = String(data.detail[0].msg);
       } else if (data.detail?.message) {
         message = data.detail.message;
       }

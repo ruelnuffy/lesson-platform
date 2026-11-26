@@ -32,8 +32,8 @@ A full-stack "daily lessons" learning web application with scheduled lesson unlo
    docker compose exec api python -m app.seed
    ```
    Default seeded accounts:
-   - **Admin:** `admin@dailylessons.local` / `AdminPass123!`
-   - **Paid Student:** `student@dailylessons.local` / `StudentPass123!`
+   - **Admin:** `admin@dailylessons.com` / `AdminPass123!`
+   - **Paid Student:** `student@dailylessons.com` / `StudentPass123!`
 
 ## Running Tests
 
