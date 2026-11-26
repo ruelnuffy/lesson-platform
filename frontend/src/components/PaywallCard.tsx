@@ -14,8 +14,7 @@ export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string
   return (
     <div className="max-w-xl mx-auto my-12 px-4">
       <div className="bg-white rounded-3xl shadow-elevated overflow-hidden">
-        <div className="bg-zinc-900 px-8 py-8 text-center text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 via-transparent to-amber-500/20 pointer-events-none" />
+        <div className="bg-blue-600 px-8 py-8 text-center text-white relative overflow-hidden">
           <div className="relative">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm shadow-sm">
               <Lock className="w-6 h-6 text-blue-300" />

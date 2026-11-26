@@ -120,7 +120,7 @@ export function DashboardPage() {
           </div>
           <div className="mt-3.5 w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-600 to-emerald-500 rounded-full transition-all duration-500"
+              className="h-full bg-blue-600 rounded-full transition-all duration-500"
               style={{ width: `${progressPct}%` }}
             />
           </div>

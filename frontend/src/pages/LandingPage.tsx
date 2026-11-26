@@ -29,7 +29,7 @@ export function LandingPage() {
           <div className="lg:col-span-6">
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-extrabold text-zinc-900 tracking-tight leading-[1.08]">
               Build real engineering mastery,{" "}
-              <span className="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-blue-600">
                 one morning at a time.
               </span>
             </h1>
@@ -44,7 +44,7 @@ export function LandingPage() {
               {user ? (
                 <Link
                   to="/dashboard"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold hover:from-sky-600 hover:to-blue-700 shadow-soft transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 shadow-soft transition-colors"
                 >
                   Go to Dashboard
                   <ArrowRight className="w-4 h-4" />
@@ -53,7 +53,7 @@ export function LandingPage() {
                 <>
                   <Link
                     to="/register"
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold hover:from-sky-600 hover:to-blue-700 shadow-soft transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 shadow-soft transition-colors"
                   >
                     Start Learning
                     <ArrowRight className="w-4 h-4" />
@@ -211,7 +211,7 @@ export function LandingPage() {
                   </span>
                   <Link
                     to={user ? `/checkout?courseId=${course.id}` : "/register"}
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold hover:from-sky-600 hover:to-blue-700 text-sm shadow-sm transition-all shrink-0"
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 text-sm shadow-sm transition-colors shrink-0"
                   >
                     {user ? "Enroll Now" : "Register"}
                     <ArrowRight className="w-4 h-4" />

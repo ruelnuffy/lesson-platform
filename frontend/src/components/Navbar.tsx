@@ -120,7 +120,7 @@ export function Navbar() {
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-sky-500 to-blue-600 text-white hover:from-sky-600 hover:to-blue-700 shadow-sm transition-all"
+                className="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-500 shadow-sm transition-colors"
               >
                 Get Started
               </Link>
