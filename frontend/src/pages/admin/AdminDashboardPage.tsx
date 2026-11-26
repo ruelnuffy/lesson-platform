@@ -206,7 +206,7 @@ export function AdminDashboardPage() {
   const defaultCourseId = courses.data?.[0]?.id;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="w-full px-4 sm:px-8 py-8">
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         {/* Sidebar */}
         <aside className="lg:col-span-3 lg:sticky lg:top-24">

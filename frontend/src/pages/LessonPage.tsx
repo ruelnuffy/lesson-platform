@@ -38,7 +38,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12 space-y-4">
+      <div className="w-full px-4 sm:px-8 py-8 space-y-4">
         <div className="h-5 w-32 bg-zinc-200 rounded animate-pulse" />
         <div className="h-96 bg-white rounded-3xl shadow-soft animate-pulse" />
       </div>
@@ -112,7 +112,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
   }
 
   return (
-    <article className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+    <article className="w-full px-4 sm:px-8 py-8">
       <Link
         to="/dashboard"
         className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-blue-600 transition-colors"

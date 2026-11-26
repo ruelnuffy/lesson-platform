@@ -93,7 +93,7 @@ export function LandingPage() {
       <section className="relative bg-white shadow-soft">
         <div className="absolute inset-0 bg-dot-grid bg-[length:24px_24px] opacity-50 pointer-events-none" />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 lg:py-24 grid lg:grid-cols-12 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 lg:py-24 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6">
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-extrabold text-zinc-900 tracking-tight leading-[1.08]">
               Build real engineering mastery,{" "}
@@ -164,7 +164,7 @@ export function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="max-w-xl mb-8">
           <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
             How It Works
@@ -207,7 +207,7 @@ export function LandingPage() {
       </section>
 
       {/* Available Courses */}
-      <section id="courses" className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
+      <section id="courses" className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
         <div className="flex items-end justify-between mb-6">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -281,7 +281,7 @@ export function LandingPage() {
       </section>
 
       {/* About Us */}
-      <section id="about" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
+      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
         <div className="bg-white rounded-3xl shadow-soft p-8 sm:p-12 grid lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -340,7 +340,7 @@ export function LandingPage() {
       </section>
 
       {/* Learner Reviews */}
-      <section id="reviews" className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
+      <section id="reviews" className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -571,7 +571,7 @@ export function LandingPage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
         <div className="bg-blue-600 rounded-3xl p-8 sm:p-12 text-center text-white shadow-elevated">
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Ready to start your morning learning habit?
@@ -594,7 +594,7 @@ export function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-white shadow-nav py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
           <div>
             <p className="font-extrabold text-blue-600 text-lg">Daily Lessons</p>
             <p className="mt-2 text-xs text-zinc-500 leading-relaxed">
@@ -652,7 +652,7 @@ export function LandingPage() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-400">
           <p>© {new Date().getFullYear()} Daily Lessons. All rights reserved.</p>
           <p>Built with FastAPI, React &amp; Paystack</p>
         </div>

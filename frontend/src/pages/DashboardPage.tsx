@@ -24,7 +24,7 @@ export function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-6">
+      <div className="w-full px-4 sm:px-8 py-8 space-y-6">
         <div className="h-8 w-56 bg-zinc-200/70 rounded-lg animate-pulse" />
         <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
@@ -69,7 +69,7 @@ export function DashboardPage() {
       : null;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-7">
+    <div className="w-full px-4 sm:px-8 py-8 space-y-7">
       {/* Greeting Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>

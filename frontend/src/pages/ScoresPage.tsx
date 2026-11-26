@@ -11,12 +11,12 @@ export function ScoresPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-zinc-500">Loading scores...</div>
+      <div className="w-full px-4 sm:px-8 py-8 text-zinc-500">Loading scores...</div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <div className="w-full px-4 sm:px-8 py-8 space-y-8">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">
           Performance

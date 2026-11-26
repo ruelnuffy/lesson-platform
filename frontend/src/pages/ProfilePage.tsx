@@ -84,7 +84,7 @@ export function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-7">
+    <div className="w-full px-4 sm:px-8 py-8 space-y-7">
       <div>
         <p className="text-xs font-bold uppercase tracking-wider text-blue-600">Account</p>
         <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">

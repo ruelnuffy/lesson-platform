@@ -47,7 +47,7 @@ export function QuizPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-12 text-zinc-500">Loading quiz...</div>
+      <div className="w-full px-4 sm:px-8 py-8 text-zinc-500">Loading quiz...</div>
     );
   }
 
@@ -71,7 +71,7 @@ export function QuizPage() {
 
   if (result) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
+      <div className="w-full px-4 sm:px-8 py-8 space-y-6">
         <div className="bg-white rounded-3xl p-8 sm:p-10 text-center shadow-elevated">
           <div
             className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${
@@ -189,7 +189,7 @@ export function QuizPage() {
   const allAnswered = quiz.questions.every((q) => answers[String(q.id)] !== undefined);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="w-full px-4 sm:px-8 py-8">
       <Link
         to={`/lessons/${quiz.lesson_id}`}
         className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-blue-600 transition-colors"
