@@ -47,7 +47,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     { to: "/dashboard", label: "Overview", icon: LayoutDashboard, match: "/dashboard" },
     { to: "/lessons/today", label: "Today's Lesson", icon: BookOpen, match: "/lessons" },
     { to: "/scores", label: "Quiz Scores", icon: Award, match: "/scores" },
-    { to: "/checkout", label: "Billing & Enroll", icon: CreditCard, match: "/checkout" },
+    ...(user?.role !== "admin"
+      ? [{ to: "/checkout", label: "Billing & Enroll", icon: CreditCard, match: "/checkout" }]
+      : []),
     { to: "/profile", label: "Profile", icon: UserIcon, match: "/profile" },
   ];
 
