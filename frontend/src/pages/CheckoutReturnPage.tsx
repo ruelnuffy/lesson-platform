@@ -30,8 +30,8 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
 
   if (mode === "failure") {
     return (
-      <div className="max-w-lg mx-auto my-14 px-4">
-        <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
+      <div className="w-full px-4 sm:px-8 py-12">
+        <div className="bg-white rounded-3xl shadow-elevated p-10 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-rose-50 text-rose-600">
             <XCircle className="w-7 h-7" />
           </div>
@@ -62,8 +62,8 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
 
   if (isLoading) {
     return (
-      <div className="max-w-lg mx-auto my-14 px-4">
-        <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
+      <div className="w-full px-4 sm:px-8 py-12">
+        <div className="bg-white rounded-3xl shadow-elevated p-10 text-center">
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto" />
           <h1 className="mt-4 text-xl font-extrabold text-zinc-900">
             Verifying your payment...
@@ -79,8 +79,8 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
 
   if (error || (reference && data?.status !== "paid")) {
     return (
-      <div className="max-w-lg mx-auto my-14 px-4">
-        <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
+      <div className="w-full px-4 sm:px-8 py-12">
+        <div className="bg-white rounded-3xl shadow-elevated p-10 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-50 text-amber-600">
             <Clock className="w-7 h-7" />
           </div>
@@ -104,8 +104,8 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
   }
 
   return (
-    <div className="max-w-lg mx-auto my-14 px-4">
-      <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
+    <div className="w-full px-4 sm:px-8 py-12">
+      <div className="bg-white rounded-3xl shadow-elevated p-10 text-center">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600">
           <CheckCircle2 className="w-7 h-7" />
         </div>
