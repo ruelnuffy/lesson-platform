@@ -208,3 +208,75 @@ def test_all_tables_and_constraints_exist(db_session: Session) -> None:
     with pytest.raises(IntegrityError):
         db_session.flush()
     db_session.rollback()
+
+
+def test_forgot_and_reset_password_single_use(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    import re
+    from app.main import app
+    from app.services.email import EmailSender, get_email_sender
+
+    sent_emails: list[dict[str, str]] = []
+
+    class CaptureEmailSender(EmailSender):
+        def send_email(self, *, to_email: str, subject: str, html_body: str, text_body: str) -> None:
+            sent_emails.append({"to": to_email, "text": text_body})
+
+    app.dependency_overrides[get_email_sender] = lambda: CaptureEmailSender()
+    try:
+        user = User(
+            name="Reset User",
+            email="resetme@example.com",
+            password_hash=hash_password("oldpassword123"),
+            role=UserRole.user,
+        )
+        db_session.add(user)
+        db_session.commit()
+
+        # Unknown email still returns 200 without leaking existence
+        unknown = client.post("/api/auth/forgot-password", json={"email": "ghost@example.com"})
+        assert unknown.status_code == 200
+        assert len(sent_emails) == 0
+
+        # Known email triggers reset link
+        res = client.post("/api/auth/forgot-password", json={"email": "resetme@example.com"})
+        assert res.status_code == 200
+        assert len(sent_emails) == 1
+
+        match = re.search(r"token=([^\s]+)", sent_emails[0]["text"])
+        assert match is not None
+        token = match.group(1)
+
+        # Reset password succeeds
+        reset_res = client.post(
+            "/api/auth/reset-password",
+            json={"token": token, "new_password": "newstrongpassword"},
+        )
+        assert reset_res.status_code == 200
+
+        # Old password fails, new password succeeds
+        assert (
+            client.post(
+                "/api/auth/login",
+                json={"email": "resetme@example.com", "password": "oldpassword123"},
+            ).status_code
+            == 401
+        )
+        assert (
+            client.post(
+                "/api/auth/login",
+                json={"email": "resetme@example.com", "password": "newstrongpassword"},
+            ).status_code
+            == 200
+        )
+
+        # Reusing the same reset token is rejected (single-use)
+        reuse = client.post(
+            "/api/auth/reset-password",
+            json={"token": token, "new_password": "anotherpassword"},
+        )
+        assert reuse.status_code == 400
+    finally:
+        app.dependency_overrides.pop(get_email_sender, None)

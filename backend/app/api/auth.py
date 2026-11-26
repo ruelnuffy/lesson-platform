@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -5,11 +7,26 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.database import get_db
 from app.models.user import User, UserRole
-from app.schemas.auth import LoginRequest, RegisterRequest, UserResponse
+from app.schemas.auth import (
+    ForgotPasswordRequest,
+    LoginRequest,
+    RegisterRequest,
+    ResetPasswordRequest,
+    UserResponse,
+)
 from app.security.deps import get_current_user
-from app.security.jwt import create_access_token
+from app.security.jwt import (
+    TokenError,
+    create_access_token,
+    create_password_reset_token,
+    decode_password_reset_token,
+    password_hash_fingerprint,
+)
 from app.security.password import hash_password, verify_password
 from app.security.rate_limit import SlidingWindowRateLimiter, make_rate_limit_dependency
+from app.services.email import EmailSender, get_email_sender, render_password_reset_email
+
+logger = logging.getLogger("daily_lessons.auth")
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -102,3 +119,64 @@ def logout(response: Response) -> dict[str, str]:
 @router.get("/me", response_model=UserResponse)
 def me(current_user: User = Depends(get_current_user)) -> User:
     return current_user
+
+
+@router.post("/forgot-password", dependencies=[Depends(rate_limit_login)])
+def forgot_password(
+    body: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+    email_sender: EmailSender = Depends(get_email_sender),
+) -> dict[str, str]:
+    normalized_email = body.email.strip().lower()
+    user = db.scalar(select(User).where(User.email == normalized_email))
+
+    if user:
+        settings = get_settings()
+        token = create_password_reset_token(user.id, user.password_hash)
+        reset_url = f"{settings.frontend_origin.rstrip('/')}/reset-password?token={token}"
+        subject, html_body, text_body = render_password_reset_email(
+            user_name=user.name,
+            reset_url=reset_url,
+        )
+        try:
+            email_sender.send_email(
+                to_email=user.email,
+                subject=subject,
+                html_body=html_body,
+                text_body=text_body,
+            )
+        except Exception as exc:
+            logger.warning(
+                "Password reset email could not be sent via SMTP (%s). Dev reset URL: %s",
+                exc,
+                reset_url,
+            )
+
+    return {
+        "message": "If an account with that email exists, a password reset link has been sent."
+    }
+
+
+@router.post("/reset-password")
+def reset_password(
+    body: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+) -> dict[str, str]:
+    try:
+        user_id, expected_ph = decode_password_reset_token(body.token)
+    except TokenError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired password reset link",
+        ) from exc
+
+    user = db.get(User, user_id)
+    if not user or password_hash_fingerprint(user.password_hash) != expected_ph:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link is invalid or has already been used",
+        )
+
+    user.password_hash = hash_password(body.new_password)
+    db.commit()
+    return {"message": "Password updated successfully. You can now sign in."}

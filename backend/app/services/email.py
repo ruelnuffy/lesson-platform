@@ -131,3 +131,51 @@ def render_daily_lesson_email(
 </html>
 """
     return subject, html_body, text_body
+
+
+def render_password_reset_email(
+    *,
+    user_name: str,
+    reset_url: str,
+) -> tuple[str, str, str]:
+    subject = "Reset your Daily Lessons password"
+
+    text_body = (
+        f"Hi {user_name},\n\n"
+        f"We received a request to reset your Daily Lessons password.\n"
+        f"Use the link below within 30 minutes to choose a new password:\n\n"
+        f"{reset_url}\n\n"
+        f"If you did not request this, you can safely ignore this email.\n"
+        f"— Daily Lessons\n"
+    )
+
+    safe_name = escape(user_name)
+    safe_url = escape(reset_url, quote=True)
+
+    html_body = f"""<!doctype html>
+<html>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background:#f7f7f5; padding:24px; color:#18181b;">
+    <div style="max-width:560px; margin:0 auto; background:#ffffff; border-radius:16px; padding:32px; box-shadow: 0 8px 24px rgba(15,23,42,0.08);">
+      <p style="margin:0 0 8px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#2563eb;">
+        Daily Lessons
+      </p>
+      <h1 style="margin:0 0 16px; font-size:22px; line-height:1.3; color:#18181b;">
+        Reset your password
+      </h1>
+      <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#3f3f46;">
+        Hi {safe_name},
+      </p>
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:#3f3f46;">
+        Click the button below to set a new password. This link expires in 30 minutes.
+      </p>
+      <a href="{safe_url}" style="display:inline-block; background:#2563eb; color:#ffffff; text-decoration:none; font-weight:600; padding:12px 24px; border-radius:10px;">
+        Reset Password
+      </a>
+      <p style="margin:24px 0 0; font-size:13px; color:#71717a;">
+        If you didn&apos;t request a password reset, you can safely ignore this email.
+      </p>
+    </div>
+  </body>
+</html>
+"""
+    return subject, html_body, text_body
