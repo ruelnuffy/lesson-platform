@@ -1,18 +1,29 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, type FormEvent } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
+  AlertCircle,
   ArrowRight,
   BookOpen,
   CheckCircle2,
   ChevronDown,
   Clock,
   Mail,
+  MessageSquarePlus,
   ShieldCheck,
   Star,
 } from "lucide-react";
-import { apiFetch, formatNaira, type CoursePublic } from "../lib/api";
+import { ApiError, apiFetch, formatNaira, type CoursePublic } from "../lib/api";
 import { useAuth } from "../lib/auth";
+
+interface ReviewItem {
+  id: number;
+  user_name: string;
+  role_label: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
 
 const FAQS = [
   {
@@ -33,34 +44,48 @@ const FAQS = [
   },
 ];
 
-const TESTIMONIALS = [
-  {
-    quote:
-      "Ten minutes with my morning coffee completely beat trying to binge a 30-hour video course on weekends. The quizzes actually made the concepts stick.",
-    name: "Tunde A.",
-    role: "Backend Engineer, Lagos",
-  },
-  {
-    quote:
-      "The 06:30 morning email is the nudge I needed. I finished all 7 days without missing a single quiz and finally feel confident with webhooks and auth.",
-    name: "Zainab M.",
-    role: "Product Developer, Abuja",
-  },
-  {
-    quote:
-      "Super clean, zero clutter. I love that every explanation breaks down why an answer is right instead of just flashing a score.",
-    name: "Chinedu O.",
-    role: "Full-Stack Student, Port Harcourt",
-  },
-];
-
 export function LandingPage() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [roleLabel, setRoleLabel] = useState("");
+  const [comment, setComment] = useState("");
+
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ["courses"],
     queryFn: () => apiFetch<CoursePublic[]>("/api/courses"),
   });
+
+  const { data: reviews = [] } = useQuery<ReviewItem[]>({
+    queryKey: ["reviews"],
+    queryFn: () => apiFetch<ReviewItem[]>("/api/reviews"),
+  });
+
+  const submitReview = useMutation<ReviewItem, ApiError>({
+    mutationFn: () =>
+      apiFetch<ReviewItem>("/api/reviews", {
+        method: "POST",
+        body: JSON.stringify({
+          rating,
+          role_label: roleLabel,
+          comment,
+        }),
+      }),
+    onSuccess: () => {
+      setComment("");
+      setRoleLabel("");
+      setRating(5);
+      setShowReviewForm(false);
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+    },
+  });
+
+  const handleReviewSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    submitReview.mutate();
+  };
 
   return (
     <div className="relative overflow-hidden">
@@ -314,40 +339,198 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="max-w-xl mb-8">
-          <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
-            Learner Stories
-          </p>
-          <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
-            Trusted by consistent learners
-          </h2>
+      {/* Learner Reviews */}
+      <section id="reviews" className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              Learner Reviews
+            </p>
+            <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+              What learners are saying
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowReviewForm((prev) => !prev)}
+            className="inline-flex items-center gap-2 self-start sm:self-auto px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 shadow-soft transition-colors"
+          >
+            <MessageSquarePlus className="w-4 h-4" />
+            {showReviewForm ? "Close Form" : "Add a Review"}
+          </button>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((t) => (
-            <div
-              key={t.name}
-              className="bg-white rounded-2xl p-6 shadow-soft flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex gap-1 text-amber-400">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <Star key={n} className="w-4 h-4 fill-amber-400" />
-                  ))}
+        {/* Add Review Form */}
+        {showReviewForm && (
+          <div className="mb-8 bg-white rounded-3xl p-6 sm:p-8 shadow-elevated max-w-2xl">
+            {user ? (
+              <form onSubmit={handleReviewSubmit} className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-bold text-zinc-900">Share your experience</h3>
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    Posting as <strong className="text-zinc-800">{user.name}</strong>
+                  </p>
                 </div>
-                <p className="mt-4 text-sm text-zinc-700 leading-relaxed">
-                  &ldquo;{t.quote}&rdquo;
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-2">
+                    Your Rating
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        className="p-1 rounded-lg hover:bg-amber-50 transition-colors"
+                        aria-label={`Rate ${star} stars`}
+                      >
+                        <Star
+                          className={`w-6 h-6 ${
+                            star <= rating
+                              ? "text-amber-400 fill-amber-400"
+                              : "text-zinc-300"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                    Role / Location (optional)
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={120}
+                    placeholder="e.g. Software Engineer, Lagos"
+                    value={roleLabel}
+                    onChange={(e) => setRoleLabel(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                    Your Review
+                  </label>
+                  <textarea
+                    required
+                    minLength={5}
+                    maxLength={600}
+                    rows={3}
+                    placeholder="What did you enjoy about the daily lessons?"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
+                  />
+                </div>
+
+                {submitReview.error && (
+                  <div className="p-3 rounded-xl bg-rose-50 text-rose-700 text-sm flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                    <span>{submitReview.error.message}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={submitReview.isPending}
+                    className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 disabled:opacity-50 shadow-sm transition-colors"
+                  >
+                    {submitReview.isPending ? "Submitting..." : "Submit Review"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowReviewForm(false)}
+                    className="px-4 py-2.5 rounded-xl bg-zinc-100 text-zinc-700 text-sm font-semibold hover:bg-zinc-200/80 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="text-center py-4">
+                <h3 className="text-lg font-bold text-zinc-900">Sign in to leave a review</h3>
+                <p className="mt-1.5 text-sm text-zinc-600">
+                  Only verified learners with an account can post reviews.
                 </p>
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  <Link
+                    to="/login"
+                    className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 shadow-sm transition-colors"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-5 py-2.5 rounded-xl bg-zinc-100 text-zinc-800 text-sm font-semibold hover:bg-zinc-200/80 transition-colors"
+                  >
+                    Create Account
+                  </Link>
+                </div>
               </div>
-              <div className="mt-6">
-                <p className="text-sm font-bold text-zinc-900">{t.name}</p>
-                <p className="text-xs text-zinc-500">{t.role}</p>
-              </div>
+            )}
+          </div>
+        )}
+
+        {/* Reviews Grid or Coming Soon State */}
+        {reviews.length === 0 ? (
+          <div className="bg-white rounded-3xl p-10 text-center shadow-soft">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-sky-50 text-blue-600">
+              <Star className="w-6 h-6" />
             </div>
-          ))}
-        </div>
+            <h3 className="mt-4 text-xl font-extrabold text-zinc-900">
+              Reviews Coming Soon
+            </h3>
+            <p className="mt-2 text-sm text-zinc-600 max-w-md mx-auto">
+              We&apos;re collecting authentic feedback from our first cohort of learners. Have
+              you started a course? Be the first to share your thoughts.
+            </p>
+            {!showReviewForm && (
+              <button
+                type="button"
+                onClick={() => setShowReviewForm(true)}
+                className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 shadow-sm transition-colors"
+              >
+                <MessageSquarePlus className="w-4 h-4" />
+                Write the First Review
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-6">
+            {reviews.map((r) => (
+              <div
+                key={r.id}
+                className="bg-white rounded-2xl p-6 shadow-soft flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex gap-1 text-amber-400">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <Star
+                        key={n}
+                        className={`w-4 h-4 ${
+                          n <= r.rating ? "fill-amber-400 text-amber-400" : "text-zinc-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-4 text-sm text-zinc-700 leading-relaxed">
+                    &ldquo;{r.comment}&rdquo;
+                  </p>
+                </div>
+                <div className="mt-6">
+                  <p className="text-sm font-bold text-zinc-900">{r.user_name}</p>
+                  {r.role_label && <p className="text-xs text-zinc-500">{r.role_label}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* FAQ */}

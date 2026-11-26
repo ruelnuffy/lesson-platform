@@ -7,6 +7,7 @@ from app.api.courses import router as courses_router
 from app.api.lessons import router as lessons_router
 from app.api.payments import router as payments_router
 from app.api.quizzes import router as quizzes_router
+from app.api.reviews import router as reviews_router
 from app.config import get_settings
 
 
@@ -28,6 +29,7 @@ def create_app() -> FastAPI:
     app.include_router(quizzes_router)
     app.include_router(payments_router)
     app.include_router(admin_router)
+    app.include_router(reviews_router)
 
     @app.get("/health", tags=["health"])
     def health() -> dict[str, str]:
