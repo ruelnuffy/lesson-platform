@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -7,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
 from app.api.courses import router as courses_router
+from app.api.cron import router as cron_router
 from app.api.lessons import router as lessons_router
 from app.api.payments import router as payments_router
 from app.api.quizzes import router as quizzes_router
@@ -33,10 +35,15 @@ def create_app() -> FastAPI:
     app.include_router(payments_router)
     app.include_router(admin_router)
     app.include_router(reviews_router)
+    app.include_router(cron_router)
 
-    uploads_dir = Path("/app/uploads")
-    uploads_dir.mkdir(parents=True, exist_ok=True)
-    app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
+    default_uploads = "/tmp/uploads" if os.getenv("VERCEL") else "/app/uploads"
+    uploads_dir = Path(os.getenv("UPLOAD_DIR", default_uploads))
+    try:
+        uploads_dir.mkdir(parents=True, exist_ok=True)
+        app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
+    except OSError:
+        pass
 
     @app.get("/health", tags=["health"])
     def health() -> dict[str, str]:

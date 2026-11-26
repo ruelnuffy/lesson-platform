@@ -2,11 +2,13 @@ from collections import defaultdict
 import csv
 from datetime import timedelta
 import io
+import os
 from pathlib import Path
 import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import StreamingResponse
+import httpx
 from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
@@ -97,14 +99,43 @@ async def admin_upload_media(
             detail="File exceeds 100 MB limit",
         )
 
-    uploads_dir = Path("/app/uploads")
-    uploads_dir.mkdir(parents=True, exist_ok=True)
+    from app.config import get_settings
+
+    settings = get_settings()
     filename = f"{uuid.uuid4().hex}{ext}"
+    content_type = file.content_type or ALLOWED_UPLOAD_EXTENSIONS[ext]
+
+    if settings.blob_read_write_token:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            res = await client.put(
+                f"https://blob.vercel-storage.com/{filename}",
+                headers={
+                    "authorization": f"Bearer {settings.blob_read_write_token}",
+                    "x-content-type": content_type,
+                },
+                content=content,
+            )
+        if res.status_code >= 400:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Blob storage upload failed",
+            )
+        blob_url = res.json().get("url")
+        return {"url": blob_url, "filename": filename, "content_type": content_type}
+
+    if os.getenv("VERCEL"):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Set BLOB_READ_WRITE_TOKEN in Vercel to upload media files, or paste an external URL.",
+        )
+
+    uploads_dir = Path(os.getenv("UPLOAD_DIR", "/app/uploads"))
+    uploads_dir.mkdir(parents=True, exist_ok=True)
     (uploads_dir / filename).write_bytes(content)
     return {
         "url": f"/uploads/{filename}",
         "filename": filename,
-        "content_type": file.content_type or ALLOWED_UPLOAD_EXTENSIONS[ext],
+        "content_type": content_type,
     }
 
 

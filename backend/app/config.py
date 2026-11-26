@@ -40,6 +40,8 @@ class Settings(BaseSettings):
 
     daily_email_hour: int = 6
     daily_email_minute: int = 30
+    cron_secret: str = ""
+    blob_read_write_token: str = ""
 
     # Rate limiting defaults
     login_rate_limit_max: int = 10
