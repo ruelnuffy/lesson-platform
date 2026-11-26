@@ -93,7 +93,7 @@ export function LandingPage() {
       <section className="relative bg-white shadow-soft">
         <div className="absolute inset-0 bg-dot-grid bg-[length:24px_24px] opacity-50 pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 lg:py-24 grid lg:grid-cols-12 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-32 grid lg:grid-cols-12 gap-14 lg:gap-16 items-center">
           <div className="lg:col-span-6">
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-extrabold text-zinc-900 tracking-tight leading-[1.08]">
               Build real engineering mastery,{" "}
@@ -164,17 +164,17 @@ export function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="max-w-xl mb-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-24 lg:py-28">
+        <div className="max-w-xl mb-12">
           <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
             How It Works
           </p>
-          <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+          <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
             A simple daily rhythm that actually sticks
           </h2>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-3 gap-7">
           {[
             {
               step: "01",
@@ -207,8 +207,8 @@ export function LandingPage() {
       </section>
 
       {/* Available Courses */}
-      <section id="courses" className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
-        <div className="flex items-end justify-between mb-6">
+      <section id="courses" className="max-w-7xl mx-auto px-4 sm:px-6 pb-24 lg:pb-28 scroll-mt-20">
+        <div className="flex items-end justify-between mb-10">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
               Curriculum
@@ -281,8 +281,8 @@ export function LandingPage() {
       </section>
 
       {/* About Us */}
-      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
-        <div className="bg-white rounded-3xl shadow-soft p-8 sm:p-12 grid lg:grid-cols-12 gap-10 items-center">
+      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-28 scroll-mt-20">
+        <div className="bg-white rounded-3xl shadow-soft p-8 sm:p-14 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
               About Us
@@ -340,8 +340,8 @@ export function LandingPage() {
       </section>
 
       {/* Learner Reviews */}
-      <section id="reviews" className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <section id="reviews" className="max-w-7xl mx-auto px-4 sm:px-6 pb-24 lg:pb-28 scroll-mt-20">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
               Learner Reviews
@@ -534,8 +534,8 @@ export function LandingPage() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="max-w-3xl mx-auto px-4 sm:px-6 pb-16 scroll-mt-20">
-        <div className="text-center mb-8">
+      <section id="faq" className="max-w-3xl mx-auto px-4 sm:px-6 pb-24 lg:pb-28 scroll-mt-20">
+        <div className="text-center mb-10">
           <p className="text-xs font-bold uppercase tracking-wider text-blue-600">FAQ</p>
           <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
             Frequently Asked Questions
@@ -571,8 +571,8 @@ export function LandingPage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
-        <div className="bg-blue-600 rounded-3xl p-8 sm:p-12 text-center text-white shadow-elevated">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-28 lg:pb-32">
+        <div className="bg-blue-600 rounded-3xl p-10 sm:p-16 text-center text-white shadow-elevated">
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Ready to start your morning learning habit?
           </h2>
@@ -593,7 +593,7 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white shadow-nav py-12">
+      <footer className="bg-white shadow-nav py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
           <div>
             <p className="font-extrabold text-blue-600 text-lg">Daily Lessons</p>
