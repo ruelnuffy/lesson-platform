@@ -159,9 +159,14 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
           </div>
         )}
 
-        <div className="mt-8">
-          <MarkdownView content={lesson.content_markdown} />
-        </div>
+        {lesson.content_markdown.trim() && (
+          <div className="mt-8">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">
+              Lesson Notes
+            </h2>
+            <MarkdownView content={lesson.content_markdown} />
+          </div>
+        )}
 
         {lesson.has_quiz && (
           <div className="mt-10 p-6 rounded-2xl bg-zinc-50 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">

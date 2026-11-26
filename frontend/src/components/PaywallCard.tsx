@@ -95,7 +95,7 @@ export function PaywallCard({ title = "Unlock Your Daily Lessons" }: { title?: s
               <div className="mt-6 grid sm:grid-cols-2 gap-3 text-sm text-zinc-700">
                 <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-3.5 py-2.5">
                   <BookOpen className="w-4 h-4 text-blue-600 shrink-0" />
-                  <span>{primary.total_lessons} scheduled daily lessons</span>
+                  <span>{primary.total_lessons} daily video lessons</span>
                 </div>
                 <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-3.5 py-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

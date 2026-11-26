@@ -93,7 +93,7 @@ export function CheckoutPage() {
               <div className="grid sm:grid-cols-2 gap-3 text-sm text-zinc-700 pt-2">
                 <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-4 py-3">
                   <BookOpen className="w-4 h-4 text-blue-600 shrink-0" />
-                  <span>{activeCourse.total_lessons} scheduled daily lessons</span>
+                  <span>{activeCourse.total_lessons} daily video lessons</span>
                 </div>
                 <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-4 py-3">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

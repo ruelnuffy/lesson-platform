@@ -131,7 +131,7 @@ export function LandingPage() {
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-medium text-zinc-500">
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-sky-500" />
-                10-minute daily lessons
+                Focused daily video lessons
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-blue-600" />
@@ -306,9 +306,9 @@ export function LandingPage() {
 
           <div className="lg:col-span-5 grid grid-cols-2 gap-4">
             <div className="bg-[#F7F7F5] rounded-2xl p-6 shadow-soft">
-              <p className="text-3xl font-extrabold text-blue-600">10 min</p>
+              <p className="text-3xl font-extrabold text-blue-600">Video</p>
               <p className="mt-1 text-xs font-semibold text-zinc-600">
-                Average daily reading time
+                Focused daily video lessons
               </p>
             </div>
             <div className="bg-[#F7F7F5] rounded-2xl p-6 shadow-soft">

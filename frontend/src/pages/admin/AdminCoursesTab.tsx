@@ -78,7 +78,7 @@ export function AdminCoursesTab() {
     new Date().toISOString().slice(0, 10)
   );
   const [lessonVideoUrl, setLessonVideoUrl] = useState("");
-  const [lessonMarkdown, setLessonMarkdown] = useState("# Lesson Title\n\nContent...");
+  const [lessonMarkdown, setLessonMarkdown] = useState("");
   const [uploadingVideo, setUploadingVideo] = useState(false);
 
   const flashSuccess = (msg: string) => {
@@ -219,7 +219,7 @@ export function AdminCoursesTab() {
       setLessonTitle("");
       setLessonVideoUrl("");
       setLessonDay(String(saved.day_number + 1));
-      setLessonMarkdown("# Lesson Title\n\nContent...");
+      setLessonMarkdown("");
       qc.invalidateQueries({ queryKey: ["admin", "lessons", activeCourseId] });
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
       flashSuccess(wasEdit ? `Updated Day ${saved.day_number}.` : `Uploaded Day ${saved.day_number}: ${saved.title}.`);
@@ -643,43 +643,80 @@ export function AdminCoursesTab() {
               />
             </div>
 
-            <div className="flex flex-wrap gap-2 items-center">
-              <input
-                placeholder="Video Embed URL (YouTube/Vimeo) or upload an MP4/WebM →"
-                value={lessonVideoUrl}
-                onChange={(e) => setLessonVideoUrl(e.target.value)}
-                className="flex-1 min-w-[240px] rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/mp4,video/webm,video/quicktime"
-                onChange={handleVideoUpload}
-                className="hidden"
-              />
-              <button
-                type="button"
-                disabled={uploadingVideo}
-                onClick={() => videoInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F7F7F5] text-zinc-800 text-xs font-semibold hover:bg-zinc-200/70"
-              >
-                <Video className="w-3.5 h-3.5 text-blue-600" />
-                {uploadingVideo ? "Uploading..." : "Upload Video"}
-              </button>
-            </div>
+            <div className="p-4 rounded-2xl bg-[#F7F7F5] space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
+                  <Video className="w-4 h-4 text-blue-600" />
+                  Lesson Video (Required)
+                </label>
+                <span className="text-[11px] text-zinc-500">MP4, WebM, MOV or Embed URL</span>
+              </div>
 
-            <div className={showPreview ? "grid md:grid-cols-2 gap-4" : ""}>
-              <textarea
-                rows={10}
-                value={lessonMarkdown}
-                onChange={(e) => setLessonMarkdown(e.target.value)}
-                className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
-              {showPreview && (
-                <div className="rounded-xl p-4 bg-zinc-50 shadow-inner overflow-y-auto max-h-72">
-                  <MarkdownView content={lessonMarkdown} />
+              <div className="flex flex-wrap gap-2 items-center">
+                <input
+                  required
+                  placeholder="Paste Video URL (YouTube/Vimeo) or upload a video file →"
+                  value={lessonVideoUrl}
+                  onChange={(e) => setLessonVideoUrl(e.target.value)}
+                  className="flex-1 min-w-[240px] rounded-xl bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
+                />
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime"
+                  onChange={handleVideoUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  disabled={uploadingVideo}
+                  onClick={() => videoInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
+                >
+                  <Video className="w-3.5 h-3.5" />
+                  {uploadingVideo ? "Uploading Video..." : "Upload Video"}
+                </button>
+              </div>
+
+              {lessonVideoUrl && (
+                <div className="aspect-video max-h-56 w-full rounded-xl overflow-hidden bg-zinc-900">
+                  {lessonVideoUrl.startsWith("/uploads/") ||
+                  /\.(mp4|webm|mov)$/i.test(lessonVideoUrl) ? (
+                    <video
+                      src={resolveMediaUrl(lessonVideoUrl, "")}
+                      controls
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <iframe
+                      src={lessonVideoUrl}
+                      title="Video preview"
+                      className="w-full h-full"
+                      allowFullScreen
+                    />
+                  )}
                 </div>
               )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+                Lesson Notes / Summary (Optional Markdown)
+              </label>
+              <div className={showPreview ? "grid md:grid-cols-2 gap-4" : ""}>
+                <textarea
+                  rows={6}
+                  placeholder="Optional written notes, links, or key takeaways..."
+                  value={lessonMarkdown}
+                  onChange={(e) => setLessonMarkdown(e.target.value)}
+                  className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                />
+                {showPreview && (
+                  <div className="rounded-xl p-4 bg-zinc-50 shadow-inner overflow-y-auto max-h-52">
+                    <MarkdownView content={lessonMarkdown || "*No written notes added.*"} />
+                  </div>
+                )}
+              </div>
             </div>
 
             <button
