@@ -64,6 +64,41 @@ export function formatNaira(priceKobo: number): string {
   }).format(naira);
 }
 
+export function resolveMediaUrl(
+  url: string | null | undefined,
+  fallback = "/images/course-workspace.jpg"
+): string {
+  if (!url) return fallback;
+  if (url.startsWith("/uploads/")) return `${API_BASE_URL}${url}`;
+  return url;
+}
+
+export async function uploadMedia(
+  file: File
+): Promise<{ url: string; filename: string; content_type: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/upload`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let message = response.statusText;
+    try {
+      const data = await response.json();
+      if (typeof data.detail === "string") message = data.detail;
+    } catch {
+      // ignore
+    }
+    throw new ApiError(response.status, message);
+  }
+
+  return response.json();
+}
+
 // Shared API Types
 export interface User {
   id: number;
@@ -79,6 +114,7 @@ export interface CoursePublic {
   title: string;
   description: string;
   price_kobo: number;
+  image_url: string | null;
   is_active: boolean;
   total_lessons: number;
 }

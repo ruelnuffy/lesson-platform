@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { ApiError, apiFetch, formatNaira, type CoursePublic } from "../lib/api";
+import { ApiError, apiFetch, formatNaira, resolveMediaUrl, type CoursePublic } from "../lib/api";
 
 interface InitResponse {
   authorization_url: string;
@@ -70,7 +70,7 @@ export function CheckoutPage() {
         <div className="lg:col-span-7 bg-white rounded-3xl shadow-soft overflow-hidden">
           <div className="h-56 bg-sky-50">
             <img
-              src="/images/course-workspace.jpg"
+              src={resolveMediaUrl(activeCourse?.image_url)}
               alt={activeCourse?.title || "Course preview"}
               className="w-full h-full object-cover"
             />

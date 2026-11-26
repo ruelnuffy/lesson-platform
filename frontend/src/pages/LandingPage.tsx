@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Star,
 } from "lucide-react";
-import { ApiError, apiFetch, formatNaira, type CoursePublic } from "../lib/api";
+import { ApiError, apiFetch, formatNaira, resolveMediaUrl, type CoursePublic } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 interface ReviewItem {
@@ -231,7 +231,7 @@ export function LandingPage() {
                 <div>
                   <div className="relative h-48 overflow-hidden bg-sky-50">
                     <img
-                      src="/images/course-workspace.jpg"
+                      src={resolveMediaUrl(course.image_url)}
                       alt={course.title}
                       className="w-full h-full object-cover"
                     />

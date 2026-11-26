@@ -30,6 +30,7 @@ def list_active_courses(db: Session = Depends(get_db)) -> list[CoursePublicRespo
             title=course.title,
             description=course.description,
             price_kobo=course.price_kobo,
+            image_url=course.image_url,
             is_active=course.is_active,
             total_lessons=lesson_count,
         )
@@ -70,6 +71,7 @@ def get_course_public(
         title=course.title,
         description=course.description,
         price_kobo=course.price_kobo,
+        image_url=course.image_url,
         is_active=course.is_active,
         total_lessons=len(syllabus),
         syllabus=syllabus,

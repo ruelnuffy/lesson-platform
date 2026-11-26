@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { apiFetch, formatNaira, type CoursePublic } from "../lib/api";
+import { apiFetch, formatNaira, resolveMediaUrl, type CoursePublic } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 interface CourseDetailPublic extends CoursePublic {
@@ -63,7 +63,7 @@ export function PaywallCard({ title = "Unlock Your Daily Lessons" }: { title?: s
         <div className="bg-white rounded-3xl shadow-elevated overflow-hidden grid lg:grid-cols-12">
           <div className="lg:col-span-5 bg-sky-50 min-h-[240px]">
             <img
-              src="/images/course-workspace.jpg"
+              src={resolveMediaUrl(primary.image_url)}
               alt={primary.title}
               className="w-full h-full object-cover"
             />

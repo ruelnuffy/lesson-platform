@@ -10,6 +10,7 @@ class CoursePublicResponse(BaseModel):
     title: str
     description: str
     price_kobo: int
+    image_url: str | None = None
     is_active: bool
     total_lessons: int = 0
 

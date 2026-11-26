@@ -1,14 +1,34 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarPlus, Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  AlertCircle,
+  CalendarPlus,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  FileText,
+  Image as ImageIcon,
+  Pencil,
+  Plus,
+  Trash2,
+  Upload,
+  Video,
+} from "lucide-react";
 import { MarkdownView } from "../../components/MarkdownView";
-import { apiFetch, formatNaira } from "../../lib/api";
+import {
+  ApiError,
+  apiFetch,
+  formatNaira,
+  resolveMediaUrl,
+  uploadMedia,
+} from "../../lib/api";
 
 interface AdminCourse {
   id: number;
   title: string;
   description: string;
   price_kobo: number;
+  image_url: string | null;
   is_active: boolean;
   lesson_count: number;
 }
@@ -25,20 +45,33 @@ interface AdminLesson {
 
 export function AdminCoursesTab() {
   const qc = useQueryClient();
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const mdInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+  const [editingCourse, setEditingCourse] = useState<AdminCourse | null>(null);
   const [editingLesson, setEditingLesson] = useState<AdminLesson | null>(null);
   const [showPreview, setShowPreview] = useState(true);
+  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
+  // Course form
   const [courseTitle, setCourseTitle] = useState("");
   const [courseDesc, setCourseDesc] = useState("");
   const [coursePriceNaira, setCoursePriceNaira] = useState("15000");
+  const [courseImageUrl, setCourseImageUrl] = useState("");
+  const [courseActive, setCourseActive] = useState(true);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
+  // Bulk lessons form
   const [bulkStartDate, setBulkStartDate] = useState(
     new Date().toISOString().slice(0, 10)
   );
   const [bulkDays, setBulkDays] = useState("7");
   const [bulkStartDay, setBulkStartDay] = useState("1");
 
+  // Lesson form
   const [lessonDay, setLessonDay] = useState("1");
   const [lessonTitle, setLessonTitle] = useState("");
   const [lessonReleaseDate, setLessonReleaseDate] = useState(
@@ -46,6 +79,18 @@ export function AdminCoursesTab() {
   );
   const [lessonVideoUrl, setLessonVideoUrl] = useState("");
   const [lessonMarkdown, setLessonMarkdown] = useState("# Lesson Title\n\nContent...");
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+
+  const flashSuccess = (msg: string) => {
+    setErrorMessage("");
+    setStatusMessage(msg);
+    setTimeout(() => setStatusMessage(""), 4000);
+  };
+
+  const flashError = (err: unknown) => {
+    setStatusMessage("");
+    setErrorMessage(err instanceof ApiError ? err.message : "Operation failed");
+  };
 
   const { data: courses = [] } = useQuery<AdminCourse[]>({
     queryKey: ["admin", "courses"],
@@ -61,22 +106,53 @@ export function AdminCoursesTab() {
     enabled: Boolean(activeCourseId),
   });
 
-  const createCourse = useMutation({
-    mutationFn: () =>
-      apiFetch("/api/admin/courses", {
+  const resetCourseForm = () => {
+    setEditingCourse(null);
+    setCourseTitle("");
+    setCourseDesc("");
+    setCoursePriceNaira("15000");
+    setCourseImageUrl("");
+    setCourseActive(true);
+  };
+
+  const startEditCourse = (c: AdminCourse) => {
+    setEditingCourse(c);
+    setCourseTitle(c.title);
+    setCourseDesc(c.description);
+    setCoursePriceNaira(String(Math.round(c.price_kobo / 100)));
+    setCourseImageUrl(c.image_url || "");
+    setCourseActive(c.is_active);
+  };
+
+  const saveCourse = useMutation({
+    mutationFn: () => {
+      const payload = {
+        title: courseTitle.trim(),
+        description: courseDesc.trim(),
+        price_kobo: Math.round(Number(coursePriceNaira) * 100),
+        image_url: courseImageUrl.trim() || null,
+        is_active: courseActive,
+      };
+      if (editingCourse) {
+        return apiFetch<AdminCourse>(`/api/admin/courses/${editingCourse.id}`, {
+          method: "PUT",
+          body: JSON.stringify(payload),
+        });
+      }
+      return apiFetch<AdminCourse>("/api/admin/courses", {
         method: "POST",
-        body: JSON.stringify({
-          title: courseTitle,
-          description: courseDesc,
-          price_kobo: Math.round(Number(coursePriceNaira) * 100),
-          is_active: true,
-        }),
-      }),
-    onSuccess: () => {
-      setCourseTitle("");
-      setCourseDesc("");
-      qc.invalidateQueries({ queryKey: ["admin", "courses"] });
+        body: JSON.stringify(payload),
+      });
     },
+    onSuccess: (saved) => {
+      const wasEdit = Boolean(editingCourse);
+      resetCourseForm();
+      setSelectedCourseId(saved.id);
+      qc.invalidateQueries({ queryKey: ["admin", "courses"] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+      flashSuccess(wasEdit ? `Updated course "${saved.title}".` : `Published course "${saved.title}".`);
+    },
+    onError: flashError,
   });
 
   const deleteCourse = useMutation({
@@ -84,13 +160,17 @@ export function AdminCoursesTab() {
       apiFetch(`/api/admin/courses/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       setSelectedCourseId(null);
+      resetCourseForm();
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
+      qc.invalidateQueries({ queryKey: ["courses"] });
+      flashSuccess("Course deleted.");
     },
+    onError: flashError,
   });
 
   const bulkCreate = useMutation({
     mutationFn: () =>
-      apiFetch(`/api/admin/courses/${activeCourseId}/lessons/bulk`, {
+      apiFetch<AdminLesson[]>(`/api/admin/courses/${activeCourseId}/lessons/bulk`, {
         method: "POST",
         body: JSON.stringify({
           start_date: bulkStartDate,
@@ -99,46 +179,52 @@ export function AdminCoursesTab() {
           title_prefix: "Day",
         }),
       }),
-    onSuccess: () => {
+    onSuccess: (created) => {
       qc.invalidateQueries({ queryKey: ["admin", "lessons", activeCourseId] });
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
+      flashSuccess(`Created ${created.length} scheduled lesson(s).`);
     },
+    onError: flashError,
   });
 
   const saveLesson = useMutation({
     mutationFn: () => {
       if (editingLesson) {
-        return apiFetch(`/api/admin/lessons/${editingLesson.id}`, {
+        return apiFetch<AdminLesson>(`/api/admin/lessons/${editingLesson.id}`, {
           method: "PUT",
           body: JSON.stringify({
             day_number: Number(lessonDay),
-            title: lessonTitle,
+            title: lessonTitle.trim(),
             release_date: lessonReleaseDate,
-            video_url: lessonVideoUrl || null,
+            video_url: lessonVideoUrl.trim() || null,
             content_markdown: lessonMarkdown,
           }),
         });
       }
-      return apiFetch("/api/admin/lessons", {
+      return apiFetch<AdminLesson>("/api/admin/lessons", {
         method: "POST",
         body: JSON.stringify({
           course_id: activeCourseId,
           day_number: Number(lessonDay),
-          title: lessonTitle,
+          title: lessonTitle.trim(),
           release_date: lessonReleaseDate,
-          video_url: lessonVideoUrl || null,
+          video_url: lessonVideoUrl.trim() || null,
           content_markdown: lessonMarkdown,
         }),
       });
     },
-    onSuccess: () => {
+    onSuccess: (saved) => {
+      const wasEdit = Boolean(editingLesson);
       setEditingLesson(null);
       setLessonTitle("");
       setLessonVideoUrl("");
+      setLessonDay(String(saved.day_number + 1));
       setLessonMarkdown("# Lesson Title\n\nContent...");
       qc.invalidateQueries({ queryKey: ["admin", "lessons", activeCourseId] });
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
+      flashSuccess(wasEdit ? `Updated Day ${saved.day_number}.` : `Uploaded Day ${saved.day_number}: ${saved.title}.`);
     },
+    onError: flashError,
   });
 
   const deleteLesson = useMutation({
@@ -147,7 +233,9 @@ export function AdminCoursesTab() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "lessons", activeCourseId] });
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
+      flashSuccess("Lesson deleted.");
     },
+    onError: flashError,
   });
 
   const startEditLesson = (l: AdminLesson) => {
@@ -159,9 +247,51 @@ export function AdminCoursesTab() {
     setLessonMarkdown(l.content_markdown);
   };
 
-  const handleCreateCourse = (e: FormEvent) => {
+  const handleCoverUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCover(true);
+    try {
+      const res = await uploadMedia(file);
+      setCourseImageUrl(res.url);
+      flashSuccess("Course cover image uploaded.");
+    } catch (err) {
+      flashError(err);
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleVideoUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    try {
+      const res = await uploadMedia(file);
+      setLessonVideoUrl(res.url);
+      flashSuccess("Lesson video uploaded.");
+    } catch (err) {
+      flashError(err);
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const handleMarkdownFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    setLessonMarkdown(text);
+    if (!lessonTitle.trim()) {
+      const heading = text.match(/^#\s+(.+)$/m);
+      setLessonTitle(heading ? heading[1].trim() : file.name.replace(/\.(md|txt)$/i, ""));
+    }
+    flashSuccess(`Loaded "${file.name}" into editor.`);
+  };
+
+  const handleSaveCourse = (e: FormEvent) => {
     e.preventDefault();
-    createCourse.mutate();
+    saveCourse.mutate();
   };
 
   const handleSaveLesson = (e: FormEvent) => {
@@ -171,78 +301,185 @@ export function AdminCoursesTab() {
 
   return (
     <div className="space-y-6">
+      {statusMessage && (
+        <div className="p-3.5 rounded-2xl bg-emerald-50 text-emerald-700 text-sm flex items-center gap-2 shadow-soft">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{statusMessage}</span>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="p-3.5 rounded-2xl bg-rose-50 text-rose-700 text-sm flex items-center gap-2 shadow-soft">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
       <div className="grid md:grid-cols-2 gap-5">
+        {/* Courses List */}
         <div className="bg-white rounded-2xl shadow-soft p-5">
-          <h2 className="font-bold text-zinc-900 mb-3">Courses</h2>
-          <div className="space-y-2">
+          <h2 className="font-bold text-zinc-900 mb-3">Courses ({courses.length})</h2>
+          <div className="space-y-2.5">
             {courses.map((c) => (
               <div
                 key={c.id}
                 onClick={() => setSelectedCourseId(c.id)}
-                className={`p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all ${
+                className={`p-3.5 rounded-xl cursor-pointer flex items-center justify-between gap-3 transition-all ${
                   activeCourseId === c.id
                     ? "bg-blue-50 ring-2 ring-blue-600 shadow-sm"
-                    : "bg-zinc-50/80 hover:bg-zinc-100/80"
+                    : "bg-[#F7F7F5] hover:bg-zinc-100"
                 }`}
               >
-                <div>
-                  <p className="font-bold text-zinc-900 text-sm">{c.title}</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    {formatNaira(c.price_kobo)} · {c.lesson_count} lessons
-                  </p>
+                <div className="flex items-center gap-3 min-w-0">
+                  <img
+                    src={resolveMediaUrl(c.image_url)}
+                    alt={c.title}
+                    className="w-12 h-12 rounded-lg object-cover shrink-0 bg-sky-50"
+                  />
+                  <div className="min-w-0">
+                    <p className="font-bold text-zinc-900 text-sm truncate">{c.title}</p>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      {formatNaira(c.price_kobo)} · {c.lesson_count} lessons ·{" "}
+                      {c.is_active ? "Active" : "Draft"}
+                    </p>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteCourse.mutate(c.id);
-                  }}
-                  className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50"
-                  title="Delete course"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEditCourse(c);
+                    }}
+                    className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-100/60"
+                    title="Edit course"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteCourse.mutate(c.id);
+                    }}
+                    className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50"
+                    title="Delete course"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Create / Edit Course Form */}
         <form
-          onSubmit={handleCreateCourse}
-          className="bg-white rounded-2xl shadow-soft p-5 space-y-3"
+          onSubmit={handleSaveCourse}
+          className="bg-white rounded-2xl shadow-soft p-5 space-y-3.5"
         >
-          <h2 className="font-bold text-zinc-900">Create New Course</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-zinc-900">
+              {editingCourse ? `Editing "${editingCourse.title}"` : "Upload New Course"}
+            </h2>
+            {editingCourse && (
+              <button
+                type="button"
+                onClick={resetCourseForm}
+                className="text-xs font-semibold text-zinc-500 hover:text-zinc-900"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+
           <input
             required
             placeholder="Course title"
             value={courseTitle}
             onChange={(e) => setCourseTitle(e.target.value)}
-            className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
+            className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
           />
           <textarea
             rows={2}
             placeholder="Course description"
             value={courseDesc}
             onChange={(e) => setCourseDesc(e.target.value)}
-            className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
+            className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
           />
-          <div className="flex items-center gap-3">
+
+          <div className="flex flex-wrap items-center gap-3">
             <input
               type="number"
               min="0"
               placeholder="Price (NGN)"
               value={coursePriceNaira}
               onChange={(e) => setCoursePriceNaira(e.target.value)}
-              className="w-36 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
+              className="w-36 rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            />
+
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverUpload}
+              className="hidden"
             />
             <button
-              type="submit"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
+              type="button"
+              disabled={uploadingCover}
+              onClick={() => coverInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F7F7F5] text-zinc-800 text-xs font-semibold hover:bg-zinc-200/70 transition-colors"
             >
-              <Plus className="w-4 h-4" />
-              Add Course
+              <ImageIcon className="w-3.5 h-3.5 text-blue-600" />
+              {uploadingCover
+                ? "Uploading..."
+                : courseImageUrl
+                ? "Change Cover"
+                : "Upload Cover Image"}
             </button>
+
+            <label className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={courseActive}
+                onChange={(e) => setCourseActive(e.target.checked)}
+                className="w-4 h-4 rounded accent-blue-600"
+              />
+              Published
+            </label>
           </div>
+
+          {courseImageUrl && (
+            <div className="flex items-center gap-3 bg-[#F7F7F5] rounded-xl p-2">
+              <img
+                src={resolveMediaUrl(courseImageUrl)}
+                alt="Cover preview"
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+              <span className="text-xs text-zinc-600 truncate flex-1">{courseImageUrl}</span>
+              <button
+                type="button"
+                onClick={() => setCourseImageUrl("")}
+                className="text-xs text-rose-600 font-semibold px-2"
+              >
+                Remove
+              </button>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={saveCourse.isPending}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 disabled:opacity-50 shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            {saveCourse.isPending
+              ? "Saving..."
+              : editingCourse
+              ? "Update Course"
+              : "Publish Course"}
+          </button>
         </form>
       </div>
 
@@ -260,7 +497,7 @@ export function AdminCoursesTab() {
                   type="date"
                   value={bulkStartDate}
                   onChange={(e) => setBulkStartDate(e.target.value)}
-                  className="mt-1 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                  className="mt-1 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
               <div>
@@ -271,7 +508,7 @@ export function AdminCoursesTab() {
                   max="90"
                   value={bulkDays}
                   onChange={(e) => setBulkDays(e.target.value)}
-                  className="mt-1 w-24 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                  className="mt-1 w-24 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
               <div>
@@ -281,15 +518,16 @@ export function AdminCoursesTab() {
                   min="1"
                   value={bulkStartDay}
                   onChange={(e) => setBulkStartDay(e.target.value)}
-                  className="mt-1 w-24 rounded-xl bg-zinc-100/80 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                  className="mt-1 w-24 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 />
               </div>
               <button
                 type="button"
+                disabled={bulkCreate.isPending}
                 onClick={() => bulkCreate.mutate()}
                 className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
               >
-                Bulk Create Days
+                {bulkCreate.isPending ? "Creating..." : "Bulk Create Days"}
               </button>
             </div>
           </div>
@@ -309,9 +547,7 @@ export function AdminCoursesTab() {
                       Day {l.day_number}
                     </span>
                     <span className="font-semibold text-zinc-900">{l.title}</span>
-                    <span className="ml-2 text-xs text-zinc-500">
-                      {l.release_date}
-                    </span>
+                    <span className="ml-2 text-xs text-zinc-500">({l.release_date})</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -336,15 +572,31 @@ export function AdminCoursesTab() {
             </div>
           </div>
 
+          {/* Upload / Edit Lesson Form */}
           <form
             onSubmit={handleSaveLesson}
             className="bg-white rounded-2xl shadow-soft p-5 space-y-4"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-bold text-zinc-900">
-                {editingLesson ? `Editing Day ${editingLesson.day_number}` : "Create Lesson"}
+                {editingLesson ? `Editing Day ${editingLesson.day_number}` : "Upload Lesson"}
               </h2>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <input
+                  ref={mdInputRef}
+                  type="file"
+                  accept=".md,.markdown,.txt"
+                  onChange={handleMarkdownFile}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => mdInputRef.current?.click()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F7F5] text-xs font-semibold text-zinc-800 hover:bg-zinc-200/70"
+                >
+                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                  Import .md File
+                </button>
                 <button
                   type="button"
                   onClick={() => setShowPreview((p) => !p)}
@@ -373,37 +625,55 @@ export function AdminCoursesTab() {
                 placeholder="Day #"
                 value={lessonDay}
                 onChange={(e) => setLessonDay(e.target.value)}
-                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                className="rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
               <input
                 required
                 placeholder="Lesson Title"
                 value={lessonTitle}
                 onChange={(e) => setLessonTitle(e.target.value)}
-                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                className="rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
               <input
                 type="date"
                 required
                 value={lessonReleaseDate}
                 onChange={(e) => setLessonReleaseDate(e.target.value)}
-                className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                className="rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
             </div>
 
-            <input
-              placeholder="Optional Video Embed URL (e.g. https://www.youtube.com/embed/...)"
-              value={lessonVideoUrl}
-              onChange={(e) => setLessonVideoUrl(e.target.value)}
-              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            />
+            <div className="flex flex-wrap gap-2 items-center">
+              <input
+                placeholder="Video Embed URL (YouTube/Vimeo) or upload an MP4/WebM →"
+                value={lessonVideoUrl}
+                onChange={(e) => setLessonVideoUrl(e.target.value)}
+                className="flex-1 min-w-[240px] rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              />
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime"
+                onChange={handleVideoUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                disabled={uploadingVideo}
+                onClick={() => videoInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F7F7F5] text-zinc-800 text-xs font-semibold hover:bg-zinc-200/70"
+              >
+                <Video className="w-3.5 h-3.5 text-blue-600" />
+                {uploadingVideo ? "Uploading..." : "Upload Video"}
+              </button>
+            </div>
 
             <div className={showPreview ? "grid md:grid-cols-2 gap-4" : ""}>
               <textarea
                 rows={10}
                 value={lessonMarkdown}
                 onChange={(e) => setLessonMarkdown(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
               {showPreview && (
                 <div className="rounded-xl p-4 bg-zinc-50 shadow-inner overflow-y-auto max-h-72">
@@ -414,9 +684,15 @@ export function AdminCoursesTab() {
 
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
+              disabled={saveLesson.isPending}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 disabled:opacity-50 shadow-sm"
             >
-              {editingLesson ? "Update Lesson" : "Create Lesson"}
+              <Upload className="w-4 h-4" />
+              {saveLesson.isPending
+                ? "Saving..."
+                : editingLesson
+                ? "Update Lesson"
+                : "Upload Lesson"}
             </button>
           </form>
         </>

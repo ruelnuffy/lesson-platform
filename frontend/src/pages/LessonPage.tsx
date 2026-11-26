@@ -13,6 +13,7 @@ import { PaywallCard } from "../components/PaywallCard";
 import {
   ApiError,
   apiFetch,
+  resolveMediaUrl,
   type LessonDetail,
   type TodayDashboard,
 } from "../lib/api";
@@ -138,13 +139,22 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
               Lesson Video
             </div>
             <div className="aspect-video w-full rounded-2xl overflow-hidden bg-zinc-900 shadow-elevated">
-              <iframe
-                src={lesson.video_url}
-                title={lesson.title}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              {lesson.video_url.startsWith("/uploads/") ||
+              /\.(mp4|webm|mov)$/i.test(lesson.video_url) ? (
+                <video
+                  src={resolveMediaUrl(lesson.video_url, "")}
+                  controls
+                  className="w-full h-full"
+                />
+              ) : (
+                <iframe
+                  src={lesson.video_url}
+                  title={lesson.title}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              )}
             </div>
           </div>
         )}

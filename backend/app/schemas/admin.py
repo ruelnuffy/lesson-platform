@@ -38,6 +38,7 @@ class AdminCourseCreate(BaseModel):
     title: str = Field(min_length=1, max_length=255)
     description: str = ""
     price_kobo: int = Field(ge=0)
+    image_url: str | None = None
     is_active: bool = True
 
 
@@ -45,6 +46,7 @@ class AdminCourseUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=255)
     description: str | None = None
     price_kobo: int | None = Field(default=None, ge=0)
+    image_url: str | None = None
     is_active: bool | None = None
 
 
@@ -55,6 +57,7 @@ class AdminCourseResponse(BaseModel):
     title: str
     description: str
     price_kobo: int
+    image_url: str | None = None
     is_active: bool
     lesson_count: int = 0
 

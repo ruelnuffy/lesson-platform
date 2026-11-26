@@ -23,6 +23,7 @@ frontend/.vite/
 .vscode/
 .idea/
 
-# Local test DBs
+# Local test DBs & uploads
 *.db
 *.sqlite3
+backend/uploads/

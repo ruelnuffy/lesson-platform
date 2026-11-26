@@ -127,3 +127,29 @@ def test_admin_crud_bulk_lessons_quiz_grant_revoke_and_csv(
     assert csv_res.status_code == 200
     assert "text/csv" in csv_res.headers["content-type"]
     assert "attempt_id,user_id,user_name" in csv_res.text
+
+
+def test_admin_upload_media_and_course_image(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    _login_as(client, db_session, "uploader@example.com", UserRole.admin)
+
+    # Unsupported extension rejected
+    bad = client.post(
+        "/api/admin/upload",
+        files={"file": ("script.sh", b"#!/bin/sh", "text/plain")},
+    )
+    assert bad.status_code == 422
+
+    # Valid PNG upload succeeds and is served from /uploads/
+    ok = client.post(
+        "/api/admin/upload",
+        files={"file": ("cover.png", b"\x89PNG\r\n\x1a\nfake", "image/png")},
+    )
+    assert ok.status_code == 200
+    url = ok.json()["url"]
+    assert url.startswith("/uploads/")
+
+    served = client.get(url)
+    assert served.status_code == 200

@@ -2,9 +2,10 @@ from collections import defaultdict
 import csv
 from datetime import timedelta
 import io
+from pathlib import Path
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
@@ -63,6 +64,48 @@ router = APIRouter(
 # ---------------------------------------------------------------------------
 # Overview
 # ---------------------------------------------------------------------------
+
+
+ALLOWED_UPLOAD_EXTENSIONS = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+    ".mp4": "video/mp4",
+    ".webm": "video/webm",
+    ".mov": "video/quicktime",
+}
+MAX_UPLOAD_BYTES = 100 * 1024 * 1024  # 100 MB
+
+
+@router.post("/upload")
+async def admin_upload_media(
+    file: UploadFile = File(...),
+) -> dict[str, str]:
+    ext = Path(file.filename or "").suffix.lower()
+    if ext not in ALLOWED_UPLOAD_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Unsupported file type. Upload JPG, PNG, WEBP, GIF, MP4, WEBM, or MOV.",
+        )
+
+    content = await file.read()
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="File exceeds 100 MB limit",
+        )
+
+    uploads_dir = Path("/app/uploads")
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"{uuid.uuid4().hex}{ext}"
+    (uploads_dir / filename).write_bytes(content)
+    return {
+        "url": f"/uploads/{filename}",
+        "filename": filename,
+        "content_type": file.content_type or ALLOWED_UPLOAD_EXTENSIONS[ext],
+    }
 
 
 @router.get("/overview", response_model=AdminOverviewResponse)
@@ -259,6 +302,7 @@ def admin_list_courses(db: Session = Depends(get_db)) -> list[AdminCourseRespons
             title=c.title,
             description=c.description,
             price_kobo=c.price_kobo,
+            image_url=c.image_url,
             is_active=c.is_active,
             lesson_count=cnt,
         )
@@ -280,6 +324,7 @@ def admin_create_course(
         title=course.title,
         description=course.description,
         price_kobo=course.price_kobo,
+        image_url=course.image_url,
         is_active=course.is_active,
         lesson_count=0,
     )
@@ -306,6 +351,7 @@ def admin_update_course(
         title=course.title,
         description=course.description,
         price_kobo=course.price_kobo,
+        image_url=course.image_url,
         is_active=course.is_active,
         lesson_count=lesson_count,
     )
