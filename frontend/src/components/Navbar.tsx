@@ -50,33 +50,34 @@ export function Navbar() {
         {/* Center: Navigation Links */}
         <nav className="hidden md:flex items-center gap-1">
           {user ? (
-            <>
-              <Link to="/dashboard" className={navLinkClass("/dashboard")}>
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
+            user.role === "admin" ? (
+              <Link
+                to="/admin"
+                className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                  location.pathname.startsWith("/admin")
+                    ? "bg-amber-100 text-amber-900"
+                    : "bg-amber-50 text-amber-800 hover:bg-amber-100"
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Admin Console
               </Link>
-              <Link to="/lessons/today" className={navLinkClass("/lessons")}>
-                <BookOpen className="w-4 h-4" />
-                Today&apos;s Lesson
-              </Link>
-              <Link to="/scores" className={navLinkClass("/scores")}>
-                <Award className="w-4 h-4" />
-                Scores
-              </Link>
-              {user.role === "admin" && (
-                <Link
-                  to="/admin"
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
-                    location.pathname.startsWith("/admin")
-                      ? "bg-amber-100 text-amber-900"
-                      : "bg-amber-50 text-amber-800 hover:bg-amber-100"
-                  }`}
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  Admin
+            ) : (
+              <>
+                <Link to="/dashboard" className={navLinkClass("/dashboard")}>
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
                 </Link>
-              )}
-            </>
+                <Link to="/lessons/today" className={navLinkClass("/lessons")}>
+                  <BookOpen className="w-4 h-4" />
+                  Today&apos;s Lesson
+                </Link>
+                <Link to="/scores" className={navLinkClass("/scores")}>
+                  <Award className="w-4 h-4" />
+                  Scores
+                </Link>
+              </>
+            )
           ) : (
             <>
               <Link

@@ -72,6 +72,26 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+export function RequireLearner({ children }: { children: ReactNode }) {
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center text-slate-500">
+        Loading session...
+      </div>
+    );
+  }
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
+  if (user.role === "admin") {
+    return <Navigate to="/admin" replace />;
+  }
+  return <>{children}</>;
+}
+
 export function RequireAdmin({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAuth();
   const location = useLocation();

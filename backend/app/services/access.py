@@ -6,7 +6,7 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
-from app.models import Course, Enrollment, EnrollmentStatus, Lesson, User, UserRole
+from app.models import Enrollment, EnrollmentStatus, Lesson, User
 
 
 def today_in_app_tz() -> date:
@@ -20,10 +20,6 @@ def now_utc() -> datetime:
 
 
 def get_active_paid_course_ids(db: Session, user_id: int) -> list[int]:
-    user = db.get(User, user_id)
-    if user and user.role == UserRole.admin:
-        return list(db.scalars(select(Course.id).where(Course.is_active.is_(True))).all())
-
     current_time = now_utc()
     stmt = (
         select(Enrollment.course_id)
@@ -55,9 +51,6 @@ def ensure_lesson_access(
     *,
     today: date | None = None,
 ) -> None:
-    if user.role == UserRole.admin:
-        return
-
     if not has_active_paid_enrollment(db, user.id, lesson.course_id):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

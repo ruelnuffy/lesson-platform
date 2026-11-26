@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { Navbar } from "./components/Navbar";
-import { AuthProvider, RequireAdmin, RequireAuth } from "./lib/auth";
+import { AuthProvider, RequireAdmin, RequireAuth, RequireLearner } from "./lib/auth";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { CheckoutReturnPage } from "./pages/CheckoutReturnPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -39,45 +39,45 @@ function AppRoutes() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-      {/* Authenticated Learner */}
+      {/* Authenticated Learner (admins redirect to /admin) */}
       <Route
         path="/dashboard"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <DashboardPage />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
         path="/lessons/today"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <LessonPage mode="today" />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
         path="/lessons/:lessonId"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <LessonPage mode="byId" />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
         path="/lessons/:lessonId/quiz"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <QuizPage />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
         path="/scores"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <ScoresPage />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
@@ -91,33 +91,33 @@ function AppRoutes() {
       <Route
         path="/checkout"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <CheckoutPage />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
         path="/checkout/callback"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <CheckoutReturnPage mode="callback" />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
         path="/checkout/success"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <CheckoutReturnPage mode="success" />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
       <Route
         path="/checkout/failure"
         element={
-          <RequireAuth>
+          <RequireLearner>
             <CheckoutReturnPage mode="failure" />
-          </RequireAuth>
+          </RequireLearner>
         }
       />
 

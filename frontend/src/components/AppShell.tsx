@@ -43,13 +43,13 @@ export function AppShell({ children }: { children: ReactNode }) {
     navigate("/");
   };
 
-  const navItems = [
+  const isAdmin = user?.role === "admin";
+
+  const learnerNavItems = [
     { to: "/dashboard", label: "Overview", icon: LayoutDashboard, match: "/dashboard" },
     { to: "/lessons/today", label: "Today's Lesson", icon: BookOpen, match: "/lessons" },
     { to: "/scores", label: "Quiz Scores", icon: Award, match: "/scores" },
-    ...(user?.role !== "admin"
-      ? [{ to: "/checkout", label: "Billing & Enroll", icon: CreditCard, match: "/checkout" }]
-      : []),
+    { to: "/checkout", label: "Billing & Enroll", icon: CreditCard, match: "/checkout" },
     { to: "/profile", label: "Profile", icon: UserIcon, match: "/profile" },
   ];
 
@@ -107,32 +107,36 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Nav Links */}
       <div className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-        <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
-          Workspace
-        </p>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(item.match);
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                active
-                  ? "bg-white text-blue-600 shadow-soft"
-                  : "text-blue-100 hover:text-white hover:bg-blue-500/60"
-              }`}
-            >
-              <Icon className="w-4 h-4 shrink-0" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-
-        {user?.role === "admin" && (
+        {!isAdmin && (
           <>
-            <p className="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
+            <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
+              Workspace
+            </p>
+            {learnerNavItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.match);
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                    active
+                      ? "bg-white text-blue-600 shadow-soft"
+                      : "text-blue-100 hover:text-white hover:bg-blue-500/60"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </>
+        )}
+
+        {isAdmin && (
+          <>
+            <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
               Admin · Analytics
             </p>
             {[
@@ -219,6 +223,22 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Link>
               );
             })}
+
+            <p className="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
+              Account
+            </p>
+            <Link
+              to="/profile"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${
+                location.pathname === "/profile"
+                  ? "bg-white text-blue-600 shadow-soft"
+                  : "text-blue-100 hover:text-white hover:bg-blue-500/60"
+              }`}
+            >
+              <UserIcon className="w-4 h-4 shrink-0" />
+              <span>Profile</span>
+            </Link>
           </>
         )}
       </div>
@@ -278,7 +298,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <Menu className="w-5 h-5" />
             </button>
-            {location.pathname !== "/dashboard" && (
+            {!isAdmin && location.pathname !== "/dashboard" && (
               <Link
                 to="/dashboard"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F7F5] text-xs font-semibold text-zinc-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
@@ -287,19 +307,30 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="hidden sm:inline">Back to Dashboard</span>
               </Link>
             )}
+            {isAdmin && location.pathname !== "/admin" && (
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F7F5] text-xs font-semibold text-zinc-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Back to Overview</span>
+              </Link>
+            )}
             <h2 className="text-base sm:text-lg font-extrabold text-zinc-900 tracking-tight">
               {getPageTitle(location.pathname)}
             </h2>
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              to="/lessons/today"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              Today&apos;s Lesson
-            </Link>
+            {!isAdmin && (
+              <Link
+                to="/lessons/today"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                Today&apos;s Lesson
+              </Link>
+            )}
             {user && (
               <Link
                 to="/profile"
