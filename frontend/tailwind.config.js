@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
+        sans: ['"Inter"', "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+        mono: ['"Inter"', "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
       },
       boxShadow: {
         nav: "0 4px 20px -4px rgba(15, 23, 42, 0.06)",

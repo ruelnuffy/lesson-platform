@@ -176,7 +176,7 @@ export function AdminQuizzesTab() {
                             : "text-zinc-600"
                         }`}
                       >
-                        <span className="font-mono text-xs">
+                        <span className="text-xs">
                           {String.fromCharCode(65 + optIdx)}.
                         </span>
                         <span>{opt}</span>

@@ -309,7 +309,7 @@ export function AdminCoursesTab() {
                       Day {l.day_number}
                     </span>
                     <span className="font-semibold text-zinc-900">{l.title}</span>
-                    <span className="ml-2 text-xs text-zinc-500 font-mono">
+                    <span className="ml-2 text-xs text-zinc-500">
                       {l.release_date}
                     </span>
                   </div>
@@ -403,7 +403,7 @@ export function AdminCoursesTab() {
                 rows={10}
                 value={lessonMarkdown}
                 onChange={(e) => setLessonMarkdown(e.target.value)}
-                className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm font-mono focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               />
               {showPreview && (
                 <div className="rounded-xl p-4 bg-zinc-50 shadow-inner overflow-y-auto max-h-72">

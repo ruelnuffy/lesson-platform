@@ -13,7 +13,7 @@ export function MarkdownView({ content }: { content: string }) {
       [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2
       [&_li]:marker:text-blue-500
       [&_blockquote]:bg-blue-50/70 [&_blockquote]:px-5 [&_blockquote]:py-3.5 [&_blockquote]:rounded-2xl [&_blockquote]:shadow-soft [&_blockquote]:text-zinc-700 [&_blockquote]:italic
-      [&_code]:font-mono [&_code]:bg-zinc-100 [&_code]:text-blue-700 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-[13.5px]
+      [&_code]:[&_code]:bg-zinc-100 [&_code]:text-blue-700 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-[13.5px]
       [&_pre]:bg-zinc-900 [&_pre]:text-zinc-100 [&_pre]:p-4 [&_pre]:rounded-2xl [&_pre]:overflow-x-auto [&_pre]:shadow-soft [&_pre_code]:bg-transparent [&_pre_code]:text-zinc-100 [&_pre_code]:p-0
       [&_a]:text-blue-600 [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-blue-800"
     >

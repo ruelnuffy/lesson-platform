@@ -440,7 +440,7 @@ export function AdminDashboardPage() {
                           {p.status}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-xs text-zinc-600">
+                      <td className="px-5 py-3.5 text-xs text-zinc-600">
                         {p.paystack_reference || "—"}
                       </td>
                     </tr>

@@ -69,7 +69,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
             Verifying your payment...
           </h1>
           <p className="mt-2 text-zinc-600 text-sm">
-            Confirming reference <code className="font-mono text-xs">{reference}</code> with
+            Confirming reference <code className="text-xs">{reference}</code> with
             Paystack.
           </p>
         </div>

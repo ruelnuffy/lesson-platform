@@ -196,7 +196,7 @@ export function LandingPage() {
               key={item.step}
               className="bg-white rounded-2xl p-6 shadow-soft hover:shadow-elevated transition-shadow"
             >
-              <span className="font-mono text-xs font-bold text-blue-600 bg-sky-50 px-2.5 py-1 rounded-md">
+              <span className="text-xs font-bold text-blue-600 bg-sky-50 px-2.5 py-1 rounded-md">
                 {item.step}
               </span>
               <h3 className="mt-4 font-bold text-zinc-900">{item.title}</h3>
