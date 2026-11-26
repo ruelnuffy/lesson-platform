@@ -9,6 +9,7 @@ import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LessonPage } from "./pages/LessonPage";
 import { LoginPage } from "./pages/LoginPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { QuizPage } from "./pages/QuizPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
@@ -74,6 +75,14 @@ function AppRoutes() {
         element={
           <RequireAuth>
             <ScoresPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <RequireAuth>
+            <ProfilePage />
           </RequireAuth>
         }
       />

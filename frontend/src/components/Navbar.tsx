@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
+import { Avatar } from "./Avatar";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -94,12 +95,12 @@ export function Navbar() {
               <div className="w-2" />
 
               <div className="flex items-center gap-2.5 pl-1">
-                <div className="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shadow-sm">
-                  {initials}
-                </div>
-                <span className="text-sm font-medium text-zinc-700 max-w-[120px] truncate">
-                  {user.name}
-                </span>
+                <Link to="/profile" className="flex items-center gap-2 hover:opacity-80">
+                  <Avatar name={user.name} avatarUrl={user.avatar_url} size="sm" />
+                  <span className="text-sm font-medium text-zinc-700 max-w-[120px] truncate">
+                    {user.name}
+                  </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   title="Log out"

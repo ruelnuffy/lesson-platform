@@ -289,3 +289,37 @@ def test_forgot_and_reset_password_single_use(
         assert reuse.status_code == 400
     finally:
         app.dependency_overrides.pop(get_email_sender, None)
+
+
+def test_update_profile_name_and_avatar(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    user = User(
+        name="Old Name",
+        email="profile@example.com",
+        password_hash=hash_password("password123"),
+        role=UserRole.user,
+    )
+    db_session.add(user)
+    db_session.commit()
+
+    assert (
+        client.post(
+            "/api/auth/login",
+            json={"email": "profile@example.com", "password": "password123"},
+        ).status_code
+        == 200
+    )
+
+    res = client.patch(
+        "/api/auth/profile",
+        json={
+            "name": "New Name",
+            "avatar_url": "https://example.com/avatar.png",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["name"] == "New Name"
+    assert data["avatar_url"] == "https://example.com/avatar.png"

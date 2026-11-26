@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import DateTime, Enum as SAEnum, String, func
+from sqlalchemy import DateTime, Enum as SAEnum, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -19,6 +19,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    avatar_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     role: Mapped[UserRole] = mapped_column(
         SAEnum(UserRole, native_enum=False, length=20),
         default=UserRole.user,

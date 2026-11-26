@@ -26,6 +26,11 @@ class ResetPasswordRequest(BaseModel):
     new_password: str = Field(min_length=8, max_length=128)
 
 
+class ProfileUpdateRequest(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=255)
+    avatar_url: str | None = Field(default=None, max_length=500_000)
+
+
 class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -33,4 +38,5 @@ class UserResponse(BaseModel):
     name: str
     email: EmailStr
     role: UserRole
+    avatar_url: str | None = None
     created_at: datetime

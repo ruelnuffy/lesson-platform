@@ -10,6 +10,7 @@ from app.models.user import User, UserRole
 from app.schemas.auth import (
     ForgotPasswordRequest,
     LoginRequest,
+    ProfileUpdateRequest,
     RegisterRequest,
     ResetPasswordRequest,
     UserResponse,
@@ -144,6 +145,35 @@ def logout(response: Response) -> dict[str, str]:
 
 @router.get("/me", response_model=UserResponse)
 def me(current_user: User = Depends(get_current_user)) -> User:
+    return current_user
+
+
+@router.patch("/profile", response_model=UserResponse)
+def update_profile(
+    body: ProfileUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> User:
+    if body.name is not None:
+        current_user.name = body.name.strip()
+    if "avatar_url" in body.model_fields_set:
+        if body.avatar_url is not None and body.avatar_url.strip():
+            val = body.avatar_url.strip()
+            if not (
+                val.startswith("https://")
+                or val.startswith("http://")
+                or val.startswith("/")
+                or val.startswith("data:image/")
+            ):
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Invalid avatar format",
+                )
+            current_user.avatar_url = val
+        else:
+            current_user.avatar_url = None
+    db.commit()
+    db.refresh(current_user)
     return current_user
 
 

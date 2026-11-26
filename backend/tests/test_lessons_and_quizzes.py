@@ -122,7 +122,7 @@ def test_access_gating_unpaid_and_expired_users_get_403_not_paid(
     db_session: Session,
 ) -> None:
     course, past_lesson, today_lesson, _, quiz = _create_course_with_lessons(db_session)
-    user = _create_user_and_login(client, db_session, "unpaid@example.com")
+    user = _create_user_and_login(client, db_session, "unpaid_gating_test@example.com")
 
     # No enrollment -> 403 not_paid
     for path in (
