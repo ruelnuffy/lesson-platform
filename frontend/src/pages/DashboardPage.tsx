@@ -158,13 +158,13 @@ export function DashboardPage() {
 
       {/* Main 12-Column Dashboard Grid */}
       <div className="grid lg:grid-cols-12 gap-6 items-start">
-        {/* Left 8 Columns: Today's Lesson + Unlocked Curriculum */}
+        {/* Left 8 Columns: Today's Lesson Only */}
         <div className="lg:col-span-8 space-y-6">
           {/* Today's Lesson Spotlight */}
           <section className="bg-white rounded-3xl shadow-elevated overflow-hidden grid sm:grid-cols-12">
             <div className="sm:col-span-7 p-6 sm:p-8 flex flex-col justify-center">
               <span className="inline-flex items-center self-start px-3 py-1 rounded-full bg-blue-50 text-xs font-bold text-blue-600">
-                Today&apos;s Drop · {data.today}
+                Today&apos;s Lesson · {data.today}
               </span>
 
               {data.lesson ? (
@@ -182,7 +182,7 @@ export function DashboardPage() {
                       to={`/lessons/${data.lesson.id}`}
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 text-sm shadow-soft transition-colors"
                     >
-                      Open Lesson
+                      Open Today&apos;s Lesson
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                     {data.lesson.has_quiz && (
@@ -199,12 +199,12 @@ export function DashboardPage() {
               ) : (
                 <>
                   <h2 className="mt-3.5 text-xl font-extrabold text-zinc-900">
-                    No new lesson scheduled today
+                    No lesson scheduled for today
                   </h2>
                   <p className="mt-2 text-zinc-600 text-sm leading-relaxed">
                     {data.next_release_date
-                      ? `Your next lesson unlocks on ${data.next_release_date}. Review past lessons below.`
-                      : "You've unlocked all scheduled lessons so far!"}
+                      ? `Your next lesson unlocks on ${data.next_release_date} at 06:30 WAT.`
+                      : "All scheduled lessons have been completed!"}
                   </p>
                 </>
               )}
@@ -217,101 +217,6 @@ export function DashboardPage() {
                 className="w-full h-full object-cover"
               />
             </div>
-          </section>
-
-          {/* Unlocked Curriculum List */}
-          <section className="bg-white rounded-3xl shadow-soft p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-extrabold text-zinc-900 tracking-tight">
-                  Unlocked Curriculum
-                </h2>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  {data.unlocked_count} of {data.total_lessons} lessons available
-                </p>
-              </div>
-              <Link
-                to="/scores"
-                className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline"
-              >
-                All scores
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {data.past_lessons.length === 0 ? (
-              <p className="py-6 text-center text-sm text-zinc-500">
-                No lessons unlocked yet.
-              </p>
-            ) : (
-              <div className="space-y-2.5">
-                {data.past_lessons.map((lesson) => {
-                  const isToday = lesson.release_date === data.today;
-                  return (
-                    <div
-                      key={lesson.id}
-                      className="group rounded-2xl bg-[#F7F7F5] hover:bg-white hover:shadow-soft p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                    >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
-                            lesson.quiz_summary?.passed
-                              ? "bg-emerald-100 text-emerald-700"
-                              : isToday
-                              ? "bg-blue-600 text-white"
-                              : "bg-white text-zinc-700 shadow-sm"
-                          }`}
-                        >
-                          {lesson.quiz_summary?.passed ? (
-                            <CheckCircle2 className="w-4 h-4" />
-                          ) : (
-                            `D${lesson.day_number}`
-                          )}
-                        </div>
-
-                        <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-[11px] font-semibold text-zinc-500">
-                              Day {lesson.day_number} · {lesson.release_date}
-                            </span>
-                            {isToday && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                                Today
-                              </span>
-                            )}
-                            {lesson.quiz_summary?.passed && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                                Best {lesson.quiz_summary.best_score_percent}%
-                              </span>
-                            )}
-                          </div>
-                          <h3 className="mt-0.5 font-bold text-sm text-zinc-900 truncate group-hover:text-blue-600 transition-colors">
-                            {lesson.title}
-                          </h3>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Link
-                          to={`/lessons/${lesson.id}`}
-                          className="px-3.5 py-1.5 rounded-xl bg-white text-zinc-700 text-xs font-semibold shadow-sm hover:bg-zinc-100 transition-colors"
-                        >
-                          Read
-                        </Link>
-                        {lesson.has_quiz && (
-                          <Link
-                            to={`/lessons/${lesson.id}/quiz`}
-                            className="px-3.5 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
-                          >
-                            Quiz
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </section>
         </div>
 
