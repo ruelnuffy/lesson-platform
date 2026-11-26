@@ -5,7 +5,6 @@ import {
   Award,
   BookOpen,
   Calendar,
-  CheckCircle2,
   ClipboardCheck,
   Clock,
   Flame,
@@ -60,12 +59,10 @@ export function DashboardPage() {
   const circumference = 2 * Math.PI * radius;
   const strokeOffset = circumference - (progressPct / 100) * circumference;
 
-  const quizScores = data.past_lessons
-    .map((l) => l.quiz_summary?.best_score_percent)
-    .filter((s): s is number => s !== null && s !== undefined);
-  const avgBest =
-    quizScores.length > 0
-      ? Math.round(quizScores.reduce((a, b) => a + b, 0) / quizScores.length)
+  const todayQuiz = data.lesson?.quiz_summary ?? null;
+  const todayScore =
+    todayQuiz?.latest_score_percent !== null && todayQuiz?.latest_score_percent !== undefined
+      ? `${todayQuiz.latest_score_percent}%`
       : null;
 
   return (
@@ -126,33 +123,42 @@ export function DashboardPage() {
         <div className="bg-white rounded-2xl p-5 shadow-soft flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              Quizzes Passed
-            </p>
-            <p className="mt-1.5 text-3xl font-extrabold text-zinc-900">
-              {data.completed_quizzes_count}
-              <span className="text-sm font-semibold text-zinc-400">
-                {" "}
-                / {data.total_lessons}
-              </span>
-            </p>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 shadow-soft flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              Avg Best Score
+              Today&apos;s Score
             </p>
             <p className="mt-1.5 text-3xl font-extrabold text-blue-600">
-              {avgBest !== null ? `${avgBest}%` : "—"}
+              {todayScore ?? "—"}
+            </p>
+            <p className="mt-1 text-[11px] text-zinc-500">
+              {todayQuiz && todayQuiz.attempts_count > 0
+                ? `Best: ${todayQuiz.best_score_percent}% · ${todayQuiz.passed ? "Passed" : "Not passed"}`
+                : data.lesson?.has_quiz
+                ? "Not taken yet"
+                : "No quiz today"}
             </p>
           </div>
           <div className="w-11 h-11 rounded-xl bg-sky-50 text-blue-600 flex items-center justify-center">
             <Award className="w-5 h-5" />
           </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 shadow-soft">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Progress
+            </p>
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+              {progressPct}%
+            </span>
+          </div>
+          <div className="mt-3.5 w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-blue-600 rounded-full transition-all duration-500"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <p className="mt-2 text-xs text-zinc-500">
+            {data.completed_quizzes_count} of {data.total_lessons} lessons completed
+          </p>
         </div>
       </div>
 
