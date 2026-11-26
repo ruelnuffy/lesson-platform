@@ -95,18 +95,12 @@ export function LandingPage() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-32 grid lg:grid-cols-12 gap-14 lg:gap-16 items-center">
           <div className="lg:col-span-6">
-            <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-extrabold text-zinc-900 tracking-tight leading-[1.08]">
+            <h1 className="text-5xl sm:text-6xl lg:text-[64px] font-extrabold text-zinc-900 tracking-tight leading-[1.04]">
               Build real engineering mastery,{" "}
               <span className="text-blue-600">one morning at a time.</span>
             </h1>
 
-            <p className="mt-5 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-xl">
-              Skip the 40-hour video backlog. Receive one focused lesson every morning at
-              06:30 Africa/Lagos, lock it in with a server-graded quiz, and watch your streak
-              compound.
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               {user ? (
                 <Link
                   to="/dashboard"
