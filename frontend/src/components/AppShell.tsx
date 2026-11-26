@@ -52,9 +52,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     (match !== "/dashboard" && location.pathname.startsWith(match));
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-white shadow-soft">
+    <div className="flex flex-col h-full bg-blue-600 text-white shadow-elevated">
       {/* Brand */}
-      <div className="h-16 px-6 flex items-center justify-between bg-blue-600 text-white">
+      <div className="h-16 px-6 flex items-center justify-between">
         <Link
           to="/"
           onClick={() => setSidebarOpen(false)}
@@ -74,26 +74,24 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Prominent User Profile Card */}
       {user && (
-        <div className="px-4 pt-4 pb-3">
+        <div className="px-4 pb-3">
           <Link
             to="/profile"
             onClick={() => setSidebarOpen(false)}
-            className="block rounded-2xl bg-[#F7F7F5] hover:bg-sky-50/70 p-3.5 transition-colors group"
+            className="block rounded-2xl bg-blue-700/70 hover:bg-blue-700 p-3.5 transition-colors group"
           >
             <div className="flex items-center gap-3">
               <Avatar name={user.name} avatarUrl={user.avatar_url} size="md" />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-zinc-900 truncate group-hover:text-blue-600 transition-colors">
-                  {user.name}
-                </p>
-                <p className="text-[11px] text-zinc-500 truncate">{user.email}</p>
+                <p className="text-sm font-bold text-white truncate">{user.name}</p>
+                <p className="text-[11px] text-blue-100 truncate">{user.email}</p>
               </div>
             </div>
             <div className="mt-2.5 flex items-center justify-between text-[11px]">
               <span className="px-2 py-0.5 rounded-full bg-white text-blue-600 font-bold capitalize shadow-sm">
                 {user.role === "admin" ? "Admin" : "Learner"}
               </span>
-              <span className="font-semibold text-zinc-500 group-hover:text-blue-600">
+              <span className="font-semibold text-blue-100 group-hover:text-white">
                 Edit profile →
               </span>
             </div>
@@ -103,7 +101,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Nav Links */}
       <div className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-        <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+        <p className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
           Workspace
         </p>
         {navItems.map((item) => {
@@ -116,8 +114,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 active
-                  ? "bg-blue-600 text-white shadow-soft"
-                  : "text-zinc-600 hover:text-zinc-900 hover:bg-[#F7F7F5]"
+                  ? "bg-white text-blue-600 shadow-soft"
+                  : "text-blue-100 hover:text-white hover:bg-blue-500/60"
               }`}
             >
               <Icon className="w-4 h-4 shrink-0" />
@@ -128,7 +126,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         {user?.role === "admin" && (
           <>
-            <p className="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+            <p className="px-3 pt-4 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-200">
               Administration
             </p>
             <Link
@@ -136,8 +134,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 location.pathname.startsWith("/admin")
-                  ? "bg-amber-500 text-white shadow-soft"
-                  : "bg-amber-50 text-amber-800 hover:bg-amber-100"
+                  ? "bg-amber-400 text-zinc-900 shadow-soft"
+                  : "bg-amber-300/20 text-amber-100 hover:bg-amber-300/30"
               }`}
             >
               <ShieldCheck className="w-4 h-4 shrink-0" />
@@ -152,7 +150,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Link
           to="/"
           onClick={() => setSidebarOpen(false)}
-          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-[#F7F7F5] transition-colors"
+          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-blue-100 hover:text-white hover:bg-blue-500/60 transition-colors"
         >
           <Home className="w-4 h-4 shrink-0" />
           <span>Back to Home</span>
@@ -161,7 +159,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-200 hover:text-white hover:bg-rose-500/25 transition-colors"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             <span>Sign out</span>
@@ -192,17 +190,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Main Content Column */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top Utility Bar */}
-        <header className="sticky top-0 z-20 h-16 bg-blue-600 text-white shadow-nav px-4 sm:px-8 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-20 h-16 bg-white/90 backdrop-blur-md shadow-nav px-4 sm:px-8 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl text-white hover:bg-blue-500/60"
+              className="lg:hidden p-2 rounded-xl text-zinc-600 hover:bg-[#F7F7F5]"
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h2 className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+            <h2 className="text-base sm:text-lg font-extrabold text-zinc-900 tracking-tight">
               {getPageTitle(location.pathname)}
             </h2>
           </div>
@@ -210,7 +208,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             <Link
               to="/lessons/today"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-blue-600 text-xs font-semibold hover:bg-blue-50 shadow-sm transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
             >
               <BookOpen className="w-3.5 h-3.5" />
               Today&apos;s Lesson
@@ -218,10 +216,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             {user && (
               <Link
                 to="/profile"
-                className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-blue-500/70 hover:bg-blue-500 transition-colors"
+                className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-[#F7F7F5] hover:bg-zinc-200/70 transition-colors"
               >
                 <Avatar name={user.name} avatarUrl={user.avatar_url} size="sm" />
-                <span className="hidden md:inline text-xs font-semibold text-white max-w-[110px] truncate">
+                <span className="hidden md:inline text-xs font-semibold text-zinc-800 max-w-[110px] truncate">
                   {user.name}
                 </span>
               </Link>
