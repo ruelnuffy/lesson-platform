@@ -1,9 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle2, Lock, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  Lock,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { apiFetch, formatNaira, type CoursePublic } from "../lib/api";
+import { useAuth } from "../lib/auth";
 
-export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string }) {
+interface CourseDetailPublic extends CoursePublic {
+  syllabus: Array<{
+    id: number;
+    day_number: number;
+    title: string;
+    release_date: string;
+    is_released: boolean;
+  }>;
+}
+
+export function PaywallCard({ title = "Unlock Your Daily Lessons" }: { title?: string }) {
+  const { user } = useAuth();
+  const firstName = user?.name?.split(" ")[0] || "there";
+
   const { data: courses = [] } = useQuery({
     queryKey: ["courses"],
     queryFn: () => apiFetch<CoursePublic[]>("/api/courses"),
@@ -11,80 +33,147 @@ export function PaywallCard({ title = "Unlock Daily Lessons" }: { title?: string
 
   const primary = courses[0];
 
+  const { data: courseDetail } = useQuery({
+    queryKey: ["courses", primary?.id],
+    queryFn: () => apiFetch<CourseDetailPublic>(`/api/courses/${primary!.id}`),
+    enabled: Boolean(primary?.id),
+  });
+
   return (
-    <div className="max-w-xl mx-auto my-12 px-4">
-      <div className="bg-white rounded-3xl shadow-elevated overflow-hidden">
-        <div className="bg-blue-600 px-8 py-8 text-center text-white relative overflow-hidden">
-          <div className="relative">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm shadow-sm">
-              <Lock className="w-6 h-6 text-blue-300" />
-            </div>
-            <h1 className="mt-4 text-2xl font-extrabold tracking-tight">{title}</h1>
-            <p className="mt-2 text-sm text-zinc-300 max-w-md mx-auto">
-              An active paid enrollment is required to read lesson content, watch embedded
-              videos, and take daily mastery quizzes.
-            </p>
-          </div>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      {/* Greeting Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+            Learning Dashboard
+          </p>
+          <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
+            Welcome, {firstName}
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600">{title}</p>
         </div>
+        <span className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-white text-xs font-semibold text-zinc-600 shadow-soft">
+          <Lock className="w-3.5 h-3.5 text-blue-600" />
+          Enrollment Required
+        </span>
+      </div>
 
-        <div className="p-8">
-          {primary ? (
-            <>
-              <div className="p-5 rounded-2xl bg-zinc-50/90 shadow-soft">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
-                      Full Cohort Access
-                    </span>
-                    <h2 className="mt-1 font-bold text-zinc-900 text-lg">{primary.title}</h2>
-                    <p className="text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                      {primary.description}
-                    </p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <span className="text-2xl font-extrabold text-zinc-900">
-                      {formatNaira(primary.price_kobo)}
-                    </span>
-                    <span className="block text-[11px] text-zinc-500">One-time payment</span>
-                  </div>
+      {/* Main Enrollment Hero Card */}
+      {primary ? (
+        <div className="bg-white rounded-3xl shadow-elevated overflow-hidden grid lg:grid-cols-12">
+          <div className="lg:col-span-5 bg-sky-50 min-h-[240px]">
+            <img
+              src="/images/course-workspace.jpg"
+              alt={primary.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="lg:col-span-7 p-7 sm:p-10 flex flex-col justify-between">
+            <div>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+                    Full Cohort Access
+                  </span>
+                  <h2 className="mt-1.5 text-2xl font-extrabold text-zinc-900 tracking-tight">
+                    {primary.title}
+                  </h2>
                 </div>
-
-                <ul className="mt-5 pt-4 space-y-2 text-sm text-zinc-700">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    {primary.total_lessons} structured daily lessons unlocked on schedule
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Server-graded quizzes with instant explanations &amp; unlimited retakes
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Daily 06:30 WAT morning email reminders
-                  </li>
-                </ul>
+                <div className="text-right shrink-0">
+                  <span className="text-2xl sm:text-3xl font-extrabold text-blue-600">
+                    {formatNaira(primary.price_kobo)}
+                  </span>
+                  <span className="block text-xs text-zinc-500 mt-0.5">One-time payment</span>
+                </div>
               </div>
 
+              <p className="mt-3 text-sm text-zinc-600 leading-relaxed">
+                {primary.description}
+              </p>
+
+              <div className="mt-6 grid sm:grid-cols-2 gap-3 text-sm text-zinc-700">
+                <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-3.5 py-2.5">
+                  <BookOpen className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span>{primary.total_lessons} scheduled daily lessons</span>
+                </div>
+                <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-3.5 py-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Server-graded quizzes</span>
+                </div>
+                <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-3.5 py-2.5">
+                  <Mail className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span>06:30 WAT daily emails</span>
+                </div>
+                <div className="flex items-center gap-2.5 bg-[#F7F7F5] rounded-xl px-3.5 py-2.5">
+                  <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span>Unlimited quiz retakes</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-7 flex flex-col sm:flex-row sm:items-center gap-4">
               <Link
                 to={`/checkout?courseId=${primary.id}`}
-                className="mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-sm transition-all"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 shadow-soft transition-colors"
               >
                 Enroll &amp; Pay with Paystack
                 <ArrowRight className="w-4 h-4" />
               </Link>
-
-              <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-zinc-500">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Verified server-side via Paystack · Instant unlock
-              </p>
-            </>
-          ) : (
-            <p className="text-center text-sm text-zinc-500">
-              No active courses are available for enrollment yet.
-            </p>
-          )}
+              <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                Verified server-side · Instant unlock
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white rounded-3xl shadow-soft p-10 text-center text-sm text-zinc-500">
+          No active courses are available for enrollment yet.
+        </div>
+      )}
+
+      {/* Locked Curriculum Preview (titles & dates only, never lesson content) */}
+      {courseDetail && courseDetail.syllabus.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-extrabold text-zinc-900 tracking-tight">
+                What You&apos;ll Unlock ({courseDetail.syllabus.length} Days)
+              </h2>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                Enroll above to unlock lesson content, embedded videos, and daily quizzes.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            {courseDetail.syllabus.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl p-4 shadow-soft flex items-center justify-between gap-3"
+              >
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#F7F7F5] text-zinc-500 flex items-center justify-center font-bold text-xs shrink-0">
+                    D{item.day_number}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-zinc-900 text-sm truncate">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      Scheduled {item.release_date}
+                    </p>
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-[#F7F7F5] text-zinc-400 flex items-center justify-center shrink-0">
+                  <Lock className="w-3.5 h-3.5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -29,13 +29,13 @@ export function DashboardPage() {
             <div key={i} className="h-28 bg-white rounded-2xl shadow-soft animate-pulse" />
           ))}
         </div>
-        <div className="h-52 bg-zinc-900/10 rounded-3xl animate-pulse" />
+        <div className="h-60 bg-white rounded-3xl shadow-soft animate-pulse" />
       </div>
     );
   }
 
   if (error instanceof ApiError && error.status === 403 && error.reason === "not_paid") {
-    return <PaywallCard title="Enroll to Start Your Daily Lessons" />;
+    return <PaywallCard title="Enroll to unlock your daily lessons and mastery quizzes." />;
   }
 
   if (error || !data) {
@@ -58,7 +58,7 @@ export function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+          <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
             Learning Dashboard
           </p>
           <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
@@ -130,30 +130,27 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* Today's Lesson Hero */}
-      <section className="relative overflow-hidden bg-zinc-900 rounded-3xl p-7 sm:p-9 text-white shadow-elevated">
-        <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-blue-600/30 blur-3xl pointer-events-none" />
-        <div className="absolute -left-16 -bottom-24 w-72 h-72 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
-
-        <div className="relative">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-blue-200">
+      {/* Today's Lesson Editorial Hero */}
+      <section className="bg-white rounded-3xl shadow-elevated overflow-hidden grid lg:grid-cols-12">
+        <div className="lg:col-span-7 p-7 sm:p-9 flex flex-col justify-center">
+          <span className="inline-flex items-center self-start px-3 py-1 rounded-full bg-blue-50 text-xs font-bold text-blue-600">
             Today&apos;s Drop · {data.today}
           </span>
 
           {data.lesson ? (
             <>
-              <h2 className="mt-4 text-2xl sm:text-3xl font-extrabold tracking-tight">
+              <h2 className="mt-4 text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
                 Day {data.lesson.day_number}: {data.lesson.title}
               </h2>
-              <p className="mt-2 text-zinc-300 text-sm max-w-2xl">
+              <p className="mt-2.5 text-zinc-600 text-sm leading-relaxed">
                 {data.lesson.quiz_summary?.passed
-                  ? `You've passed today's quiz with a best score of ${data.lesson.quiz_summary.best_score_percent}%. Feel free to review or retake anytime.`
+                  ? `You've passed today's quiz with a best score of ${data.lesson.quiz_summary.best_score_percent}%. Review or retake anytime.`
                   : "Read today's lesson and pass the quick quiz to extend your streak."}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to={`/lessons/${data.lesson.id}`}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:bg-blue-50 text-sm shadow-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 text-sm shadow-soft transition-colors"
                 >
                   Open Today&apos;s Lesson
                   <ArrowRight className="w-4 h-4" />
@@ -161,9 +158,9 @@ export function DashboardPage() {
                 {data.lesson.has_quiz && (
                   <Link
                     to={`/lessons/${data.lesson.id}/quiz`}
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 text-sm transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#F7F7F5] text-zinc-800 font-semibold hover:bg-zinc-200/70 text-sm transition-colors"
                   >
-                    <ClipboardCheck className="w-4 h-4" />
+                    <ClipboardCheck className="w-4 h-4 text-blue-600" />
                     {data.lesson.quiz_summary?.attempts_count ? "Retake Quiz" : "Take Quiz"}
                   </Link>
                 )}
@@ -171,16 +168,24 @@ export function DashboardPage() {
             </>
           ) : (
             <>
-              <h2 className="mt-4 text-2xl font-extrabold">
+              <h2 className="mt-4 text-2xl font-extrabold text-zinc-900">
                 No new lesson scheduled for today
               </h2>
-              <p className="mt-2 text-zinc-300 text-sm">
+              <p className="mt-2 text-zinc-600 text-sm leading-relaxed">
                 {data.next_release_date
                   ? `Your next lesson unlocks on ${data.next_release_date}. Review past lessons below in the meantime.`
                   : "You've unlocked all scheduled lessons so far! Review past lessons below."}
               </p>
             </>
           )}
+        </div>
+
+        <div className="hidden lg:block lg:col-span-5 bg-sky-50">
+          <img
+            src="/images/hero-learning.jpg"
+            alt="Morning learning desk"
+            className="w-full h-full object-cover"
+          />
         </div>
       </section>
 
@@ -219,7 +224,7 @@ export function DashboardPage() {
                           ? "bg-emerald-50 text-emerald-700"
                           : isToday
                           ? "bg-blue-600 text-white shadow-sm"
-                          : "bg-zinc-100 text-zinc-700"
+                          : "bg-[#F7F7F5] text-zinc-700"
                       }`}
                     >
                       {lesson.quiz_summary?.passed ? (
@@ -245,7 +250,7 @@ export function DashboardPage() {
                           </span>
                         )}
                       </div>
-                      <h3 className="mt-1 font-bold text-zinc-900 group-hover:text-blue-700 transition-colors">
+                      <h3 className="mt-1 font-bold text-zinc-900 group-hover:text-blue-600 transition-colors">
                         {lesson.title}
                       </h3>
                     </div>
@@ -254,14 +259,14 @@ export function DashboardPage() {
                   <div className="flex items-center gap-2 sm:shrink-0">
                     <Link
                       to={`/lessons/${lesson.id}`}
-                      className="px-4 py-2 rounded-xl bg-zinc-100 text-zinc-700 text-sm font-semibold hover:bg-zinc-200/80 transition-colors"
+                      className="px-4 py-2 rounded-xl bg-[#F7F7F5] text-zinc-700 text-sm font-semibold hover:bg-zinc-200/70 transition-colors"
                     >
                       Read
                     </Link>
                     {lesson.has_quiz && (
                       <Link
                         to={`/lessons/${lesson.id}/quiz`}
-                        className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
+                        className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 shadow-sm transition-colors"
                       >
                         Quiz
                       </Link>
