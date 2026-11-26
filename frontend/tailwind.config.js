@@ -7,6 +7,9 @@ export default {
         sans: ['"Inter"', "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
         mono: ['"Inter"', "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
       },
+      backgroundImage: {
+        "dot-grid": "radial-gradient(rgba(37, 99, 235, 0.16) 1px, transparent 1px)",
+      },
       boxShadow: {
         nav: "0 4px 20px -4px rgba(15, 23, 42, 0.06)",
         soft: "0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 10px 28px -8px rgba(15, 23, 42, 0.08)",

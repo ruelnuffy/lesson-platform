@@ -91,7 +91,7 @@ export function LandingPage() {
     <div className="relative overflow-hidden">
       {/* Hero */}
       <section className="relative bg-white shadow-soft">
-        <div className="absolute inset-0 bg-dot-grid opacity-50 pointer-events-none" />
+        <div className="absolute inset-0 bg-dot-grid bg-[length:24px_24px] opacity-50 pointer-events-none" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 lg:py-24 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6">
