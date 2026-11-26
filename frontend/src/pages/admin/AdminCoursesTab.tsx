@@ -2,6 +2,8 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
+  ArrowLeft,
+  ArrowRight,
   CalendarPlus,
   CheckCircle2,
   Eye,
@@ -49,7 +51,8 @@ export function AdminCoursesTab() {
   const mdInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+  // null = viewing Courses list; number = opened that course's Lessons
+  const [openedCourseId, setOpenedCourseId] = useState<number | null>(null);
   const [editingCourse, setEditingCourse] = useState<AdminCourse | null>(null);
   const [editingLesson, setEditingLesson] = useState<AdminLesson | null>(null);
   const [showPreview, setShowPreview] = useState(true);
@@ -97,13 +100,13 @@ export function AdminCoursesTab() {
     queryFn: () => apiFetch<AdminCourse[]>("/api/admin/courses"),
   });
 
-  const activeCourseId = selectedCourseId ?? courses[0]?.id ?? null;
+  const openedCourse = courses.find((c) => c.id === openedCourseId) ?? null;
 
   const { data: lessons = [] } = useQuery<AdminLesson[]>({
-    queryKey: ["admin", "lessons", activeCourseId],
+    queryKey: ["admin", "lessons", openedCourseId],
     queryFn: () =>
-      apiFetch<AdminLesson[]>(`/api/admin/lessons?course_id=${activeCourseId}`),
-    enabled: Boolean(activeCourseId),
+      apiFetch<AdminLesson[]>(`/api/admin/lessons?course_id=${openedCourseId}`),
+    enabled: Boolean(openedCourseId),
   });
 
   const resetCourseForm = () => {
@@ -116,6 +119,7 @@ export function AdminCoursesTab() {
   };
 
   const startEditCourse = (c: AdminCourse) => {
+    setOpenedCourseId(null);
     setEditingCourse(c);
     setCourseTitle(c.title);
     setCourseDesc(c.description);
@@ -147,10 +151,11 @@ export function AdminCoursesTab() {
     onSuccess: (saved) => {
       const wasEdit = Boolean(editingCourse);
       resetCourseForm();
-      setSelectedCourseId(saved.id);
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
       qc.invalidateQueries({ queryKey: ["courses"] });
-      flashSuccess(wasEdit ? `Updated course "${saved.title}".` : `Published course "${saved.title}".`);
+      flashSuccess(
+        wasEdit ? `Updated course "${saved.title}".` : `Published course "${saved.title}".`
+      );
     },
     onError: flashError,
   });
@@ -159,7 +164,7 @@ export function AdminCoursesTab() {
     mutationFn: (id: number) =>
       apiFetch(`/api/admin/courses/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      setSelectedCourseId(null);
+      setOpenedCourseId(null);
       resetCourseForm();
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
       qc.invalidateQueries({ queryKey: ["courses"] });
@@ -170,7 +175,7 @@ export function AdminCoursesTab() {
 
   const bulkCreate = useMutation({
     mutationFn: () =>
-      apiFetch<AdminLesson[]>(`/api/admin/courses/${activeCourseId}/lessons/bulk`, {
+      apiFetch<AdminLesson[]>(`/api/admin/courses/${openedCourseId}/lessons/bulk`, {
         method: "POST",
         body: JSON.stringify({
           start_date: bulkStartDate,
@@ -180,7 +185,7 @@ export function AdminCoursesTab() {
         }),
       }),
     onSuccess: (created) => {
-      qc.invalidateQueries({ queryKey: ["admin", "lessons", activeCourseId] });
+      qc.invalidateQueries({ queryKey: ["admin", "lessons", openedCourseId] });
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
       flashSuccess(`Created ${created.length} scheduled lesson(s).`);
     },
@@ -204,7 +209,7 @@ export function AdminCoursesTab() {
       return apiFetch<AdminLesson>("/api/admin/lessons", {
         method: "POST",
         body: JSON.stringify({
-          course_id: activeCourseId,
+          course_id: openedCourseId,
           day_number: Number(lessonDay),
           title: lessonTitle.trim(),
           release_date: lessonReleaseDate,
@@ -220,9 +225,13 @@ export function AdminCoursesTab() {
       setLessonVideoUrl("");
       setLessonDay(String(saved.day_number + 1));
       setLessonMarkdown("");
-      qc.invalidateQueries({ queryKey: ["admin", "lessons", activeCourseId] });
+      qc.invalidateQueries({ queryKey: ["admin", "lessons", openedCourseId] });
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
-      flashSuccess(wasEdit ? `Updated Day ${saved.day_number}.` : `Uploaded Day ${saved.day_number}: ${saved.title}.`);
+      flashSuccess(
+        wasEdit
+          ? `Updated Day ${saved.day_number}.`
+          : `Uploaded Day ${saved.day_number}: ${saved.title}.`
+      );
     },
     onError: flashError,
   });
@@ -231,7 +240,7 @@ export function AdminCoursesTab() {
     mutationFn: (id: number) =>
       apiFetch(`/api/admin/lessons/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin", "lessons", activeCourseId] });
+      qc.invalidateQueries({ queryKey: ["admin", "lessons", openedCourseId] });
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
       flashSuccess("Lesson deleted.");
     },
@@ -245,6 +254,15 @@ export function AdminCoursesTab() {
     setLessonReleaseDate(l.release_date);
     setLessonVideoUrl(l.video_url || "");
     setLessonMarkdown(l.content_markdown);
+  };
+
+  const handleOpenCourse = (c: AdminCourse) => {
+    setOpenedCourseId(c.id);
+    setEditingLesson(null);
+    setLessonDay(String(c.lesson_count + 1));
+    setLessonTitle("");
+    setLessonVideoUrl("");
+    setLessonMarkdown("");
   };
 
   const handleCoverUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -286,7 +304,7 @@ export function AdminCoursesTab() {
       const heading = text.match(/^#\s+(.+)$/m);
       setLessonTitle(heading ? heading[1].trim() : file.name.replace(/\.(md|txt)$/i, ""));
     }
-    flashSuccess(`Loaded "${file.name}" into editor.`);
+    flashSuccess(`Loaded "${file.name}" into notes.`);
   };
 
   const handleSaveCourse = (e: FormEvent) => {
@@ -299,84 +317,429 @@ export function AdminCoursesTab() {
     saveLesson.mutate();
   };
 
-  return (
-    <div className="space-y-6">
+  const alerts = (
+    <>
       {statusMessage && (
         <div className="p-3.5 rounded-2xl bg-emerald-50 text-emerald-700 text-sm flex items-center gap-2 shadow-soft">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{statusMessage}</span>
         </div>
       )}
-
       {errorMessage && (
         <div className="p-3.5 rounded-2xl bg-rose-50 text-rose-700 text-sm flex items-center gap-2 shadow-soft">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
+    </>
+  );
 
-      <div className="grid md:grid-cols-2 gap-5">
-        {/* Courses List */}
-        <div className="bg-white rounded-2xl shadow-soft p-5">
-          <h2 className="font-bold text-zinc-900 mb-3">Courses ({courses.length})</h2>
-          <div className="space-y-2.5">
-            {courses.map((c) => (
-              <div
-                key={c.id}
-                onClick={() => setSelectedCourseId(c.id)}
-                className={`p-3.5 rounded-xl cursor-pointer flex items-center justify-between gap-3 transition-all ${
-                  activeCourseId === c.id
-                    ? "bg-blue-50 ring-2 ring-blue-600 shadow-sm"
-                    : "bg-[#F7F7F5] hover:bg-zinc-100"
-                }`}
+  // -------------------------------------------------------------------------
+  // STEP 2: Course Opened -> Manage & Upload Video Lessons
+  // -------------------------------------------------------------------------
+  if (openedCourse) {
+    return (
+      <div className="space-y-6">
+        {alerts}
+
+        {/* Selected Course Header Bar */}
+        <div className="bg-white rounded-2xl shadow-soft p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <button
+              type="button"
+              onClick={() => setOpenedCourseId(null)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F7F7F5] text-xs font-semibold text-zinc-700 hover:text-blue-600 hover:bg-blue-50 transition-colors shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              All Courses
+            </button>
+            <img
+              src={resolveMediaUrl(openedCourse.image_url)}
+              alt={openedCourse.title}
+              className="w-12 h-12 rounded-xl object-cover shrink-0 bg-sky-50"
+            />
+            <div className="min-w-0">
+              <h2 className="font-extrabold text-zinc-900 text-lg truncate">
+                {openedCourse.title}
+              </h2>
+              <p className="text-xs text-zinc-500">
+                {formatNaira(openedCourse.price_kobo)} · {lessons.length} video lessons
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => startEditCourse(openedCourse)}
+            className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3.5 py-2 rounded-xl bg-[#F7F7F5] text-xs font-semibold text-zinc-700 hover:bg-zinc-200/70 transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5 text-blue-600" />
+            Edit Course Info
+          </button>
+        </div>
+
+        {/* Upload / Edit Video Lesson Form */}
+        <form
+          onSubmit={handleSaveLesson}
+          className="bg-white rounded-2xl shadow-soft p-6 space-y-4"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="font-bold text-zinc-900 text-lg">
+              {editingLesson
+                ? `Editing Day ${editingLesson.day_number}`
+                : "Upload New Video Lesson"}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              <input
+                ref={mdInputRef}
+                type="file"
+                accept=".md,.markdown,.txt"
+                onChange={handleMarkdownFile}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => mdInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F7F5] text-xs font-semibold text-zinc-800 hover:bg-zinc-200/70"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={resolveMediaUrl(c.image_url)}
-                    alt={c.title}
-                    className="w-12 h-12 rounded-lg object-cover shrink-0 bg-sky-50"
+                <FileText className="w-3.5 h-3.5 text-blue-600" />
+                Import Notes (.md)
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPreview((p) => !p)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 text-xs font-semibold text-zinc-700 hover:bg-zinc-200/80"
+              >
+                {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                {showPreview ? "Hide Preview" : "Show Preview"}
+              </button>
+              {editingLesson && (
+                <button
+                  type="button"
+                  onClick={() => setEditingLesson(null)}
+                  className="px-3 py-1.5 rounded-lg bg-zinc-100 text-xs font-semibold text-zinc-600"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-3">
+            <input
+              type="number"
+              min="1"
+              required
+              placeholder="Day #"
+              value={lessonDay}
+              onChange={(e) => setLessonDay(e.target.value)}
+              className="rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            />
+            <input
+              required
+              placeholder="Lesson Title"
+              value={lessonTitle}
+              onChange={(e) => setLessonTitle(e.target.value)}
+              className="rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            />
+            <input
+              type="date"
+              required
+              value={lessonReleaseDate}
+              onChange={(e) => setLessonReleaseDate(e.target.value)}
+              className="rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            />
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#F7F7F5] space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
+                <Video className="w-4 h-4 text-blue-600" />
+                Lesson Video (Required)
+              </label>
+              <span className="text-[11px] text-zinc-500">MP4, WebM, MOV or Embed URL</span>
+            </div>
+
+            <div className="flex flex-wrap gap-2 items-center">
+              <input
+                required
+                placeholder="Paste Video URL (YouTube/Vimeo) or upload a video file →"
+                value={lessonVideoUrl}
+                onChange={(e) => setLessonVideoUrl(e.target.value)}
+                className="flex-1 min-w-[240px] rounded-xl bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
+              />
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime"
+                onChange={handleVideoUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                disabled={uploadingVideo}
+                onClick={() => videoInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
+              >
+                <Video className="w-3.5 h-3.5" />
+                {uploadingVideo ? "Uploading Video..." : "Upload Video"}
+              </button>
+            </div>
+
+            {lessonVideoUrl && (
+              <div className="aspect-video max-h-56 w-full rounded-xl overflow-hidden bg-zinc-900">
+                {lessonVideoUrl.startsWith("/uploads/") ||
+                /\.(mp4|webm|mov)$/i.test(lessonVideoUrl) ? (
+                  <video
+                    src={resolveMediaUrl(lessonVideoUrl, "")}
+                    controls
+                    className="w-full h-full"
                   />
-                  <div className="min-w-0">
-                    <p className="font-bold text-zinc-900 text-sm truncate">{c.title}</p>
-                    <p className="text-xs text-zinc-500 mt-0.5">
-                      {formatNaira(c.price_kobo)} · {c.lesson_count} lessons ·{" "}
-                      {c.is_active ? "Active" : "Draft"}
-                    </p>
+                ) : (
+                  <iframe
+                    src={lessonVideoUrl}
+                    title="Video preview"
+                    className="w-full h-full"
+                    allowFullScreen
+                  />
+                )}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+              Lesson Notes / Summary (Optional Markdown)
+            </label>
+            <div className={showPreview ? "grid md:grid-cols-2 gap-4" : ""}>
+              <textarea
+                rows={5}
+                placeholder="Optional written notes, links, or key takeaways..."
+                value={lessonMarkdown}
+                onChange={(e) => setLessonMarkdown(e.target.value)}
+                className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              />
+              {showPreview && (
+                <div className="rounded-xl p-4 bg-zinc-50 shadow-inner overflow-y-auto max-h-44">
+                  <MarkdownView content={lessonMarkdown || "*No written notes added.*"} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={saveLesson.isPending}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 disabled:opacity-50 shadow-sm"
+          >
+            <Upload className="w-4 h-4" />
+            {saveLesson.isPending
+              ? "Saving..."
+              : editingLesson
+              ? "Update Video Lesson"
+              : "Upload Video Lesson"}
+          </button>
+        </form>
+
+        {/* Scheduled Lessons List */}
+        <div className="bg-white rounded-2xl shadow-soft overflow-hidden">
+          <div className="px-5 py-3.5 font-bold text-zinc-900">
+            Video Lessons ({lessons.length})
+          </div>
+          {lessons.length === 0 ? (
+            <p className="px-5 pb-5 text-sm text-zinc-500">
+              No lessons uploaded for this course yet. Use the form above or bulk-create days below.
+            </p>
+          ) : (
+            <div className="divide-y divide-zinc-100">
+              {lessons.map((l) => (
+                <div
+                  key={l.id}
+                  className="px-5 py-3.5 flex items-center justify-between gap-4 text-sm hover:bg-zinc-50/70"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="inline-block px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-xs shrink-0">
+                      Day {l.day_number}
+                    </span>
+                    <span className="font-semibold text-zinc-900 truncate">{l.title}</span>
+                    <span className="text-xs text-zinc-500 shrink-0">({l.release_date})</span>
+                    {l.video_url && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full shrink-0">
+                        <Video className="w-3 h-3" /> Video
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => startEditLesson(l)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-700 hover:bg-blue-50"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteLesson.mutate(l.id)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      startEditCourse(c);
-                    }}
-                    className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-100/60"
-                    title="Edit course"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteCourse.mutate(c.id);
-                    }}
-                    className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50"
-                    title="Delete course"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Bulk Create Days */}
+        <div className="bg-white rounded-2xl shadow-soft p-5">
+          <h3 className="font-bold text-zinc-900 mb-3 flex items-center gap-2 text-sm">
+            <CalendarPlus className="w-4 h-4 text-blue-600" />
+            Bulk Create Placeholder Days
+          </h3>
+          <div className="flex flex-wrap items-end gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500">Start Date</label>
+              <input
+                type="date"
+                value={bulkStartDate}
+                onChange={(e) => setBulkStartDate(e.target.value)}
+                className="mt-1 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500">Days</label>
+              <input
+                type="number"
+                min="1"
+                max="90"
+                value={bulkDays}
+                onChange={(e) => setBulkDays(e.target.value)}
+                className="mt-1 w-24 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-zinc-500">Start Day #</label>
+              <input
+                type="number"
+                min="1"
+                value={bulkStartDay}
+                onChange={(e) => setBulkStartDay(e.target.value)}
+                className="mt-1 w-24 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              />
+            </div>
+            <button
+              type="button"
+              disabled={bulkCreate.isPending}
+              onClick={() => bulkCreate.mutate()}
+              className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
+            >
+              {bulkCreate.isPending ? "Creating..." : "Bulk Create Days"}
+            </button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // STEP 1: Select a Course or Create a New Course
+  // -------------------------------------------------------------------------
+  return (
+    <div className="space-y-6">
+      {alerts}
+
+      <div className="grid lg:grid-cols-12 gap-6 items-start">
+        {/* Courses Grid */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold text-zinc-900">
+              Select a Course to Manage Lessons ({courses.length})
+            </h2>
+          </div>
+
+          {courses.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-soft p-8 text-center text-sm text-zinc-500">
+              No courses yet. Create your first video course on the right.
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-4">
+              {courses.map((c) => (
+                <div
+                  key={c.id}
+                  onClick={() => handleOpenCourse(c)}
+                  className="group bg-white rounded-2xl shadow-soft hover:shadow-elevated overflow-hidden cursor-pointer transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="h-36 bg-sky-50 relative overflow-hidden">
+                      <img
+                        src={resolveMediaUrl(c.image_url)}
+                        alt={c.title}
+                        className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
+                      />
+                      <span
+                        className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                          c.is_active
+                            ? "bg-emerald-500 text-white"
+                            : "bg-zinc-800 text-white"
+                        }`}
+                      >
+                        {c.is_active ? "Published" : "Draft"}
+                      </span>
+                    </div>
+
+                    <div className="p-4">
+                      <h3 className="font-bold text-zinc-900 group-hover:text-blue-600 transition-colors">
+                        {c.title}
+                      </h3>
+                      <p className="text-xs text-zinc-500 mt-1">
+                        {formatNaira(c.price_kobo)} · {c.lesson_count} video lessons
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="px-4 pb-4 flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-600">
+                      Open Lessons
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditCourse(c);
+                        }}
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-blue-600 hover:bg-blue-50"
+                        title="Edit course"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteCourse.mutate(c.id);
+                        }}
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-600 hover:bg-rose-50"
+                        title="Delete course"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Create / Edit Course Form */}
         <form
           onSubmit={handleSaveCourse}
-          className="bg-white rounded-2xl shadow-soft p-5 space-y-3.5"
+          className="lg:col-span-5 bg-white rounded-2xl shadow-soft p-6 space-y-4"
         >
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-zinc-900">
@@ -401,7 +764,7 @@ export function AdminCoursesTab() {
             className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft"
           />
           <textarea
-            rows={2}
+            rows={3}
             placeholder="Course description"
             value={courseDesc}
             onChange={(e) => setCourseDesc(e.target.value)}
@@ -471,7 +834,7 @@ export function AdminCoursesTab() {
           <button
             type="submit"
             disabled={saveCourse.isPending}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 disabled:opacity-50 shadow-sm"
+            className="w-full inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 disabled:opacity-50 shadow-sm"
           >
             <Plus className="w-4 h-4" />
             {saveCourse.isPending
@@ -482,258 +845,6 @@ export function AdminCoursesTab() {
           </button>
         </form>
       </div>
-
-      {activeCourseId && (
-        <>
-          <div className="bg-white rounded-2xl shadow-soft p-5">
-            <h2 className="font-bold text-zinc-900 mb-3 flex items-center gap-2">
-              <CalendarPlus className="w-4 h-4 text-blue-600" />
-              Bulk Create Lesson Days
-            </h2>
-            <div className="flex flex-wrap items-end gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-zinc-500">Start Date</label>
-                <input
-                  type="date"
-                  value={bulkStartDate}
-                  onChange={(e) => setBulkStartDate(e.target.value)}
-                  className="mt-1 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-500">Days</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="90"
-                  value={bulkDays}
-                  onChange={(e) => setBulkDays(e.target.value)}
-                  className="mt-1 w-24 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-500">Start Day #</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={bulkStartDay}
-                  onChange={(e) => setBulkStartDay(e.target.value)}
-                  className="mt-1 w-24 rounded-xl bg-[#F7F7F5] px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                />
-              </div>
-              <button
-                type="button"
-                disabled={bulkCreate.isPending}
-                onClick={() => bulkCreate.mutate()}
-                className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
-              >
-                {bulkCreate.isPending ? "Creating..." : "Bulk Create Days"}
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-soft overflow-hidden">
-            <div className="px-5 py-3.5 font-bold text-zinc-900">
-              Scheduled Lessons ({lessons.length})
-            </div>
-            <div className="divide-y divide-zinc-100">
-              {lessons.map((l) => (
-                <div
-                  key={l.id}
-                  className="px-5 py-3.5 flex items-center justify-between gap-4 text-sm hover:bg-zinc-50/70"
-                >
-                  <div>
-                    <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-xs mr-2">
-                      Day {l.day_number}
-                    </span>
-                    <span className="font-semibold text-zinc-900">{l.title}</span>
-                    <span className="ml-2 text-xs text-zinc-500">({l.release_date})</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => startEditLesson(l)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-700 hover:bg-blue-50"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => deleteLesson.mutate(l.id)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Upload / Edit Lesson Form */}
-          <form
-            onSubmit={handleSaveLesson}
-            className="bg-white rounded-2xl shadow-soft p-5 space-y-4"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-bold text-zinc-900">
-                {editingLesson ? `Editing Day ${editingLesson.day_number}` : "Upload Lesson"}
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                <input
-                  ref={mdInputRef}
-                  type="file"
-                  accept=".md,.markdown,.txt"
-                  onChange={handleMarkdownFile}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => mdInputRef.current?.click()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F7F5] text-xs font-semibold text-zinc-800 hover:bg-zinc-200/70"
-                >
-                  <FileText className="w-3.5 h-3.5 text-blue-600" />
-                  Import .md File
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowPreview((p) => !p)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 text-xs font-semibold text-zinc-700 hover:bg-zinc-200/80"
-                >
-                  {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                  {showPreview ? "Hide Preview" : "Show Preview"}
-                </button>
-                {editingLesson && (
-                  <button
-                    type="button"
-                    onClick={() => setEditingLesson(null)}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-100 text-xs font-semibold text-zinc-600"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-3">
-              <input
-                type="number"
-                min="1"
-                required
-                placeholder="Day #"
-                value={lessonDay}
-                onChange={(e) => setLessonDay(e.target.value)}
-                className="rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
-              <input
-                required
-                placeholder="Lesson Title"
-                value={lessonTitle}
-                onChange={(e) => setLessonTitle(e.target.value)}
-                className="rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
-              <input
-                type="date"
-                required
-                value={lessonReleaseDate}
-                onChange={(e) => setLessonReleaseDate(e.target.value)}
-                className="rounded-xl bg-[#F7F7F5] px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
-            </div>
-
-            <div className="p-4 rounded-2xl bg-[#F7F7F5] space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
-                  <Video className="w-4 h-4 text-blue-600" />
-                  Lesson Video (Required)
-                </label>
-                <span className="text-[11px] text-zinc-500">MP4, WebM, MOV or Embed URL</span>
-              </div>
-
-              <div className="flex flex-wrap gap-2 items-center">
-                <input
-                  required
-                  placeholder="Paste Video URL (YouTube/Vimeo) or upload a video file →"
-                  value={lessonVideoUrl}
-                  onChange={(e) => setLessonVideoUrl(e.target.value)}
-                  className="flex-1 min-w-[240px] rounded-xl bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
-                />
-                <input
-                  ref={videoInputRef}
-                  type="file"
-                  accept="video/mp4,video/webm,video/quicktime"
-                  onChange={handleVideoUpload}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  disabled={uploadingVideo}
-                  onClick={() => videoInputRef.current?.click()}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 shadow-sm transition-colors"
-                >
-                  <Video className="w-3.5 h-3.5" />
-                  {uploadingVideo ? "Uploading Video..." : "Upload Video"}
-                </button>
-              </div>
-
-              {lessonVideoUrl && (
-                <div className="aspect-video max-h-56 w-full rounded-xl overflow-hidden bg-zinc-900">
-                  {lessonVideoUrl.startsWith("/uploads/") ||
-                  /\.(mp4|webm|mov)$/i.test(lessonVideoUrl) ? (
-                    <video
-                      src={resolveMediaUrl(lessonVideoUrl, "")}
-                      controls
-                      className="w-full h-full"
-                    />
-                  ) : (
-                    <iframe
-                      src={lessonVideoUrl}
-                      title="Video preview"
-                      className="w-full h-full"
-                      allowFullScreen
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
-                Lesson Notes / Summary (Optional Markdown)
-              </label>
-              <div className={showPreview ? "grid md:grid-cols-2 gap-4" : ""}>
-                <textarea
-                  rows={6}
-                  placeholder="Optional written notes, links, or key takeaways..."
-                  value={lessonMarkdown}
-                  onChange={(e) => setLessonMarkdown(e.target.value)}
-                  className="w-full rounded-xl bg-[#F7F7F5] px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                />
-                {showPreview && (
-                  <div className="rounded-xl p-4 bg-zinc-50 shadow-inner overflow-y-auto max-h-52">
-                    <MarkdownView content={lessonMarkdown || "*No written notes added.*"} />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={saveLesson.isPending}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 disabled:opacity-50 shadow-sm"
-            >
-              <Upload className="w-4 h-4" />
-              {saveLesson.isPending
-                ? "Saving..."
-                : editingLesson
-                ? "Update Lesson"
-                : "Upload Lesson"}
-            </button>
-          </form>
-        </>
-      )}
     </div>
   );
 }
