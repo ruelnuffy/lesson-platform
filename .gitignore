@@ -26,4 +26,5 @@ frontend/.vite/
 # Local test DBs & uploads
 *.db
 *.sqlite3
+data/
 backend/uploads/

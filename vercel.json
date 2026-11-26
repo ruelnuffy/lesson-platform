@@ -1,17 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && npm install && npm run build",
+  "buildCommand": "npm install && cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "functions": {
-    "api/index.py": {
-      "maxDuration": 30
+    "api/index.ts": {
+      "maxDuration": 30,
+      "includeFiles": "node_modules/sql.js/dist/sql-wasm.wasm"
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.py" },
-    { "source": "/health", "destination": "/api/index.py" },
-    { "source": "/docs", "destination": "/api/index.py" },
-    { "source": "/openapi.json", "destination": "/api/index.py" },
+    { "source": "/api/(.*)", "destination": "/api/index.ts" },
+    { "source": "/health", "destination": "/api/index.ts" },
+    { "source": "/uploads/(.*)", "destination": "/api/index.ts" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "crons": [

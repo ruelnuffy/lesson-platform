@@ -1,0 +1,19 @@
+{
+  "name": "daily-lessons-platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.6.16",
+    "sql.js": "^1.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/sql.js": "^1.4.9"
+  }
+}
