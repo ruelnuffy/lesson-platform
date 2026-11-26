@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { AlertCircle, ArrowRight, CheckCircle2, Lock } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, Lock } from "lucide-react";
 import { ApiError, apiFetch } from "../lib/api";
 
 export function ResetPasswordPage() {
@@ -9,6 +9,7 @@ export function ResetPasswordPage() {
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -98,14 +99,22 @@ export function ResetPasswordPage() {
                   <div className="mt-1.5 relative">
                     <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       required
                       minLength={8}
                       placeholder="At least 8 characters"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full rounded-xl bg-[#F7F7F5] pl-10 pr-4 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
+                      className="w-full rounded-xl bg-[#F7F7F5] pl-10 pr-11 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:shadow-soft transition"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((s) => !s)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-700 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 
@@ -116,7 +125,7 @@ export function ResetPasswordPage() {
                   <div className="mt-1.5 relative">
                     <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       required
                       minLength={8}
                       placeholder="Repeat your new password"
