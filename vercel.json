@@ -51,6 +51,10 @@
       }
     },
     {
+      "source": "/((?!api/|health$|uploads/|docs$|openapi\\.json$|assets/|images/|.*\\..*).*)",
+      "destination": "/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": {
         "service": "frontend"
