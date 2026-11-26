@@ -26,7 +26,7 @@ export function DashboardPage() {
         <div className="h-8 w-56 bg-zinc-200/70 rounded-lg animate-pulse" />
         <div className="grid sm:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-28 bg-white rounded-2xl border border-zinc-200 animate-pulse" />
+            <div key={i} className="h-28 bg-white rounded-2xl shadow-soft animate-pulse" />
           ))}
         </div>
         <div className="h-52 bg-zinc-900/10 rounded-3xl animate-pulse" />
@@ -65,7 +65,7 @@ export function DashboardPage() {
             Welcome back, {firstName}
           </h1>
         </div>
-        <span className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3 py-1.5 rounded-full bg-white border border-zinc-200 text-xs font-medium text-zinc-600 shadow-sm">
+        <span className="inline-flex items-center gap-1.5 self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-white text-xs font-medium text-zinc-600 shadow-soft">
           <Calendar className="w-3.5 h-3.5 text-indigo-600" />
           {data.today} (WAT)
         </span>
@@ -73,7 +73,7 @@ export function DashboardPage() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 shadow-soft flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Current Streak
@@ -90,7 +90,7 @@ export function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 shadow-soft flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Lessons Unlocked
@@ -108,7 +108,7 @@ export function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft">
+        <div className="bg-white rounded-2xl p-5 shadow-soft">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Course Progress
@@ -136,7 +136,7 @@ export function DashboardPage() {
         <div className="absolute -left-16 -bottom-24 w-72 h-72 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
 
         <div className="relative">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-indigo-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-indigo-200">
             Today&apos;s Drop · {data.today}
           </span>
 
@@ -153,7 +153,7 @@ export function DashboardPage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to={`/lessons/${data.lesson.id}`}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:bg-indigo-50 text-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:bg-indigo-50 text-sm shadow-sm transition-colors"
                 >
                   Open Today&apos;s Lesson
                   <ArrowRight className="w-4 h-4" />
@@ -161,7 +161,7 @@ export function DashboardPage() {
                 {data.lesson.has_quiz && (
                   <Link
                     to={`/lessons/${data.lesson.id}/quiz`}
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 border border-white/15 text-white font-semibold hover:bg-white/20 text-sm transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 text-sm transition-colors"
                   >
                     <ClipboardCheck className="w-4 h-4" />
                     {data.lesson.quiz_summary?.attempts_count ? "Retake Quiz" : "Take Quiz"}
@@ -200,7 +200,7 @@ export function DashboardPage() {
         </div>
 
         {data.past_lessons.length === 0 ? (
-          <div className="bg-white border border-zinc-200 rounded-2xl p-8 text-center text-sm text-zinc-500">
+          <div className="bg-white rounded-2xl shadow-soft p-8 text-center text-sm text-zinc-500">
             No lessons unlocked yet.
           </div>
         ) : (
@@ -210,15 +210,15 @@ export function DashboardPage() {
               return (
                 <div
                   key={lesson.id}
-                  className="group bg-white border border-zinc-200/80 hover:border-indigo-300 rounded-2xl p-4 sm:p-5 shadow-soft hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  className="group bg-white rounded-2xl p-4 sm:p-5 shadow-soft hover:shadow-elevated transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
                     <div
                       className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${
                         lesson.quiz_summary?.passed
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200/70"
+                          ? "bg-emerald-50 text-emerald-700"
                           : isToday
-                          ? "bg-indigo-600 text-white"
+                          ? "bg-indigo-600 text-white shadow-sm"
                           : "bg-zinc-100 text-zinc-700"
                       }`}
                     >
@@ -254,7 +254,7 @@ export function DashboardPage() {
                   <div className="flex items-center gap-2 sm:shrink-0">
                     <Link
                       to={`/lessons/${lesson.id}`}
-                      className="px-4 py-2 rounded-xl border border-zinc-200 text-zinc-700 text-sm font-semibold hover:bg-zinc-50 transition-colors"
+                      className="px-4 py-2 rounded-xl bg-zinc-100 text-zinc-700 text-sm font-semibold hover:bg-zinc-200/80 transition-colors"
                     >
                       Read
                     </Link>

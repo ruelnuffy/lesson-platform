@@ -34,8 +34,8 @@ export function RegisterPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 bg-dot-grid">
-      <div className="w-full max-w-md bg-white border border-zinc-200/90 rounded-3xl shadow-elevated p-8">
-        <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-indigo-600 text-white mb-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-elevated p-8">
+        <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-indigo-600 text-white mb-4 shadow-sm">
           <Sparkles className="w-5 h-5" />
         </div>
         <h1 className="text-2xl font-extrabold text-zinc-900 tracking-tight">
@@ -46,7 +46,7 @@ export function RegisterPage() {
         </p>
 
         {error && (
-          <div className="mt-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2">
+          <div className="mt-5 p-3.5 rounded-xl bg-rose-50 shadow-sm text-rose-700 text-sm flex items-start gap-2">
             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
@@ -65,7 +65,7 @@ export function RegisterPage() {
                 placeholder="Ada Lovelace"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-zinc-300 pl-10 pr-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>
@@ -82,7 +82,7 @@ export function RegisterPage() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-zinc-300 pl-10 pr-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ export function RegisterPage() {
                 placeholder="At least 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-zinc-300 pl-10 pr-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition"
+                className="w-full rounded-xl bg-zinc-100/80 pl-10 pr-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft transition"
               />
             </div>
           </div>

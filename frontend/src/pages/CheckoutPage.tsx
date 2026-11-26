@@ -45,7 +45,7 @@ export function CheckoutPage() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-12">
-      <div className="bg-white border border-zinc-200/90 rounded-3xl shadow-elevated p-8">
+      <div className="bg-white rounded-3xl shadow-elevated p-8">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600">
           <CreditCard className="w-6 h-6" />
         </div>
@@ -64,7 +64,7 @@ export function CheckoutPage() {
             <select
               value={activeCourse?.id ?? ""}
               onChange={(e) => setSelectedCourseId(Number(e.target.value))}
-              className="mt-1.5 w-full rounded-xl border border-zinc-300 px-3.5 py-2.5 text-sm bg-white"
+              className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-soft"
             >
               {courses.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -76,7 +76,7 @@ export function CheckoutPage() {
         )}
 
         {activeCourse && (
-          <div className="mt-6 p-5 bg-zinc-50 rounded-2xl border border-zinc-200/80 space-y-4">
+          <div className="mt-6 p-5 bg-zinc-50 rounded-2xl shadow-soft space-y-4">
             <div className="flex justify-between items-start gap-4">
               <div>
                 <h2 className="font-bold text-zinc-900">{activeCourse.title}</h2>
@@ -88,7 +88,7 @@ export function CheckoutPage() {
                 {formatNaira(activeCourse.price_kobo)}
               </span>
             </div>
-            <ul className="pt-3 border-t border-zinc-200/70 space-y-2 text-xs text-zinc-600">
+            <ul className="pt-2 space-y-2 text-xs text-zinc-600">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 Instant access to all unlocked lessons
@@ -102,7 +102,7 @@ export function CheckoutPage() {
         )}
 
         {initMutation.error && (
-          <div className="mt-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2">
+          <div className="mt-5 p-3.5 rounded-xl bg-rose-50 shadow-sm text-rose-700 text-sm flex items-start gap-2">
             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{initMutation.error.message}</span>
           </div>

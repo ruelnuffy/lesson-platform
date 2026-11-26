@@ -31,7 +31,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
   if (mode === "failure") {
     return (
       <div className="max-w-lg mx-auto my-14 px-4">
-        <div className="bg-white border border-rose-200 rounded-3xl shadow-soft p-9 text-center">
+        <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-rose-50 text-rose-600">
             <XCircle className="w-7 h-7" />
           </div>
@@ -50,7 +50,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
             </Link>
             <Link
               to="/dashboard"
-              className="px-5 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-sm font-semibold hover:bg-zinc-50"
+              className="px-5 py-2.5 rounded-xl bg-zinc-100 text-zinc-700 text-sm font-semibold hover:bg-zinc-200/80"
             >
               Dashboard
             </Link>
@@ -63,7 +63,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
   if (isLoading) {
     return (
       <div className="max-w-lg mx-auto my-14 px-4">
-        <div className="bg-white border border-zinc-200 rounded-3xl shadow-soft p-9 text-center">
+        <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
           <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mx-auto" />
           <h1 className="mt-4 text-xl font-extrabold text-zinc-900">
             Verifying your payment...
@@ -80,7 +80,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
   if (error || (reference && data?.status !== "paid")) {
     return (
       <div className="max-w-lg mx-auto my-14 px-4">
-        <div className="bg-white border border-amber-200 rounded-3xl shadow-soft p-9 text-center">
+        <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-50 text-amber-600">
             <Clock className="w-7 h-7" />
           </div>
@@ -105,7 +105,7 @@ export function CheckoutReturnPage({ mode }: { mode: "callback" | "success" | "f
 
   return (
     <div className="max-w-lg mx-auto my-14 px-4">
-      <div className="bg-white border border-emerald-200 rounded-3xl shadow-elevated p-9 text-center">
+      <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600">
           <CheckCircle2 className="w-7 h-7" />
         </div>

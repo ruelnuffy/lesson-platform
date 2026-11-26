@@ -88,7 +88,7 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
   }
   if (user.role !== "admin") {
     return (
-      <div className="max-w-lg mx-auto my-16 bg-white border border-rose-200 rounded-xl p-8 text-center">
+      <div className="max-w-lg mx-auto my-16 bg-white rounded-2xl shadow-elevated p-8 text-center">
         <h1 className="text-xl font-bold text-slate-900">Admin Access Required</h1>
         <p className="mt-2 text-slate-600 text-sm">
           You do not have permission to view this page.

@@ -30,7 +30,7 @@ export function ScoresPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 shadow-soft flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Average Best Score
@@ -46,7 +46,7 @@ export function ScoresPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 shadow-soft flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Quizzes Passed
@@ -60,7 +60,7 @@ export function ScoresPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 shadow-soft flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Total Attempts
@@ -75,8 +75,8 @@ export function ScoresPage() {
         </div>
       </div>
 
-      <section className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-hidden">
-        <div className="px-6 py-4 border-b border-zinc-100 font-bold text-zinc-900">
+      <section className="bg-white rounded-2xl shadow-soft overflow-hidden">
+        <div className="px-6 py-4 font-bold text-zinc-900">
           Best vs Latest by Lesson
         </div>
         {!data || data.by_lesson.length === 0 ? (
@@ -136,8 +136,8 @@ export function ScoresPage() {
         )}
       </section>
 
-      <section className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-hidden">
-        <div className="px-6 py-4 border-b border-zinc-100 font-bold text-zinc-900">
+      <section className="bg-white rounded-2xl shadow-soft overflow-hidden">
+        <div className="px-6 py-4 font-bold text-zinc-900">
           Attempt History
         </div>
         {!data || data.attempts.length === 0 ? (

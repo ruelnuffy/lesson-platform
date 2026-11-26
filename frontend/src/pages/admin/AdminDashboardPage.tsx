@@ -85,14 +85,14 @@ const statusPill = (status: string) => {
   switch (status) {
     case "paid":
     case "sent":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200/80";
+      return "bg-emerald-50 text-emerald-700";
     case "pending":
-      return "bg-amber-50 text-amber-700 border-amber-200/80";
+      return "bg-amber-50 text-amber-700";
     case "failed":
     case "expired":
-      return "bg-rose-50 text-rose-700 border-rose-200/80";
+      return "bg-rose-50 text-rose-700";
     default:
-      return "bg-zinc-100 text-zinc-700 border-zinc-200";
+      return "bg-zinc-100 text-zinc-700";
   }
 };
 
@@ -210,8 +210,8 @@ export function AdminDashboardPage() {
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         {/* Sidebar */}
         <aside className="lg:col-span-3 lg:sticky lg:top-24">
-          <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-3">
-            <div className="px-3 py-2.5 mb-1 flex items-center gap-2 border-b border-zinc-100">
+          <div className="bg-white rounded-2xl shadow-soft p-3">
+            <div className="px-3 py-2.5 mb-2 flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
                 <ShieldCheck className="w-4 h-4" />
               </div>
@@ -293,11 +293,11 @@ export function AdminDashboardPage() {
                   placeholder="Search users by name or email..."
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-300 pl-10 pr-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
+                  className="w-full rounded-xl pl-10 pr-3.5 py-2.5 text-sm bg-white shadow-soft focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                 />
               </div>
 
-              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+              <div className="bg-white rounded-2xl shadow-soft overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
                     <tr>
@@ -321,10 +321,10 @@ export function AdminDashboardPage() {
                         </td>
                         <td className="px-5 py-3.5">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                               u.is_paid
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
-                                : "bg-zinc-100 text-zinc-600 border-zinc-200"
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-zinc-100 text-zinc-600"
                             }`}
                           >
                             {u.is_paid ? "Paid" : "Unpaid"}
@@ -363,7 +363,7 @@ export function AdminDashboardPage() {
               </div>
 
               {selectedUserId && (
-                <div className="bg-white border border-indigo-200 rounded-2xl p-5 shadow-soft">
+                <div className="bg-white rounded-2xl p-5 shadow-elevated">
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="font-bold text-zinc-900">
                       User #{selectedUserId} Quiz Scores
@@ -409,7 +409,7 @@ export function AdminDashboardPage() {
           {tab === "quizzes" && <AdminQuizzesTab />}
 
           {tab === "payments" && (
-            <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+            <div className="bg-white rounded-2xl shadow-soft overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
                   <tr>
@@ -433,7 +433,7 @@ export function AdminDashboardPage() {
                       </td>
                       <td className="px-5 py-3.5">
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase border ${statusPill(
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${statusPill(
                             p.status
                           )}`}
                         >
@@ -452,12 +452,12 @@ export function AdminDashboardPage() {
 
           {tab === "emails" && (
             <div className="space-y-4">
-              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-4 flex flex-wrap items-center gap-3">
+              <div className="bg-white rounded-2xl shadow-soft p-4 flex flex-wrap items-center gap-3">
                 <input
                   type="date"
                   value={resendDate}
                   onChange={(e) => setResendDate(e.target.value)}
-                  className="rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
+                  className="rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                 />
                 <button
                   onClick={() => resendMutation.mutate()}
@@ -474,7 +474,7 @@ export function AdminDashboardPage() {
                 )}
               </div>
 
-              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
+              <div className="bg-white rounded-2xl shadow-soft overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead className="bg-zinc-50 text-xs uppercase tracking-wider text-zinc-500">
                     <tr>
@@ -493,7 +493,7 @@ export function AdminDashboardPage() {
                         </td>
                         <td className="px-5 py-3.5">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase border ${statusPill(
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${statusPill(
                               e.status
                             )}`}
                           >
@@ -521,8 +521,8 @@ export function AdminDashboardPage() {
                 </a>
               </div>
 
-              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
-                <div className="px-5 py-3.5 border-b border-zinc-100 font-bold text-zinc-900">
+              <div className="bg-white rounded-2xl shadow-soft overflow-x-auto">
+                <div className="px-5 py-3.5 font-bold text-zinc-900">
                   Per-Lesson Summary
                 </div>
                 <table className="w-full text-sm text-left">
@@ -551,8 +551,8 @@ export function AdminDashboardPage() {
                 </table>
               </div>
 
-              <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft overflow-x-auto">
-                <div className="px-5 py-3.5 border-b border-zinc-100 font-bold text-zinc-900">
+              <div className="bg-white rounded-2xl shadow-soft overflow-x-auto">
+                <div className="px-5 py-3.5 font-bold text-zinc-900">
                   All Attempts
                 </div>
                 <table className="w-full text-sm text-left">
@@ -609,7 +609,7 @@ function StatCard({
   accent: string;
 }) {
   return (
-    <div className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-soft">
+    <div className="bg-white rounded-2xl p-5 shadow-soft">
       <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">{label}</p>
       <p className={`mt-2 text-3xl font-extrabold tracking-tight ${accent}`}>{value}</p>
     </div>

@@ -45,7 +45,7 @@ export function Navbar() {
     : "";
 
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-zinc-200/80">
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-nav">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link
           to="/"
@@ -84,10 +84,10 @@ export function Navbar() {
               {user.role === "admin" && (
                 <Link
                   to="/admin"
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                     location.pathname.startsWith("/admin")
-                      ? "bg-amber-100 text-amber-900 border border-amber-300"
-                      : "bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100"
+                      ? "bg-amber-100 text-amber-900 shadow-sm"
+                      : "bg-amber-50 text-amber-800 hover:bg-amber-100"
                   }`}
                 >
                   <ShieldCheck className="w-4 h-4" />
@@ -95,7 +95,7 @@ export function Navbar() {
                 </Link>
               )}
 
-              <div className="h-5 w-px bg-zinc-200 mx-2" />
+              <div className="w-2" />
 
               <div className="flex items-center gap-2.5 pl-1">
                 <div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shadow-sm">
@@ -145,10 +145,10 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-zinc-200 bg-white px-4 py-4 space-y-2 shadow-lg">
+        <div className="md:hidden bg-white px-4 py-4 space-y-2 shadow-elevated">
           {user ? (
             <>
-              <div className="flex items-center gap-3 pb-3 mb-2 border-b border-zinc-100">
+              <div className="flex items-center gap-3 pb-3 mb-2">
                 <div className="w-9 h-9 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">
                   {initials}
                 </div>
@@ -199,7 +199,7 @@ export function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="w-full text-center py-2.5 rounded-xl border border-zinc-200 text-sm font-semibold text-zinc-800"
+                className="w-full text-center py-2.5 rounded-xl bg-zinc-100 text-sm font-semibold text-zinc-800"
               >
                 Log in
               </Link>

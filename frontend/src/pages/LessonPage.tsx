@@ -40,7 +40,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 space-y-4">
         <div className="h-5 w-32 bg-zinc-200 rounded animate-pulse" />
-        <div className="h-96 bg-white rounded-3xl border border-zinc-200 animate-pulse" />
+        <div className="h-96 bg-white rounded-3xl shadow-soft animate-pulse" />
       </div>
     );
   }
@@ -56,7 +56,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
           : "";
       return (
         <div className="max-w-lg mx-auto my-14 px-4">
-          <div className="bg-white border border-zinc-200 rounded-3xl shadow-soft p-9 text-center">
+          <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-50 text-amber-600">
               <CalendarClock className="w-7 h-7" />
             </div>
@@ -90,7 +90,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
   if (!lesson) {
     return (
       <div className="max-w-lg mx-auto my-14 px-4">
-        <div className="bg-white border border-zinc-200 rounded-3xl shadow-soft p-9 text-center">
+        <div className="bg-white rounded-3xl shadow-elevated p-9 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600">
             <CalendarClock className="w-7 h-7" />
           </div>
@@ -121,7 +121,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
         Back to Dashboard
       </Link>
 
-      <div className="mt-4 bg-white border border-zinc-200/90 rounded-3xl shadow-soft p-6 sm:p-10">
+      <div className="mt-4 bg-white rounded-3xl shadow-elevated p-6 sm:p-10">
         <div className="flex flex-wrap items-center gap-2.5 text-xs">
           <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold">
             Day {lesson.day_number}
@@ -145,7 +145,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
               <PlayCircle className="w-4 h-4 text-indigo-600" />
               Lesson Video
             </div>
-            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-200 shadow-sm">
+            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-zinc-900 shadow-elevated">
               <iframe
                 src={lesson.video_url}
                 title={lesson.title}
@@ -162,7 +162,7 @@ export function LessonPage({ mode }: { mode: "today" | "byId" }) {
         </div>
 
         {lesson.has_quiz && (
-          <div className="mt-10 p-6 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="mt-10 p-6 rounded-2xl bg-zinc-50 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3.5">
               <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
                 <ClipboardCheck className="w-5 h-5" />

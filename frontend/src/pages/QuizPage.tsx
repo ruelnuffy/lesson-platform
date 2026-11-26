@@ -72,7 +72,7 @@ export function QuizPage() {
   if (result) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
-        <div className="bg-white border border-zinc-200/90 rounded-3xl p-8 sm:p-10 text-center shadow-elevated">
+        <div className="bg-white rounded-3xl p-8 sm:p-10 text-center shadow-elevated">
           <div
             className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${
               result.passed
@@ -103,7 +103,7 @@ export function QuizPage() {
             {result.pass_mark_percent}%
           </p>
 
-          <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-3 px-4 py-2 rounded-xl bg-zinc-50 border border-zinc-200/80 text-xs text-zinc-600">
+          <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-3 px-4 py-2 rounded-xl bg-zinc-50 text-xs text-zinc-600 shadow-sm">
             <span>
               Best: <strong className="text-zinc-900">{result.best_score_percent}%</strong>
             </span>
@@ -127,7 +127,7 @@ export function QuizPage() {
             </button>
             <Link
               to="/dashboard"
-              className="px-5 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-sm font-semibold hover:bg-zinc-50 transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-zinc-100 text-zinc-700 text-sm font-semibold hover:bg-zinc-200/80 transition-colors"
             >
               Back to Dashboard
             </Link>
@@ -143,9 +143,7 @@ export function QuizPage() {
             return (
               <div
                 key={q.id}
-                className={`bg-white border rounded-2xl p-5 shadow-soft ${
-                  r?.is_correct ? "border-emerald-200/90" : "border-rose-200/90"
-                }`}
+                className="bg-white rounded-2xl p-5 shadow-soft"
               >
                 <div className="flex items-start justify-between gap-3">
                   <p className="font-bold text-zinc-900 text-sm sm:text-base">
@@ -173,7 +171,7 @@ export function QuizPage() {
                   </p>
                 )}
                 {r?.explanation && (
-                  <p className="mt-3 text-sm text-zinc-700 bg-zinc-50 border border-zinc-100 p-3.5 rounded-xl leading-relaxed">
+                  <p className="mt-3 text-sm text-zinc-700 bg-zinc-50 p-3.5 rounded-xl leading-relaxed">
                     {r.explanation}
                   </p>
                 )}
@@ -200,7 +198,7 @@ export function QuizPage() {
         Back to Day {quiz.day_number}: {quiz.lesson_title}
       </Link>
 
-      <div className="mt-4 bg-white border border-zinc-200/90 rounded-3xl shadow-elevated p-6 sm:p-9">
+      <div className="mt-4 bg-white rounded-3xl shadow-elevated p-6 sm:p-9">
         <div className="flex items-center justify-between text-xs font-semibold text-zinc-500">
           <span>
             Question {currentIndex + 1} of {total}
@@ -245,10 +243,10 @@ export function QuizPage() {
                     onClick={() =>
                       setAnswers((prev) => ({ ...prev, [String(question.id)]: idx }))
                     }
-                    className={`w-full text-left p-4 rounded-2xl border-2 text-sm font-medium transition-all flex items-center gap-3.5 ${
+                    className={`w-full text-left p-4 rounded-2xl text-sm font-medium transition-all flex items-center gap-3.5 ${
                       isSelected
-                        ? "border-indigo-600 bg-indigo-50/70 text-indigo-950 shadow-sm"
-                        : "border-zinc-200/90 hover:border-zinc-300 hover:bg-zinc-50 text-zinc-700"
+                        ? "bg-indigo-50 text-indigo-950 ring-2 ring-indigo-600 shadow-soft"
+                        : "bg-zinc-50/90 hover:bg-white hover:shadow-soft text-zinc-700"
                     }`}
                   >
                     <span
@@ -272,18 +270,18 @@ export function QuizPage() {
         )}
 
         {submitMutation.error && (
-          <div className="mt-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2">
+          <div className="mt-5 p-3.5 rounded-xl bg-rose-50 shadow-sm text-rose-700 text-sm flex items-start gap-2">
             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{submitMutation.error.message}</span>
           </div>
         )}
 
-        <div className="mt-8 pt-6 border-t border-zinc-100 flex items-center justify-between">
+        <div className="mt-8 pt-4 flex items-center justify-between">
           <button
             type="button"
             disabled={currentIndex === 0}
             onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-zinc-200 text-zinc-700 text-sm font-semibold hover:bg-zinc-50 disabled:opacity-40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-100 text-zinc-700 text-sm font-semibold hover:bg-zinc-200/80 disabled:opacity-40 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Previous

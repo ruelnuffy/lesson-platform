@@ -23,13 +23,13 @@ export function LandingPage() {
   return (
     <div className="relative overflow-hidden">
       {/* Hero */}
-      <section className="relative border-b border-zinc-200/80 bg-white">
+      <section className="relative bg-white shadow-soft">
         <div className="absolute inset-0 bg-dot-grid opacity-60 pointer-events-none" />
         <div className="absolute -top-24 right-0 w-96 h-96 bg-indigo-200/30 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 lg:py-24 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold shadow-sm">
               <Sparkles className="w-3.5 h-3.5" />
               Structured Cohort Learning · 06:30 WAT Daily Drops
             </div>
@@ -65,7 +65,7 @@ export function LandingPage() {
                   </Link>
                   <Link
                     to="/login"
-                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-zinc-200 text-zinc-800 font-semibold hover:bg-zinc-50 transition-colors"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white text-zinc-800 font-semibold shadow-soft hover:shadow-elevated transition-all"
                   >
                     Sign in
                   </Link>
@@ -91,7 +91,7 @@ export function LandingPage() {
 
           {/* Right Preview Card */}
           <div className="lg:col-span-5">
-            <div className="bg-zinc-900 text-white rounded-3xl p-6 shadow-elevated border border-zinc-800">
+            <div className="bg-zinc-900 text-white rounded-3xl p-6 shadow-elevated">
               <div className="flex items-center justify-between text-xs">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 font-semibold">
                   <BookOpen className="w-3.5 h-3.5" />
@@ -110,7 +110,7 @@ export function LandingPage() {
                 timezone rules.
               </p>
 
-              <div className="mt-5 p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
+              <div className="mt-5 p-4 rounded-2xl bg-white/5 space-y-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                   Quick Quiz Preview
                 </p>
@@ -121,7 +121,7 @@ export function LandingPage() {
                   <div className="px-3 py-2 rounded-lg bg-white/5 text-xs text-zinc-400">
                     A. Only in React components
                   </div>
-                  <div className="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-xs text-emerald-200 font-medium flex items-center justify-between">
+                  <div className="px-3 py-2 rounded-lg bg-emerald-500/20 text-xs text-emerald-200 font-medium flex items-center justify-between">
                     <span>B. On the server for every lesson &amp; quiz</span>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   </div>
@@ -154,7 +154,7 @@ export function LandingPage() {
           ].map((item) => (
             <div
               key={item.step}
-              className="bg-white border border-zinc-200/80 rounded-2xl p-6 shadow-soft"
+              className="bg-white rounded-2xl p-6 shadow-soft"
             >
               <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">
                 {item.step}
@@ -181,10 +181,10 @@ export function LandingPage() {
 
         {isLoading ? (
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="h-56 bg-white rounded-2xl border border-zinc-200 animate-pulse" />
+            <div className="h-56 bg-white rounded-2xl shadow-soft animate-pulse" />
           </div>
         ) : courses.length === 0 ? (
-          <div className="bg-white border border-zinc-200 rounded-2xl p-10 text-center text-zinc-500">
+          <div className="bg-white rounded-2xl shadow-soft p-10 text-center text-zinc-500">
             No active courses published yet.
           </div>
         ) : (
@@ -192,7 +192,7 @@ export function LandingPage() {
             {courses.map((course) => (
               <div
                 key={course.id}
-                className="bg-white border border-zinc-200/90 rounded-3xl p-7 shadow-soft hover:shadow-elevated transition-shadow flex flex-col justify-between"
+                className="bg-white rounded-3xl p-7 shadow-soft hover:shadow-elevated transition-shadow flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-4">
@@ -213,7 +213,7 @@ export function LandingPage() {
                   </p>
                 </div>
 
-                <div className="mt-6 pt-5 border-t border-zinc-100 flex items-center justify-between gap-4">
+                <div className="mt-6 pt-4 flex items-center justify-between gap-4">
                   <span className="text-xs text-zinc-500 font-medium">
                     Quizzes + email reminders included
                   </span>
@@ -231,7 +231,7 @@ export function LandingPage() {
         )}
       </section>
 
-      <footer className="border-t border-zinc-200/80 bg-white py-8">
+      <footer className="bg-white shadow-nav py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <p className="font-semibold text-zinc-700">Daily Lessons</p>
           <p>Scheduled in Africa/Lagos · Powered by FastAPI, React &amp; Paystack</p>

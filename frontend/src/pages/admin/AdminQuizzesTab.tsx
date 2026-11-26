@@ -104,7 +104,7 @@ export function AdminQuizzesTab() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 flex flex-wrap items-end gap-4">
+      <div className="bg-white rounded-2xl shadow-soft p-5 flex flex-wrap items-end gap-4">
         <div className="flex-1 min-w-[240px]">
           <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
             Select Lesson
@@ -112,7 +112,7 @@ export function AdminQuizzesTab() {
           <select
             value={activeLessonId ?? ""}
             onChange={(e) => setSelectedLessonId(Number(e.target.value))}
-            className="mt-1.5 w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm bg-white"
+            className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
           >
             {lessons.map((l) => (
               <option key={l.id} value={l.id}>
@@ -131,7 +131,7 @@ export function AdminQuizzesTab() {
             max="100"
             value={passMark}
             onChange={(e) => setPassMark(e.target.value)}
-            className="mt-1.5 w-24 rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
+            className="mt-1.5 w-24 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
           />
         </div>
         <button
@@ -145,7 +145,7 @@ export function AdminQuizzesTab() {
 
       {quiz && (
         <>
-          <div className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 space-y-3">
+          <div className="bg-white rounded-2xl shadow-soft p-5 space-y-3">
             <h2 className="font-bold text-zinc-900">
               Questions ({quiz.questions.length})
             </h2>
@@ -153,7 +153,7 @@ export function AdminQuizzesTab() {
               <p className="text-sm text-zinc-500">No questions yet.</p>
             ) : (
               quiz.questions.map((q, idx) => (
-                <div key={q.id} className="p-4 rounded-xl border border-zinc-200/80 bg-zinc-50/50">
+                <div key={q.id} className="p-4 rounded-xl bg-zinc-50/80 shadow-sm">
                   <div className="flex justify-between gap-4">
                     <p className="font-bold text-zinc-900 text-sm">
                       {idx + 1}. {q.text}
@@ -187,7 +187,7 @@ export function AdminQuizzesTab() {
                     ))}
                   </ul>
                   {q.explanation && (
-                    <p className="mt-2.5 text-xs text-zinc-500 bg-white border border-zinc-200/60 p-2.5 rounded-lg">
+                    <p className="mt-2.5 text-xs text-zinc-500 bg-white shadow-sm p-2.5 rounded-lg">
                       <strong>Explanation:</strong> {q.explanation}
                     </p>
                   )}
@@ -198,7 +198,7 @@ export function AdminQuizzesTab() {
 
           <form
             onSubmit={handleAddQuestion}
-            className="bg-white border border-zinc-200/90 rounded-2xl shadow-soft p-5 space-y-4"
+            className="bg-white rounded-2xl shadow-soft p-5 space-y-4"
           >
             <h2 className="font-bold text-zinc-900">Add Question</h2>
             <input
@@ -206,7 +206,7 @@ export function AdminQuizzesTab() {
               placeholder="Question text"
               value={qText}
               onChange={(e) => setQText(e.target.value)}
-              className="w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
+              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             />
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-500">
@@ -216,7 +216,7 @@ export function AdminQuizzesTab() {
                 rows={4}
                 value={optionsText}
                 onChange={(e) => setOptionsText(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
+                className="mt-1.5 w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
               />
             </div>
             <div>
@@ -226,7 +226,7 @@ export function AdminQuizzesTab() {
               <select
                 value={correctIndex}
                 onChange={(e) => setCorrectIndex(Number(e.target.value))}
-                className="mt-1.5 rounded-xl border border-zinc-300 px-3.5 py-2 text-sm bg-white"
+                className="mt-1.5 rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
               >
                 {parsedOptions.map((opt, idx) => (
                   <option key={idx} value={idx}>
@@ -239,7 +239,7 @@ export function AdminQuizzesTab() {
               placeholder="Explanation shown after grading"
               value={explanation}
               onChange={(e) => setExplanation(e.target.value)}
-              className="w-full rounded-xl border border-zinc-300 px-3.5 py-2 text-sm"
+              className="w-full rounded-xl bg-zinc-100/80 px-3.5 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
             />
             <button
               type="submit"

@@ -8,8 +8,10 @@ export default {
         mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
       },
       boxShadow: {
-        soft: "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.08)",
-        elevated: "0 2px 6px rgba(15, 23, 42, 0.05), 0 18px 40px -16px rgba(15, 23, 42, 0.14)",
+        nav: "0 4px 20px -4px rgba(15, 23, 42, 0.06)",
+        soft: "0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 10px 28px -8px rgba(15, 23, 42, 0.08)",
+        elevated:
+          "0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 22px 48px -12px rgba(15, 23, 42, 0.14)",
       },
     },
   },
