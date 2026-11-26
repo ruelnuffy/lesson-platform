@@ -1,6 +1,13 @@
 from functools import lru_cache
+import os
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _default_database_url() -> str:
+    if os.getenv("VERCEL"):
+        return "sqlite:////tmp/dailylessons.db"
+    return "postgresql+psycopg://dailylessons:dailylessons_dev_password@postgres:5432/dailylessons"
 
 
 class Settings(BaseSettings):
@@ -14,9 +21,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     timezone: str = "Africa/Lagos"
 
-    database_url: str = (
-        "postgresql+psycopg://dailylessons:dailylessons_dev_password@postgres:5432/dailylessons"
-    )
+    database_url: str = _default_database_url()
 
     jwt_secret_key: str = "change-me-to-a-long-random-secret-at-least-32-chars"
     jwt_algorithm: str = "HS256"

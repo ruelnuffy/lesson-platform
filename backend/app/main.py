@@ -14,10 +14,17 @@ from app.api.payments import router as payments_router
 from app.api.quizzes import router as quizzes_router
 from app.api.reviews import router as reviews_router
 from app.config import get_settings
+from app.database import Base, SessionLocal, engine
+from app.seed import seed_database
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    if settings.database_url.startswith("sqlite"):
+        Base.metadata.create_all(bind=engine)
+        with SessionLocal() as db:
+            seed_database(db)
+
     app = FastAPI(title=settings.app_name)
 
     app.add_middleware(
